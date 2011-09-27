@@ -91,3 +91,17 @@
     :buy "BUY"
     :sell "SELL"
     :sell-short "SSHORT"))
+
+(defn translate-to-ib-order-type [type]
+  (condp = type
+    :limit "LMT"))
+
+(defn translate-to-ib-security-type [type]
+  (condp = type
+    :stock          "STK"     
+    :option         "OPT"     
+    :future         "FUT"     
+    :index          "IND"     
+    :future-option  "FOP"     
+    :cash           "CASH"    
+    :bag            "BAG"))

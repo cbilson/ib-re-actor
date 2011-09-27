@@ -94,7 +94,6 @@
   (translate-to-ib-date-time (date-time 2011)) => "2011 01 01 00:00:00"
   (translate-to-ib-date-time (date-time 2001 4 1 13 30 29)) => "2001 04 01 13:30:29")
 
-;.;. For every disciplined effort, there is a multiple reward. -- Rohn
 (tabular
  (fact "it can translate order actions"
    (translate-to-ib-order-action ?action) => ?expected)
@@ -103,3 +102,23 @@
  | :buy        | "BUY"     |
  | :sell       | "SELL"    |
  | :sell-short | "SSHORT"  |)
+
+(tabular
+ (fact "it can translate to IB order types"
+   (translate-to-ib-order-type ?type) => ?expected)
+ :where
+ | ?type  | ?expected |
+ | :limit | "LMT"     |)
+
+(tabular
+ (fact "it can translate security types"
+   (translate-to-ib-security-type ?type) => ?expected)
+ :where
+ | ?type          | ?expected |
+ | :stock         | "STK"     |
+ | :option        | "OPT"     |
+ | :future        | "FUT"     |
+ | :index         | "IND"     |
+ | :future-option | "FOP"     |
+ | :cash          | "CASH"    |
+ | :bag           | "BAG"     |)
