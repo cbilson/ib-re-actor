@@ -20,10 +20,13 @@
   (security-id-type (security-id-type con :isin)) => :isin
   (security-id (security-id con "US1234567890")) => "US1234567890")
 
-(fact "I can create a futures contracts"
-  (expiry (futures-contract (date-time 2011 12))) => (date-time 2011 12)
+(fact "I can create futures contracts"
   (let [con (futures-contract "TF" "NYBOT" (date-time 2011 12))]
     con => (fn [x] (= (date-time 2011 12) (expiry x)))
     con => (fn [x] (= "TF" (underlying-symbol x)))
     con => (fn [x] (= "NYBOT" (exchange x)))))
 
+(fact "I can create index contracts"
+  (let [con (index "TF" "NYBOT")]
+    con => (fn [x] (= "TF" (underlying-symbol x)))
+    con => (fn [x] (= "NYBOT" (exchange x)))))

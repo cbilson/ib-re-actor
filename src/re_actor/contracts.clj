@@ -15,10 +15,13 @@
 (field-based-property security-id-type m_secIdType translate-from-ib-security-id-type translate-to-ib-security-id-type)
 (field-based-property security-id m_secId)
 
-(defn futures-contract
-  ([] (let [contract (Contract.)]
-        (set! (.m_secType contract) (translate-to-ib-security-type :future))
+(defn make-contract [contract-type]
+  (let [contract (Contract.)]
+        (set! (.m_secType contract) (translate-to-ib-security-type contract-type))
         contract))
+
+(defn futures-contract
+  ([] (make-contract :future))
   ([^org.joda.DateTime expiry-val]
      (-> (futures-contract)
          (expiry expiry-val)))
@@ -26,3 +29,8 @@
      (-> (futures-contract expiry-val)
          (exchange exchange-val)
          (underlying-symbol symbol-val))))
+
+(defn index [symbol-val exchange-val]
+  (-> (make-contract :index)
+      (underlying-symbol symbol-val)
+      (exchange exchange-val)))
