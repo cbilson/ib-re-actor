@@ -80,6 +80,9 @@
 (fact "it can translate date-times to IB expiry strings"
   (translate-to-ib-expiry (date-time 2011 9 17)) => "201109")
 
+(fact "it can translate from IB expiry strings to joda DateTimes"
+  (translate-from-ib-expiry "201109") => (date-time 2011 9))
+
 (tabular 
  (fact "it can translate time in force values"
    (translate-time-in-force ?value) => ?expected)
@@ -122,3 +125,14 @@
  | :future-option | "FOP"     |
  | :cash          | "CASH"    |
  | :bag           | "BAG"     |)
+
+(tabular
+ (fact "it can translate security id types"
+   (translate-from-ib-security-id-type ?ib-type) => ?re-actor-type
+   (translate-to-ib-security-id-type ?re-actor-type) => ?ib-type)
+ :where
+ | ?re-actor-type | ?ib-type |
+ | :isin          | "ISIN"   |
+ | :cusip         | "CUSIP"  |
+ | :sedol         | "SEDOL"  |
+ | :ric           | "RIC"    |)

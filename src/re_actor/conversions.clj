@@ -68,12 +68,15 @@
     String (translate-from-ib-date-time (Long/parseLong val))
     Long (from-long (* 1000 val))))
 
-(defn translate-to-ib-expiry [expiry-date]
-  (let [y (year expiry-date)
+(defn translate-to-ib-expiry [val]
+  (let [y (year val)
         ys (.toString y)
-        m (month expiry-date)
+        m (month val)
         ms (format "%02d" m)]
     (str ys ms)))
+
+(defn translate-from-ib-expiry [val]
+  (parse (formatter "yyyyMM") val))
 
 (defn translate-time-in-force [value]
   (condp = value
@@ -105,3 +108,17 @@
     :future-option  "FOP"     
     :cash           "CASH"    
     :bag            "BAG"))
+
+(defn translate-from-ib-security-id-type [val]
+  (condp = val
+    "ISIN" :isin
+    "CUSIP" :cusip
+    "SEDOL" :sedol
+    "RIC" :ric))
+
+(defn translate-to-ib-security-id-type [val]
+  (condp = val
+    :isin "ISIN"
+    :cusip "CUSIP"
+    :sedol "SEDOL"
+    :ric "RIC"))
