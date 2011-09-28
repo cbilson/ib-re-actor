@@ -1,16 +1,7 @@
 (ns re-actor.contracts
-  (:use [re-actor.conversions])
+  (:use [re-actor.conversions]
+        [re-actor.util])
   (:import [com.ib.client Contract]))
-
-(defmacro field-based-property
-  ([property-name field-name]
-     `(defn ~property-name
-        ([x#] (. x# ~field-name))
-        ([x# val#] (set! (. x# ~field-name) val#) x#)))
-  ([property-name field-name get-xform set-xform]
-     `(defn ~property-name
-        ([x#] (~get-xform (. x# ~field-name)))
-        ([x# val#] (set! (. x# ~field-name) (~set-xform val#)) x#))))
 
 (field-based-property expiry m_expiry translate-from-ib-expiry translate-to-ib-expiry)
 (field-based-property underlying-symbol m_symbol)
