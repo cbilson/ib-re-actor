@@ -3,49 +3,35 @@
         [clj-time.core :only [date-time]]
         [midje.sweet]))
 
-(def *messages* (atom []))
+#_ (process-to-message
+    (.historicalData 42 "finished" 0.0 0.0 0.0 0.0 0 0 0.0 false)
+    (.fooBar 1 2 3))
 
-(defn process-message [message]
-  (swap! *messages* conj message))
+(defmacro process-to-messages [& forms]
+  `(let [messages# (atom [])
+         process-fn# (fn [message#] (swap! messages# conj message#))]
+     (doto (create-client process-fn#)
+       ~@forms)
+     @messages#))
 
-(binding [*messages* (atom [])]
-  (fact "it handles historicalData messages from IB"
-    (let [client (create-client process-message)
-          request-id 42
-          timestamp "1000000000"
-          open 1.0
-          high 1.5
-          low 0.5
-          close 0.8
-          volume 50
-          count 5
-          wap 0.9
-          has-gaps? true]
-      (.historicalData client request-id timestamp open high low close volume count wap has-gaps?)
-      @*messages* => [{:type :price-bar
-                       :request-id request-id
-                       :time (date-time 2001 9 9 1 46 40)
-                       :open open
-                       :high high
-                       :low low
-                       :close close
-                       :volume volume
-                       :count count
-                       :WAP wap
-                       :has-gaps? has-gaps?}])))
+(fact "it handles historicalData messages from IB"
+  (process-to-messages
+   (.historicalData 1 "1000000000" 2.0 3.0 4.0 5.0 6 7 8.0 true))
+  => [{:type :price-bar :request-id 1 :time (date-time 2001 9 9 1 46 40)
+       :open 2.0 :high 3.0 :low 4.0 :close 5.0 :volume 6 :count 7 :WAP 8.0
+       :has-gaps? true}])
 
-(binding [*messages* (atom [])]
-  (fact "it handles historicalData complete messages from IB"
-    (let [client (create-client process-message)]
-      (.historicalData client 42 "finished" 0.0 0.0 0.0 0.0 0 0 0.0 false)
-      @*messages* => [{:type :complete :request-id 42}])))
+(fact "it handles historicalData complete messages from IB"
+  (process-to-messages
+   (.historicalData 42 "finished" 0.0 0.0 0.0 0.0 0 0 0.0 false))
+  => [{:type :complete :request-id 42}])
 
-;.;. Excellence is not an act but a habit. -- Aristotle
-(binding [*messages* (atom [])]
-  (fact "it handles realtime bars"
-    (let [client (create-client process-message)]
-      (.realtimeBar client 51 1000000000 1.0 2.0 3.0 4.0 5 6.0 7)
-      @*messages* => [{:type :price-bar :request-id 51
-                       :time (date-time 2001 9 9 1 46 40)
-                       :open 1.0 :high 2.0 :low 3.0 :close 4.0 :volume 5 :count 7
-                       :WAP 6.0}])))
+(fact "it handles realtime bars"
+  (process-to-messages
+   (.realtimeBar 51 1000000000 1.0 2.0 3.0 4.0 5 6.0 7))
+  => [{:type :price-bar :request-id 51
+       :time (date-time 2001 9 9 1 46 40)
+       :open 1.0 :high 2.0 :low 3.0 :close 4.0 :volume 5 :count 7
+       :WAP 6.0}])
+
+
