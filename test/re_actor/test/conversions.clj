@@ -136,3 +136,16 @@
  | :cusip         | "CUSIP"  |
  | :sedol         | "SEDOL"  |
  | :ric           | "RIC"    |)
+
+(tabular
+ (fact "it can translate tick field codes"
+   (translate-from-ib-tick-field-code ?ib-code) => ?re-actor-code
+   (translate-to-ib-tick-field-code ?re-actor-code) => ?ib-code)
+ :where
+ | ?re-actor-code | ?ib-code |
+ | :bid           | 1        |
+ | :ask           | 2        |
+ | :last          | 4        |
+ | :high          | 6        |
+ | :low           | 7        |
+ | :close         | 9        |)

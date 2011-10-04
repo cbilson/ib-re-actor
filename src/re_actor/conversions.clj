@@ -122,3 +122,21 @@
     :cusip "CUSIP"
     :sedol "SEDOL"
     :ric "RIC"))
+
+(defn translate-from-ib-tick-field-code [val]
+  (condp = val
+    1 :bid
+    2 :ask
+    4 :last
+    6 :high
+    7 :low
+    9 :close))
+
+(defn translate-to-ib-tick-field-code [val]
+  (condp = val
+    :bid 1
+    :ask 2
+    :last 4
+    :high 6
+    :low 7
+    :close 9))
