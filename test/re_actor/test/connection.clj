@@ -34,4 +34,8 @@
        :open 1.0 :high 2.0 :low 3.0 :close 4.0 :volume 5 :count 7
        :WAP 6.0}])
 
+(fact "it handles price ticks"
+  (process-to-messages
+   (.tickPrice 1 2 3.0 1))
+  => [{:ticker-id 1 :field :ask :price 3.0 :can-auto-execute? true}])
 

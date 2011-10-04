@@ -18,21 +18,25 @@
 (defn create-client [process-message]
   (reify
     EWrapper
+
     (historicalData [this requestId date open high low close volume count wap hasGaps]
       (if (is-finish? date)
         (process-message {:type :complete :request-id requestId})
         (process-message {:type :price-bar :request-id requestId :time (translate-from-ib-date-time date)
                           :open open :high high :low low :close close :volume volume
                           :count count :WAP wap :has-gaps? hasGaps})))
+
     (realtimeBar [this requestId time open high low close volume wap count]
       (process-message {:type :price-bar :request-id requestId :time (translate-from-ib-date-time time)
                           :open open :high high :low low :close close :volume volume
-                          :count count :WAP wap}))
-    ;; (tickPrice [this tickerId field price canAutoExecute]
-    ;; (.tick handler {:ticker-id tickerId
-    ;;                 :field (translate-tick-field field)
-    ;;                 :price price :can-auto-execute? canAutoExecute})
-                                        ;    )
+                        :count count :WAP wap}))
+
+    (tickPrice [this tickerId field price canAutoExecute]
+      (process-message {:ticker-id tickerId
+                        :field (translate-from-ib-tick-field field)
+                        :price price
+                        :can-auto-execute? (= 1 canAutoExecute)}))
+
     ;; (error [this request-id error-code message]
     ;; (.error handler {:request-id request-id
     ;;                  :error-code error-code
