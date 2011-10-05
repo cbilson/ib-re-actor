@@ -93,6 +93,17 @@
                     :vwap "VWAP"
                     })
 
+(translation-table order-status
+                   {
+                    :pending-submit "PendingSubmit"
+                    :pending-cancel "PendingCancel"
+                    :pre-submitted "PreSubmitted"
+                    :submitted "Submitted"
+                    :cancelled "Cancelled"
+                    :filled "Filled"
+                    :inactive "Inactive"
+                    })
+
 (translation-table security-id-type
                    {:isin "ISIN"
                     :cusip "CUSIP"

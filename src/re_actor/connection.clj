@@ -28,40 +28,69 @@
 
     (realtimeBar [this requestId time open high low close volume wap count]
       (process-message {:type :price-bar :request-id requestId :time (translate-from-ib-date-time time)
-                          :open open :high high :low low :close close :volume volume
+                        :open open :high high :low low :close close :volume volume
                         :count count :WAP wap}))
 
     (tickPrice [this tickerId field price canAutoExecute]
-      (process-message {:ticker-id tickerId
-                        :field (translate-from-ib-tick-field field)
+      (process-message {:type :price-tick :field (translate-from-ib-tick-field-code field)
+                        :ticker-id tickerId
                         :price price
                         :can-auto-execute? (= 1 canAutoExecute)}))
 
-    ;; (error [this request-id error-code message]
-    ;; (.error handler {:request-id request-id
-    ;;                  :error-code error-code
-    ;;                  :message message})
-    ;;   )
-    ;; (^void error [this ^String message]
-    ;;   ;; (.error handler {:message message})
-    ;;   )
-    ;; (^void error [this ^Exception ex]
-    ;;   ;; (.error handler {:message (.toString ex) :exception ex})
-    ;;   )
-    ;; (currentTime [this time]
-    ;;   ;; (.error handler {:server-date (convert-ib-date-time time)
-    ;;   ;;                  :local-date (now)})
-    ;;   )
-    ;; (tickSnapshotEnd [this reqId])
-    ;; (connectionClosed [this]
-    ;;   ;; (.closed handler)
-    ;;   )
-    ;; (tickSize [this tickerId field size])
-    ;; (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice])
-    ;; (tickGeneric [this tickerId tickType value])
-    ;; (tickString [this tickerId tickType value])
-    ;; (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry])
-    ;; (orderStatus [this orderId status filled remaining avgFillPrice permId parentId lastFillPrice clientId whyHeld])
+    (tickSize [this tickerId field size]
+      (process-message {:type :size-tick :field (translate-from-ib-tick-field-code field)
+                        :ticker-id tickerId
+                        :size size}))
+    
+    (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice]
+      (process-message {:type :option-computation-tick :field (translate-from-ib-tick-field-code field)
+                        :ticker-id tickerId
+                        :implied-volatility impliedVol
+                        :option-price optPrice
+                        :pv-dividends pvDividend
+                        :underlying-price undPrice
+                        :delta delta :gamma gamma :theta theta :vega vega }))
+    
+    (tickGeneric [this tickerId tickType value]
+      (process-message {:type :generic-tick :field (translate-from-ib-tick-field-code tickType)
+                        :ticker-id tickerId :value value}))
+    
+    (tickString [this tickerId tickType value]
+      (process-message {:type :string-tick :field (translate-from-ib-tick-field-code tickType)
+                        :ticker-id tickerId :value value}))
+    
+    (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
+      (process-message {:type :efp-tick :field (translate-from-ib-tick-field-code tickType)
+                        :ticker-id tickerId
+                        :basis-points basisPoints :formatted-basis-points formattedBasisPoints
+                        :implied-future impliedFuture :hold-days holdDays :future-expiry futureExpiry
+                        :dividend-impact dividendImpact :dividends-to-expiry dividendsToExpiry}))
+
+    (tickSnapshotEnd [this reqId]
+      (process-message {:type :tick-snapshot-end :request-id reqId}))
+    
+    (connectionClosed [this]
+      (process-message {:type :connection-closed}))
+    
+    (error [this requestId errorCode message]
+      (process-message {:type :error :request-id requestId :code errorCode :message message}))
+    
+    (^void error [this ^String message]
+      (process-message {:type :error :message message}))
+    
+    (^void error [this ^Exception ex]
+      (process-message {:type :error :exception ex}))
+    
+    (currentTime [this time]
+      (process-message {:type :current-time :value (translate-from-ib-date-time time)}))
+    
+    (orderStatus [this orderId status filled remaining avgFillPrice permId parentId lastFillPrice clientId whyHeld]
+      (process-message {:type :order-status :order-id orderId :status (translate-from-ib-order-status status)
+                        :filled filled :remaining remaining :average-fill-price avgFillPrice
+                        :permanent-id permId :parent-id parentId
+                        :last-fill-price lastFillPrice :client-id clientId
+                        :why-held whyHeld}))
+    
     ;; (openOrder [this orderId contract order orderState])
     ;; (openOrderEnd [this])
     ;; (nextValidId [this orderId])
