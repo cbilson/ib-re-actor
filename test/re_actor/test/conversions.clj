@@ -22,10 +22,8 @@
    (translate-to-ib-security-type ?value) => ?expected)
  :where
  | ?value            | ?expected |
- | :stock            | "STK"     |
  | :equity           | "STK"     |
  | :option           | "OPT"     |
- | :future           | "FUT"     |
  | :futures          | "FUT"     |
  | :index            | "IND"     |
  | :future-option    | "FOP"     |
@@ -33,20 +31,8 @@
  | :bag              | "BAG"     |)
 
 (tabular
- (fact "it can translate from IB tick field codes"
-   (translate-from-ib-tick-field ?field) => ?expected)
- :where
- | ?field | ?expected |
- | 1      | :bid      |
- | 2      | :ask      |
- | 4      | :last     |
- | 6      | :high     |
- | 7      | :low      |
- | 9      | :close    |)
-
-(tabular
  (fact "it can translate bar sizes"
-   (translate-bar-size ?value ?unit) => ?expected)
+   (translate-to-ib-bar-size ?value ?unit) => ?expected)
  :where
  | ?value | ?unit    | ?expected |
  | 1      | :second  | "1 sec"   |
@@ -60,7 +46,7 @@
 
 (tabular
  (fact "it can translate what to show strings"
-   (translate-what-to-show ?value) => ?expected)
+   (translate-to-ib-what-to-show ?value) => ?expected)
  :where
  | ?value                     | ?expected                   |
  | :trades                    | "TRADES"                    |
@@ -85,7 +71,7 @@
 
 (tabular 
  (fact "it can translate time in force values"
-   (translate-time-in-force ?value) => ?expected)
+   (translate-to-ib-time-in-force ?value) => ?expected)
  :where
  | ?value               | ?expected |
  | :day                 | "DAY"     |
@@ -118,9 +104,8 @@
    (translate-to-ib-security-type ?type) => ?expected)
  :where
  | ?type          | ?expected |
- | :stock         | "STK"     |
  | :option        | "OPT"     |
- | :future        | "FUT"     |
+ | :futures       | "FUT"     |
  | :index         | "IND"     |
  | :future-option | "FOP"     |
  | :cash          | "CASH"    |
@@ -137,15 +122,19 @@
  | :sedol         | "SEDOL"  |
  | :ric           | "RIC"    |)
 
+;.;. Any intelligent fool can make things bigger, more complex, and more
+;.;. violent. It takes a touch of genius -- and a lot of courage -- to move
+;.;. in the opposite direction. -- Schumacher
 (tabular
  (fact "it can translate tick field codes"
    (translate-from-ib-tick-field-code ?ib-code) => ?re-actor-code
    (translate-to-ib-tick-field-code ?re-actor-code) => ?ib-code)
  :where
  | ?re-actor-code | ?ib-code |
- | :bid           | 1        |
- | :ask           | 2        |
- | :last          | 4        |
- | :high          | 6        |
- | :low           | 7        |
- | :close         | 9        |)
+ | :bid-size      | 0        |
+ | :bid-price     | 1        |
+ | :ask-price     | 2        |
+ | :ask-size      | 3        |)
+
+
+
