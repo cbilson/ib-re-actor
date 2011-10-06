@@ -2,20 +2,13 @@
   (:use [re-actor.conversions])
   (:import [com.ib.client EClientSocket EWrapper]))
 
-(defrecord PriceBar [request-id time open high low close volume count WAP has-gaps?])
-(defrecord Complete [request-id])
-(defrecord Tick [ticker-id field value can-auto-execute?])
-
-(defrecord OrderStatus [order-id status filled remaining average-fill-price
-                        permanent-id parent-id last-fill-price client-id
-                        why-held])
-
-(defrecord Position [contract quantity market-price market-value average-cost unrealized-gain-loss realized-gain-loss account-name])
-
 (defn- is-finish? [date-string]
   (.startsWith date-string "finished"))
 
 (defn create-client [process-message]
+  "Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
+calling a single function with maps that all have a :type to indicate what type
+of messages was received, and the massaged parameters from the event."
   (reify
     EWrapper
 
@@ -91,61 +84,91 @@
                         :last-fill-price lastFillPrice :client-id clientId
                         :why-held whyHeld}))
     
-    ;; (openOrder [this orderId contract order orderState])
-    ;; (openOrderEnd [this])
-    ;; (nextValidId [this orderId])
-    ;; (updateAccountValue [this key value currency accountName])
-    ;; (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName])
-    ;; (updateAccountTime [this timeStamp])
-    ;; (contractDetails [this request-id contractDetails]
-    ;;   ;; (.contract-details handler request-id
-    ;;   ;;                    {:summary (.m_summary contractDetails)
-    ;;   ;;                     :market-name (.m_marketName contractDetails)
-    ;;   ;;                     :trading-class (.m_tradingClass contractDetails)
-    ;;   ;;                     :min-tick (.m_minTick contractDetails)
-    ;;   ;;                     :price-magnifier (.m_priceMagnifier contractDetails)
-    ;;   ;;                     :order-types (.m_orderTypes contractDetails)
-    ;;   ;;                     :valid-exchanges (.m_validExchanges contractDetails)
-    ;;   ;;                     :underlying-contract-id (.m_underConId contractDetails)
-    ;;   ;;                     :long-name (.m_longName contractDetails)
-    ;;   ;;                     :cusip (.m_cusip contractDetails)
-    ;;   ;;                     :ratings (.m_ratings contractDetails)
-    ;;   ;;                     :description (.m_descAppend contractDetails)
-    ;;   ;;                     :bond-type (.m_bondType contractDetails)
-    ;;   ;;                     :coupon-type (.m_couponType contractDetails)
-    ;;   ;;                     :callable (.m_callable contractDetails)
-    ;;   ;;                     :putable (.m_putable contractDetails)
-    ;;   ;;                     :coupon (.m_coupon contractDetails)
-    ;;   ;;                     :convertible (.m_convertible contractDetails)
-    ;;   ;;                     :maturity (.m_maturity contractDetails)
-    ;;   ;;                     :issue-date (.m_issueDate contractDetails)
-    ;;   ;;                     :next-option-date (.m_nextOptionDate contractDetails)
-    ;;   ;;                     :next-option-type (.m_nextOptionType contractDetails)
-    ;;   ;;                     :next-option-partial (.m_nextOptionPartial contractDetails)
-    ;;   ;;                     :notes (.m_notes contractDetails)
-    ;;   ;;                     :contract-month (.m_contractMonth contractDetails)
-    ;;   ;;                     :industry (.m_industry contractDetails)
-    ;;   ;;                     :category (.m_category contractDetails)
-    ;;   ;;                     :subcategory (.m_subcategory contractDetails)
-    ;;   ;;                     :time-zone-id (.m_timeZoneId contractDetails)
-    ;;   ;;                     :trading-hours (.m_tradingHours contractDetails)
-    ;;   ;;                     :liquid-hours (.m_liquidHours contractDetails)})
-    ;;   )
-    ;; (contractDetailsEnd [this request-id]
-    ;;   ;; (.contract-details-end handler request-id)
-    ;;   )
-    ;; (bondContractDetails [this request-id contractDetails])
-    ;; (execDetails [this request-id contract execution])
-    ;; (execDetailsEnd [this request-id])
-    ;; (updateMktDepth [this tickerId position operation side price size])
-    ;; (updateMktDepthL2 [this tickerId position marketMaker operation side price size])
-    ;; (updateNewsBulletin [this msgId msgType message origExchange])
-    ;; (managedAccounts [this accountsList])
-    ;; (receiveFA [this faDataType xml])
-    ;; (scannerParameters [this xml])
-    ;; (scannerData [this request-id rank contractDetails distance benchmark projection legsStr])
-    ;; (scannerDataEnd [this request-id])
-    ))
+    (openOrder [this orderId contract order orderState]
+      (process-message {:type :open-order :order-id orderId :contract contract :order order :order-state orderState}))
+    
+    (openOrderEnd [this]
+      (process-message {:type :open-order-end}))
+    
+    (nextValidId [this orderId]
+      (process-message {:type :next-valid-order-id :value orderId}))
+    
+    (updateAccountValue [this key value currency accountName]
+      (let [account-value-key (translate-from-ib-account-value-key key)]
+        (if (= account-value-key :day-trades-remaining)
+          (process-message {:type :update-account-day-trades-remaining
+                            :value (Integer/parseInt value)
+                            :account accountName})
+          (process-message {:type :update-account-value :key account-value-key
+                            :value (Double/parseDouble value) :currency currency
+                            :account accountName}))))
+    
+    (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
+      (process-message {:type :update-portfolio :contract contract :position position
+                        :market-price marketPrice :market-value marketValue
+                        :average-cost averageCost :unrealized-gain-loss unrealizedPNL :realized-gain-loss realizedPNL
+                        :account accountName}))
+    
+    (updateAccountTime [this timeStamp]
+      (process-message {:type :update-account-time :value (translate-from-ib-date-time timeStamp)}))
+    
+    (contractDetails [this requestId contractDetails]
+      (process-message {:type :contract-details :request-id requestId :value contractDetails}))
+    
+    (bondContractDetails [this requestId contractDetails]
+      (process-message {:type :contract-details :request-id requestId :value contractDetails}))
+
+    (contractDetailsEnd [this requestId]
+      (process-message {:type :contract-details-end :request-id requestId}))
+    
+    (execDetails [this requestId contract execution]
+      (process-message {:type :execution-details :request-id requestId :contract contract :value execution}))
+    
+    (execDetailsEnd [this requestId]
+      (process-message {:type :execution-details-end :request-id requestId}))
+    
+    (updateMktDepth [this tickerId position operation side price size]
+      (process-message {:type :update-market-depth :ticker-id tickerId :position position
+                        :operation (translate-from-ib-market-depth-row-operation operation)
+                        :side (translate-from-ib-market-depth-side side)
+                        :price price :size size}))
+    
+    (updateMktDepthL2 [this tickerId position marketMaker operation side price size]
+      (process-message {:type :update-market-depth-level-2 :ticker-id tickerId :position position
+                        :market-maker marketMaker
+                        :operation (translate-from-ib-market-depth-row-operation operation)
+                        :side (translate-from-ib-market-depth-side side)
+                        :price price :size size}))
+    
+    (updateNewsBulletin [this msgId msgType message origExchange]
+      (process-message {:type (condp = msgType
+                                0 :news-bulletin
+                                1 :exchange-unavailable
+                                2 :exchange-available)
+                        :id msgId :message message :exchange origExchange}))
+    
+    (managedAccounts [this accountsList]
+      (process-message {:type :managed-accounts
+                        :accounts (->> (.split accountsList ",") (map #(.trim %)) vec)}))
+    
+    (receiveFA [this faDataType xml]
+      (process-message {:type (condp = faDataType
+                                1 :financial-advisor-groups
+                                2 :financial-advisor-profile
+                                3 :financial-advisor-account-aliases)
+                        :value xml}))
+    
+    (scannerParameters [this xml]
+      (process-message {:type :scan-parameters :value xml}))
+    
+    (scannerData [this requestId rank contractDetails distance benchmark projection legsStr]
+      (process-message {:type :scan-result :request-id requestId :rank rank
+                        :contract-details contractDetails :distance distance
+                        :benchmark benchmark :projection projection
+                        :legs legsStr}))
+
+    (scannerDataEnd [this request-id]
+      (process-message {:type :scan-end :request-id request-id}))))
 
 ;; (defn connect
 ;;   "This function must be called before any other. There is no feedback

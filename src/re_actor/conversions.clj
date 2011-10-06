@@ -171,6 +171,29 @@
                     :volume-rate 56}
                    )
 
+(translation-table account-value-key
+                   {
+                    :cash-balance "CashBalance"
+                    :day-trades-remaining "DayTradesRemaining"
+                    :equity-with-loan-value "EquityWithLoanValue"
+                    :initial-margin-required "InitMarginReq"
+                    :maintenance-margin-required "MaintMarginReq"
+                    :net-liquidation "NetLiquidation"
+                    })
+
+(translation-table market-depth-row-operation
+                   {
+                    :insert 0
+                    :update 1
+                    :delete 2
+                    })
+
+(translation-table market-depth-side
+                   {
+                    :ask 0
+                    :bid 1
+                    })
+
 (defn translate-to-ib-duration [val unit]
   (str val " " (translate-to-ib-duration-unit unit)))
 
@@ -195,4 +218,3 @@
 
 (defn translate-to-ib-bar-size [val unit]
   (str val " " (translate-to-ib-bar-size-unit unit)))
-
