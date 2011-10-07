@@ -239,10 +239,6 @@
                     :eps-growth "EPSTRENDGR"
                     :dividend-growth "DIVGRPCT"})
 
-(defn translate-to-ib-fundamental-ratios-list [ratios]
-  (-> (map translate-to-ib-fundamental-ratio ratios)
-      (String/join)))
-
 (translation-table account-value-key
                    {
                     :cash-balance "CashBalance"
