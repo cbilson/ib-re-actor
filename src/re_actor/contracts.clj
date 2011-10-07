@@ -17,8 +17,8 @@
 
 (defn make-contract [contract-type]
   (let [contract (Contract.)]
-        (set! (.m_secType contract) (translate-to-ib-security-type contract-type))
-        contract))
+    (set! (.m_secType contract) (translate-to-ib-security-type contract-type))
+    contract))
 
 (defn futures-contract
   ([] (make-contract :future))
