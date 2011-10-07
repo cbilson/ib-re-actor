@@ -38,7 +38,7 @@
                    {
                     :equity "STK"
                     :option "OPT"
-                    :futures "FUT"
+                    :future "FUT"
                     :index "IND"
                     :future-option "FOP"
                     :cash "CASH"
