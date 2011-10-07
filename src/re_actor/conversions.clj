@@ -135,17 +135,17 @@
                     :high-52-week 20
                     :avg-volume 21
                     :open-interest 22
-                    :option-historical-vol 23
-                    :option-implied-vol 24
-                    :option-bid-exch 25
-                    :option-ask-exch 26
+                    :option-historical-volatility 23
+                    :option-implied-volatility 24
+                    :option-bid-exchange 25
+                    :option-ask-exchange 26
                     :option-call-open-interest 27
                     :option-put-open-interest 28
                     :option-call-volume 29
                     :option-put-volume 30
                     :index-future-premium 31
-                    :bid-exch 32
-                    :ask-exch 33
+                    :bid-exchange 32
+                    :ask-exchange 33
                     :auction-volume 34
                     :auction-price 35
                     :auction-imbalance 36
@@ -160,7 +160,7 @@
                     :last-timestamp 45
                     :shortable 46
                     :fundamental-ratios 47
-                    :rt-volume 48
+                    :realtime-volume 48
                     :halted 49
                     :bid-yield 50
                     :ask-yield 51
@@ -170,6 +170,78 @@
                     :trade-rate 55
                     :volume-rate 56}
                    )
+
+(translation-table tick-type
+                   {
+                    :option-volume 100                   ; :option-call-volume, :option-put-volume
+                    :option-open-interest 101            ; :option-call-open-interest, :option-put-open-interest
+                    :historical-volatility 104           ; :option-historical-volatility
+                    :option-implied-volatility 106       ; :option-implied-volatility
+                    :index-future-premium 162            ; :index-future-premium
+                    :miscellaneous-stats 165             ; :low-13-week, :high-13-week, :low-26-week, :high-26-week, :low-52-week, :high-52-week, :avg-volume 21
+                    :mark-price 221                      ; :mark-price
+                    :auction-values 225                  ; :auction-volume, :auction-price, :auction-imbalance
+                    :realtime-volume 233                 ; :realtime-volume
+                    :shortable 236                       ; :shortable
+                    :inventory 256                       ;
+                    :fundamental-ratios 258              ; :fundamental-ratios
+                    :realtime-historical-volatility 411  ; 58?
+                    })
+
+(translation-table fundamental-ratio
+                   {
+                    :closing-price "NPRICE"
+                    :3-year-ttm-growth "Three_Year_TTM_Growth"
+                    :ttm/ttm "TTM_over_TTM"
+                    :12-month-high "NHIG"
+                    :12-month-low "NLOW"
+                    :pricing-date "PDATE"
+                    :10-day-average-volume "VOL10DAVG"
+                    :market-cap "MKTCAP"
+                    :eps-exclusing-extraordinary-items "TTMEPSXCLX"
+                    :eps-normalized "AEPSNORM"
+                    :revenue/share "TTMREVPS"
+                    :common-equity-book-value/share "QBVPS"
+                    :tangible-book-value/share "QTANBVPS"
+                    :cash/share "QCSHPS"
+                    :cash-flow/share "TTMCFSHR"
+                    :dividends/share "TTMDIVSHR"
+                    :dividend-rate "IAD"
+                    :pe-excluding-extraordinary-items "PEEXCLXOR"
+                    :pe-normalized "APENORM"
+                    :price/sales "TMPR2REV"
+                    :price/tangible-book "PR2TANBK"
+                    :price/cash-flow/share "TTMPRCFPS"
+                    :price/book "PRICE2BK"
+                    :current-ration "QCURRATIO"
+                    :quick-ratio "QQUICKRATI"
+                    :long-term-debt/equity "QLTD2EQ"
+                    :total-debt/equity "QTOTD2EQ"
+                    :payout-ratio "TTMPAYRAT"
+                    :revenue "TTMREV"
+                    :ebita "TTMEBITD"
+                    :ebt "TTMEBT"
+                    :niac "TTMNIAC"
+                    :ebt-normalized "AEBTNORM"
+                    :niac-normalized "ANIACNORM"
+                    :gross-margin "TTMGROSMGN"
+                    :net-profit-margin "TTMNPMGN"
+                    :operating-margin "TTMOPMGN"
+                    :pretax-margin "APTMGNPCT"
+                    :return-on-average-assets "TTMROAPCT"
+                    :return-on-average-equity "TTMROEPCT"
+                    :roi "TTMROIPCT"
+                    :revenue-change "REVCHNGYR"
+                    :revenue-change-ttm "TTMREVCHG"
+                    :revenue-growth "REVTRENDGR"
+                    :eps-change "EPSCHNGYR"
+                    :eps-change-ttm "TTMEPSCHG"
+                    :eps-growth "EPSTRENDGR"
+                    :dividend-growth "DIVGRPCT"})
+
+(defn translate-to-ib-fundamental-ratios-list [ratios]
+  (-> (map translate-to-ib-fundamental-ratio ratios)
+      (String/join)))
 
 (translation-table account-value-key
                    {

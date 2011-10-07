@@ -5,7 +5,7 @@
 (defn- is-finish? [date-string]
   (.startsWith date-string "finished"))
 
-(defn create-client [process-message]
+(defn create-wrapper [process-message]
   "Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
 calling a single function with maps that all have a :type to indicate what type
 of messages was received, and the massaged parameters from the event."
@@ -170,25 +170,26 @@ of messages was received, and the massaged parameters from the event."
     (scannerDataEnd [this request-id]
       (process-message {:type :scan-end :request-id request-id}))))
 
-;; (defn connect
-;;   "This function must be called before any other. There is no feedback
-;; for a successful connection, but a subsequent attempt to connect
-;; will return the message 'Already connected.'
+(defn connect
+  "This function must be called before any other. There is no feedback
+for a successful connection, but a subsequent attempt to connect
+will return the message 'Already connected.'
 
-;; wrapper is an implementation of the EWrapper interface.
+wrapper is an implementation of the EWrapper interface.
 
-;; host is the hostname running IB Gateway or TWS.
+host is the hostname running IB Gateway or TWS.
 
-;; port is the port IB Gateway / TWS is running on.
+port is the port IB Gateway / TWS is running on.
 
-;; client-id identifies this client. Only one connection to a gateway can
-;; be made per client-id at a time."
-;;   ([wrapper] (connect wrapper "localhost"))
-;;   ([wrapper host] (connect wrapper host 7496))
-;;   ([wrapper host port] (connect wrapper host port 1))
-;;   ([wrapper host port client-id]
-;;      (let [connection (EClientSocket. wrapper)]
-;;        (doto connection
-;;          (.eConnect host port client-id)))))
+client-id identifies this client. Only one connection to a gateway can
+be made per client-id at a time."
+  ([handler-fn] (connect handler-fn "localhost"))
+  ([handler-fn host] (connect handler-fn host 7496))
+  ([handler-fn host port] (connect handler-fn host port 1))
+  ([handler-fn host port client-id]
+     (let [wrapper (create-wrapper handler-fn)
+           connection (EClientSocket. wrapper)]
+       (doto connection
+         (.eConnect host port client-id)))))
 
-
+(defn request-market-data [client id contract ])
