@@ -34,3 +34,13 @@
   (-> (make-contract :index)
       (underlying-symbol symbol-val)
       (exchange exchange-val)))
+
+(defn equity
+  ([symbol-val exchange-val]
+     (equity symbol-val exchange-val "USD"))
+  ([symbol-val exchange-val currency-val]
+     (-> (make-contract :equity)
+         (underlying-symbol symbol-val)
+         (exchange exchange-val)
+         (currency currency-val))))
+
