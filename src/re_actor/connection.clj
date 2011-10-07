@@ -192,4 +192,48 @@ be made per client-id at a time."
        (doto connection
          (.eConnect host port client-id)))))
 
-(defn request-market-data [client id contract ])
+(defn request-market-data
+  "Call this method to request market data. The market data will be returned by 
+:price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
+and :efp-tick messages.
+
+Parameter Descriptions
+----------------------
+
+connection
+The connection to use to make the request. Use (connect) to get this.
+
+tickerId
+The ticker id. Must be a unique value. When the market data returns, it
+will be identified by this tag. This is also used when canceling the
+market data.
+
+contract
+This contains attributes used to describe the contract. Use (make-contract) or
+(futures-contract) for example to create it.
+
+tick-list (optional)
+A list of tick types:
+:option-volume                       Option Volume (currently for stocks)
+:option-open-interest                Option Open Interest (currently for stocks)
+:historical-volatility 104           Historical Volatility (currently for stocks)
+:option-implied-volatility 106       Option Implied Volatility (currently for stocks)
+:index-future-premium 162            Index Future Premium
+:miscellaneous-stats 165             Miscellaneous Stats
+:mark-price 221                      Mark Price (used in TWS P&L computations)
+:auction-values 225                  Auction values (volume, price and imbalance)
+:realtime-volume 233                 RTVolume
+:shortable 236                       Shortable
+:inventory 256                       Inventory
+:fundamental-ratios 258              Fundamental Ratios
+:realtime-historical-volatility 411  Realtime Historical Volatility
+
+if no tick list is specified, a single snapshot of market data will come back
+and have the market data subscription will be immediately canceled."
+  ([connection id contract tick-list]
+     (let [ib-tick-list (map translate-to-ib-tick-type tick-list)]
+       (.reqMktData connection id contract ib-tick-list false))
+     id)
+  ([connection id contract]
+     (.reqMktData connection id contract nil true)
+     id))
