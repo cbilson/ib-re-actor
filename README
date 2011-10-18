@@ -1,13 +1,16 @@
-# re-actor
+# ib-re-actor
 
-FIXME: write description
+A clojure friendly wrapper around the Interactive Brokers java API.
 
 ## Usage
 
-FIXME: write
+1. Get it via leiningen:
+   [cbilson/ib-re-actor "0.0.1-SNAPSHOT"]
+
+2. Built and application. See examples in examples folder.
 
 ## License
 
-Copyright (C) 2011 FIXME
+Copyright (C) 2011 Chris Bilson
 
 Distributed under the Eclipse Public License, the same as Clojure.
