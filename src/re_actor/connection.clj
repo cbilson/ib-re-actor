@@ -43,15 +43,19 @@ of messages was received, and the massaged parameters from the event."
                         :pv-dividends pvDividend
                         :underlying-price undPrice
                         :delta delta :gamma gamma :theta theta :vega vega }))
-    
+
     (tickGeneric [this tickerId tickType value]
       (process-message {:type :generic-tick :field (translate-from-ib-tick-field-code tickType)
                         :ticker-id tickerId :value value}))
-    
+
     (tickString [this tickerId tickType value]
-      (process-message {:type :string-tick :field (translate-from-ib-tick-field-code tickType)
-                        :ticker-id tickerId :value value}))
-    
+      (let [field (translate-from-ib-tick-field-code tickType)
+            val (condp = field
+                  :last-timestamp (translate-from-ib-date-time value)
+                  value)]
+        (process-message {:type :string-tick :field field
+                          :ticker-id tickerId :value val})))
+
     (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
       (process-message {:type :efp-tick :field (translate-from-ib-tick-field-code tickType)
                         :ticker-id tickerId
