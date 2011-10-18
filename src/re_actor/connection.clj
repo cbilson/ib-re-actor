@@ -196,8 +196,11 @@ be made per client-id at a time."
        (doto connection
          (.eConnect host port client-id)))))
 
+(defn disconnect [connection]
+  (.eDisconnect connection))
+
 (defn request-market-data
-  "Call this method to request market data. The market data will be returned by 
+  "Call this method to request market data. The market data will be returned by
 :price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
 and :efp-tick messages.
 
