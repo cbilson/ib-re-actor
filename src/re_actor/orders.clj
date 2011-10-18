@@ -31,9 +31,9 @@ Valid actions are: :buy, :sell, :sell-short."
      (limit-order contract action quantity limit-price (swap! *client-order-id* inc)))
   ([contract action quantity limit-price id]
      (let [order (Order.)]
-       (set! (.m_action order) (translate-order-action action))
+       (set! (.m_action order) (translate-to-ib-order-action action))
        (set! (.m_orderType order) (translate-to-ib-order-type :limit))
-       (set! (.m_tif order) (translate-time-in-force :day))
+       (set! (.m_tif order) (translate-to-ib-time-in-force :day))
        (re-actor.orders/id order id)
        (re-actor.orders/quantity order quantity)
        (re-actor.orders/limit-price order limit-price)
@@ -43,7 +43,7 @@ Valid actions are: :buy, :sell, :sell-short."
   "Change the time an order will be in force if not filled."
   (fn [_ value] (class value)))
 (defmethod time-in-force clojure.lang.Keyword [^Order order value]
-  (set! (.m_tif order) (translate-time-in-force value))
+  (set! (.m_tif order) (translate-to-ib-time-in-force value))
   order)
 (defmethod time-in-force org.joda.time.DateTime [^Order order date]
   (set! (.m_goodTillDate order) (translate-to-ib-date-time date))

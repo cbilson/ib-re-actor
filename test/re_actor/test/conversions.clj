@@ -24,7 +24,7 @@
  | ?value            | ?expected |
  | :equity           | "STK"     |
  | :option           | "OPT"     |
- | :futures          | "FUT"     |
+ | :future           | "FUT"     |
  | :index            | "IND"     |
  | :future-option    | "FOP"     |
  | :cash             | "CASH"    |
@@ -79,9 +79,11 @@
  | :immediate-or-cancel | "IOC"     |
  | :good-till-date      | "GTD"     |)
 
+;.;. Intellectual 'work' is misnamed; it is a pleasure, a dissipation, and
+;.;.                                ; is its own highest reward. -- Twain
 (fact "it can translate date-times to the IB format"
-  (translate-to-ib-date-time (date-time 2011)) => "2011 01 01 00:00:00"
-  (translate-to-ib-date-time (date-time 2001 4 1 13 30 29)) => "2001 04 01 13:30:29")
+  (translate-to-ib-date-time (date-time 2011)) => "20110101 00:00:00 UTC"
+  (translate-to-ib-date-time (date-time 2001 4 1 13 30 29)) => "20010401 13:30:29 UTC")
 
 (tabular
  (fact "it can translate order actions"
@@ -100,18 +102,6 @@
  | :limit | "LMT"     |)
 
 (tabular
- (fact "it can translate security types"
-   (translate-to-ib-security-type ?type) => ?expected)
- :where
- | ?type          | ?expected |
- | :option        | "OPT"     |
- | :futures       | "FUT"     |
- | :index         | "IND"     |
- | :future-option | "FOP"     |
- | :cash          | "CASH"    |
- | :bag           | "BAG"     |)
-
-(tabular
  (fact "it can translate security id types"
    (translate-from-ib-security-id-type ?ib-type) => ?re-actor-type
    (translate-to-ib-security-id-type ?re-actor-type) => ?ib-type)
@@ -122,9 +112,6 @@
  | :sedol         | "SEDOL"  |
  | :ric           | "RIC"    |)
 
-;.;. Any intelligent fool can make things bigger, more complex, and more
-;.;. violent. It takes a touch of genius -- and a lot of courage -- to move
-;.;. in the opposite direction. -- Schumacher
 (tabular
  (fact "it can translate tick field codes"
    (translate-from-ib-tick-field-code ?ib-code) => ?re-actor-code
@@ -135,6 +122,3 @@
  | :bid-price     | 1        |
  | :ask-price     | 2        |
  | :ask-size      | 3        |)
-
-
-

@@ -281,8 +281,9 @@
   (parse (formatter "yyyyMM") val))
 
 (defn translate-to-ib-date-time [value]
-  (-> (formatter "yyyy MM dd HH:mm:ss")
-      (unparse value)))
+  (-> (formatter "yyyyMMdd HH:mm:ss")
+      (unparse value)
+      (str " UTC")))
 
 (defn translate-to-ib-bar-size [val unit]
   (str val " " (translate-to-ib-bar-size-unit unit)))

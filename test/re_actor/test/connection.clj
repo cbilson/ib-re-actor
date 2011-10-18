@@ -11,7 +11,7 @@
 (defmacro process-to-messages [& forms]
   `(let [messages# (atom [])
          process-fn# (fn [message#] (swap! messages# conj message#))]
-     (doto (create-client process-fn#)
+     (doto (create-wrapper process-fn#)
        ~@forms)
      @messages#))
 
@@ -58,9 +58,9 @@
        :ticker-id 1 :value 2.0}])
 
 (fact "it handles string ticks"
-  (process-to-messages (.tickString 1 45 "2001-04-01 13:30:01"))
+  (process-to-messages (.tickString 1 45 "1000000000"))
   => [{:type :string-tick :field :last-timestamp
-       :ticker-id 1 :value "2001-04-01 13:30:01"}])
+       :ticker-id 1 :value (date-time 2001 9 9 1 46 40)}])
 
 (fact "it handles EFP ticks"
   (process-to-messages (.tickEFP 1 38 2.0 "0.03 %" 4.0 5 "2001-04-01" 6.0 7.0))

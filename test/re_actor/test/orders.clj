@@ -28,7 +28,7 @@
 (fact "it lets me set good till date on orders with just a date"
   (let [order (-> (Order.) (time-in-force (date-time 2011 1 2 3 4)))]
     (.m_tif order) => "GTD"
-    (.m_goodTillDate order) => "2011 01 02 03:04:00"))
+    (.m_goodTillDate order) => "20110102 03:04:00 UTC"))
 
 (fact "I can set an order good for day"
   (.m_tif (good-for-day (Order.))) => "DAY")
