@@ -244,5 +244,28 @@ and have the market data subscription will be immediately canceled."
        (.reqMktData connection id contract ib-tick-list false))
      id)
   ([connection id contract]
-     (.reqMktData connection id contract nil true)
+     (.reqMktData connection id contract "" true)
      id))
+
+(defn request-historical-data
+  "Start receiving historical price bars stretching back <duration> <duration-unit>s back,
+up till <end> for the specified contract. The messages will have :request-id of <id>.
+
+duration-unit should be one of :second(s), :day(s), :week(s), or :year(s).
+
+bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
+
+what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :historical-volatility,
+:option-implied-volatility, :option-volume, or :option-open-interest."
+  ([connection id contract end duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
+     (let [ib-end (translate-to-ib-date-time end)
+           ib-duration (translate-to-ib-duration duration duration-unit)
+           ib-bar-size (translate-to-ib-bar-size bar-size bar-size-unit)
+           ib-what-to-show (translate-to-ib-what-to-show what-to-show)]
+       (.reqHistoricalData connection id contract ib-end ib-duration ib-bar-size ib-what-to-show
+                           (if use-regular-trading-hours? 1 0)
+                           2)))
+  ([connection id contract end duration duration-unit bar-size bar-size-unit what-to-show]
+     (request-historical-data connection id contract end duration duration-unit bar-size bar-size-unit what-to-show true))
+  ([connection id contract end duration duration-unit bar-size bar-size-unit]
+     (request-historical-data connection id contract end duration duration-unit bar-size bar-size-unit :trades true)))
