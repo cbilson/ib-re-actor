@@ -1,6 +1,7 @@
 (ns re-actor.contracts
   (:use [re-actor.conversions]
-        [re-actor.util])
+        [re-actor.util]
+        [clj-time.core :only [date-time]])
   (:import [com.ib.client Contract]))
 
 (field-based-property expiry m_expiry translate-from-ib-expiry translate-to-ib-expiry)
@@ -22,10 +23,10 @@
 
 (defn futures-contract
   ([] (make-contract :future))
-  ([^org.joda.DateTime expiry-val]
+  ([expiry-val]
      (-> (futures-contract)
          (expiry expiry-val)))
-  ([^String symbol-val ^String exchange-val ^org.joda.DateTime expiry-val]
+  ([symbol-val exchange-val expiry-val]
      (-> (futures-contract expiry-val)
          (exchange exchange-val)
          (underlying-symbol symbol-val))))
