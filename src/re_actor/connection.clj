@@ -204,6 +204,8 @@ be made per client-id at a time."
 :price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
 and :efp-tick messages.
 
+For snapshots, a :tick-snapshot-end message will indicate the snapshot is done.
+
 Parameter Descriptions
 ----------------------
 
