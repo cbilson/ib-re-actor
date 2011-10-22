@@ -1,5 +1,5 @@
-(ns re-actor.connection
-  (:use [re-actor.conversions])
+(ns ib-re-actor.connection
+  (:use [ib-re-actor.conversions])
   (:import [com.ib.client EClientSocket EWrapper]))
 
 (defn- is-finish? [date-string]

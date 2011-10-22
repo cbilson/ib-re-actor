@@ -1,4 +1,4 @@
-(ns re-actor.util)
+(ns ib-re-actor.util)
 
 (defmacro field-based-property
   ([property-name field-name]

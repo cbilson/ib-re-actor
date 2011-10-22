@@ -1,2 +1,2 @@
-(ns re-actor.core)
+(ns ib-re-actor.core)
 

@@ -1,6 +1,7 @@
-(use '[re-actor.connection]
-     '[re-actor.contracts]
-     '[clj-time.core :only [date-time minus]])
+(ns ib-rec-action.examples.gap-fade
+  (:use [ib-re-actor.connection]
+        [ib-re-actor.contracts]
+        [clj-time.core :only [date-time minus]])))
 
 (defn is-end? [msg]
   (contains? [:tick-snapshot-end :error]))

@@ -1,6 +1,6 @@
-(ns re-actor.contracts
-  (:use [re-actor.conversions]
-        [re-actor.util]
+(ns ib-re-actor.contracts
+  (:use [ib-re-actor.conversions]
+        [ib-re-actor.util]
         [clj-time.core :only [date-time]])
   (:import [com.ib.client Contract]))
 

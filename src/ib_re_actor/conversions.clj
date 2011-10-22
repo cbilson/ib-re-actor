@@ -1,4 +1,4 @@
-(ns re-actor.conversions
+(ns ib-re-actor.conversions
   (:use [clojure.contrib.def :only [defmacro-]]
         [clj-time.core :only [year month day date-time
                               plus minus years months weeks days hours minutes secs millis

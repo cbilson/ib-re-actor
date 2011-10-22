@@ -1,4 +1,4 @@
-(ns re-actor.historic-data)
+(ns ib-re-actor.historic-data)
 
 (defprotocol HistoricalReceiver
   (bar [this request-id bar])
