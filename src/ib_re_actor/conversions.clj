@@ -262,6 +262,13 @@
                     :bid 1
                     })
 
+(translation-table report-type
+                   {
+                    :estimates "Estimates"
+                    :financial-statements "Financial Statements"
+                    :summary "Summary"
+                    })
+
 (defn translate-to-ib-duration [val unit]
   (str val " " (translate-to-ib-duration-unit unit)))
 

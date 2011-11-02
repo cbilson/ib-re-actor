@@ -1,5 +1,6 @@
 (ns ib-re-actor.connection
-  (:use [ib-re-actor.conversions])
+  (:use [ib-re-actor.conversions]
+        [clojure.xml :only [parse]])
   (:import [com.ib.client EClientSocket EWrapper]))
 
 (defn- is-finish? [date-string]
@@ -11,7 +12,6 @@ calling a single function with maps that all have a :type to indicate what type
 of messages was received, and the massaged parameters from the event."
   (reify
     EWrapper
-
     (historicalData [this requestId date open high low close volume count wap hasGaps]
       (if (is-finish? date)
         (process-message {:type :complete :request-id requestId})
@@ -171,8 +171,12 @@ of messages was received, and the massaged parameters from the event."
                         :benchmark benchmark :projection projection
                         :legs legsStr}))
 
-    (scannerDataEnd [this request-id]
-      (process-message {:type :scan-end :request-id request-id}))))
+    (scannerDataEnd [this requestId]
+      (process-message {:type :scan-end :request-id requestId}))
+
+    (fundamentalData [this requestId xml]
+      (process-message {:type :fundamental-data :request-id requestId
+                        :report (parse (java.io.ByteArrayInputStream. (.getBytes xml)))}))))
 
 (defn connect
   "This function must be called before any other. There is no feedback
@@ -269,3 +273,12 @@ what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :histori
      (request-historical-data connection id contract end duration duration-unit bar-size bar-size-unit what-to-show true))
   ([connection id contract end duration duration-unit bar-size bar-size-unit]
      (request-historical-data connection id contract end duration duration-unit bar-size bar-size-unit :trades true)))
+
+(defn request-news-bulletins
+  ([connection] (request-news-bulletins connection true))
+  ([connection all-messages?]
+     (.reqNewsBulletins connection all-messages?)))
+
+(defn request-fundamental-data [connection request-id contract report-type]
+  (.reqFundamentalData connection request-id contract
+                       (translate-to-ib-report-type report-type)))
