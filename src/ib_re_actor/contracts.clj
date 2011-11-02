@@ -38,10 +38,11 @@
 
 (defn equity
   ([symbol-val exchange-val]
-     (equity symbol-val exchange-val "USD"))
-  ([symbol-val exchange-val currency-val]
+     (equity symbol-val exchange-val exchange-val "USD"))
+  ([symbol-val primary-exchange-val exchange-val currency-val]
      (-> (make-contract :equity)
          (underlying-symbol symbol-val)
+         (primary-exchange primary-exchange-val)
          (exchange exchange-val)
          (currency currency-val))))
 
