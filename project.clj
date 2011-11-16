@@ -6,4 +6,5 @@
                  ;; repo, as per leiningen's instructions
                  [jtsclient "9.6.5"]]
   :dev-dependencies [[midje "1.3-alpha4"]
-                     [lein-exec "0.1"]])
+                     [lein-exec "0.1"]
+                     [lein-marginalia "0.6.1"]])
