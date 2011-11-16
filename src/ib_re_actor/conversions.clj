@@ -78,20 +78,59 @@
                     :sell-short "SSHORT"})
 
 (translation-table order-type
-                   {
+                   {:ACTIVETIM "ACTIVETIM"
+                    :ADJUST "ADJUST"
+                    :ALERT "ALERT"
+                    :ALGO "ALGO"
+                    :ALLOC "ALLOC"
+                    :average-cost "AVGCOST"
+                    :basket "BASKET"
+                    :COND "COND"
+                    :CONDORDER "CONDORDER"
+                    :DAY "DAY"
+                    :DEACT "DEACT"
+                    :DEACTDIS "DEACTDIS"
+                    :DEACTEOD "DEACTEOD"
+                    :box-top "BOXTOP"
+                    :good-after-time "GAT"
+                    :good-till-date "GTD"
+                    :good-till-canceled "GTC"
+                    :GTT "GTT"
+                    :HID "HID"
+                    :ICE "ICE"
+                    :immediate-or-cancel "IOC"
                     :limit "LMT"
                     :limit-close "LMTCLS"
+                    :limit-on-close "LOC"
+                    :limit-on-open "LOO"
+                    :limit-if-touched "LIT"
+                    :LTH "LTH"
                     :market "MKT"
                     :market-close "MKTCLS"
+                    :market-on-close "MOC"
+                    :market-to-limit "MTL"
+                    :market-with-protection "MKTPRT"
+                    :market-if-touched "MIT"
+                    :market-on-open "MOO"
+                    :NONALGO "NONALGO"
+                    :one-cancels-all "OCA"
                     :pegged-to-market "PEGMKT"
-                    :rel "REL"
+                    :pegged-to-midpoint "PEGMID"
+                    :relative "REL"
+                    :request-for-quote "QUOTE"
                     :scale "SCALE"
+                    :SCALERST "SCALERST"
                     :stop "STP"
                     :stop-limit "STPLMT"
                     :trail "TRAIL"
                     :trail-limit "TRAILLIMIT"
-                    :vwap "VWAP"
-                    })
+                    :trailing-limit-if-touched "TRAILLIT"
+                    :trailing-market-if-touched "TRAILMIT"
+                    :trailing-stop "TRAIL"
+                    :trailing-stop-limit "TRAILLIMIT"
+                    :VWAP "VWAP"
+                    :volatility "VOL"
+                    :what-if "WHATIF"})
 
 (translation-table order-status
                    {
@@ -294,3 +333,37 @@
 
 (defn translate-to-ib-bar-size [val unit]
   (str val " " (translate-to-ib-bar-size-unit unit)))
+
+(defn translate-from-ib-contract-details [c]
+  {:contract (.m_summary c)
+   :market-name (.m_marketName c)
+   :trading-class (.m_tradingClass c)
+   :minimum-prices-tick (.m_minTick c)
+   :price-magnifier (.m_priceMagnifier c)
+   :order-types (vec (map translate-from-ib-order-type (.split (.m_orderTypes c) ",")))
+   :valid-exchanges (vec (.split (.m_validExchanges c) ","))
+   :underlying-contract-id (.m_underConId c)
+   :long-name (.m_longName c)
+   :CUSIP (.m_cusip c)
+   :ratings (.m_ratings c)
+   :description (.m_descAppend c)
+   :bond-type (.m_bondType c)
+   :coupon-type (.m_couponType c)
+   :callable? (.m_callable c)
+   :putable? (.m_putable c)
+   :coupon (.m_coupon c)
+   :convertible (.m_convertible c)
+   :maturity (.m_maturity c)
+   :issue-date (.m_issueDate c)
+   :next-option-date (.m_nextOptionDate c)
+   :next-option-type (.m_nextOptionType c)
+   :next-option-partial (.m_nextOptionPartial c)
+   :notes (.m_notes c)
+   :contract-month (.m_contractMonth c)
+   :industry (.m_industry c)
+   :category (.m_category c)
+   :subcategory (.m_subcategory c)
+   :time-zone-id (.m_timeZoneId c)
+   :trading-hours (vec (.split (.m_tradingHours c) ";"))
+   :liquid-hours (vec (.split (.m_liquidHours c) ";"))
+   })
