@@ -324,7 +324,9 @@
     (str ys ms)))
 
 (defn translate-from-ib-expiry [val]
-  (parse (formatter "yyyyMM") val))
+  (condp = (.length val)
+    6 (parse (formatter "yyyyMM") val)
+    8 (parse (formatter "yyyyMMdd") val)))
 
 (defn translate-to-ib-date-time [value]
   (-> (formatter "yyyyMMdd HH:mm:ss")
