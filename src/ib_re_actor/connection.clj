@@ -1,4 +1,5 @@
 (ns ib-re-actor.connection
+  "Functions for connecting to Interactive Brokers TWS and sending requests to it."
   (:use [ib-re-actor.conversions]
         [clojure.xml :only [parse]])
   (:import [com.ib.client EClientSocket EWrapper]))
@@ -6,10 +7,21 @@
 (defn- is-finish? [date-string]
   (.startsWith date-string "finished"))
 
-(defn create-wrapper [process-message]
+;; I found having to implement the entire `EWrapper` interface to be
+;; kind of a pain, so I decided to try flattening it into something
+;; that would be easy to use either via multi-methods or that you
+;; could build some other protocol on top of.
+
+;; Another consideration is that this would be a great point to build
+;; a layer that talks directly to TWS, not using the jtsclient stuff,
+;; like what was done for the .NET TWS API. I think you could take
+;; advantage of clojure's transactional memory better if you did that.
+
+(defn- create-wrapper
   "Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
-calling a single function with maps that all have a :type to indicate what type
-of messages was received, and the massaged parameters from the event."
+   calling a single function with maps that all have a :type to indicate what type
+   of messages was received, and the massaged parameters from the event."
+  [process-message]
   (reify
     EWrapper
     (historicalData [this requestId date open high low close volume count wap hasGaps]
@@ -117,7 +129,8 @@ of messages was received, and the massaged parameters from the event."
       (process-message {:type :update-account-time :value (translate-from-ib-date-time timeStamp)}))
 
     (contractDetails [this requestId contractDetails]
-      (process-message {:type :contract-details :request-id requestId :value contractDetails}))
+      (process-message {:type :contract-details :request-id requestId
+                        :value (translate-from-ib-contract-details contractDetails)}))
 
     (bondContractDetails [this requestId contractDetails]
       (process-message {:type :contract-details :request-id requestId :value contractDetails}))
@@ -180,17 +193,17 @@ of messages was received, and the massaged parameters from the event."
 
 (defn connect
   "This function must be called before any other. There is no feedback
-for a successful connection, but a subsequent attempt to connect
-will return the message 'Already connected.'
+   for a successful connection, but a subsequent attempt to connect
+   will return the message 'Already connected.'
 
-wrapper is an implementation of the EWrapper interface.
+   wrapper is an implementation of the EWrapper interface.
 
-host is the hostname running IB Gateway or TWS.
+   host is the hostname running IB Gateway or TWS.
 
-port is the port IB Gateway / TWS is running on.
+   port is the port IB Gateway / TWS is running on.
 
-client-id identifies this client. Only one connection to a gateway can
-be made per client-id at a time."
+   client-id identifies this client. Only one connection to a gateway can
+   be made per client-id at a time."
   ([handler-fn] (connect handler-fn "localhost"))
   ([handler-fn host] (connect handler-fn host 7496))
   ([handler-fn host port] (connect handler-fn host port 1))
@@ -200,67 +213,68 @@ be made per client-id at a time."
        (doto connection
          (.eConnect host port client-id)))))
 
-(defn disconnect [connection]
+(defn disconnect
+  "Call this function to terminate the connections with TWS.
+   Calling this function does not cancel orders that have already been sent."
+  [connection]
   (.eDisconnect connection))
 
 (defn request-market-data
-  "Call this method to request market data. The market data will be returned by
-:price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
-and :efp-tick messages.
+  "Call this function to request market data. The market data will be returned by
+   :price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
+   and :efp-tick messages.
 
-For snapshots, a :tick-snapshot-end message will indicate the snapshot is done.
+   For snapshots, a :tick-snapshot-end message will indicate the snapshot is done.
 
-Parameter Descriptions
-----------------------
+   ## Parameters
+   - connection
+     The connection to use to make the request. Use (connect) to get this.
 
-connection
-The connection to use to make the request. Use (connect) to get this.
+   - tickerId
+     The ticker id. Must be a unique value. When the market data returns, it
+     will be identified by this tag. This is also used when canceling the
+     market data.
 
-tickerId
-The ticker id. Must be a unique value. When the market data returns, it
-will be identified by this tag. This is also used when canceling the
-market data.
+   - contract
+     This contains attributes used to describe the contract. Use (make-contract) or
+     (futures-contract) for example to create it.
 
-contract
-This contains attributes used to describe the contract. Use (make-contract) or
-(futures-contract) for example to create it.
+   - tick-list (optional)
+     A list of tick types:
+     :option-volume                       Option Volume (currently for stocks)
+     :option-open-interest                Option Open Interest (currently for stocks)
+     :historical-volatility 104           Historical Volatility (currently for stocks)
+     :option-implied-volatility 106       Option Implied Volatility (currently for stocks)
+     :index-future-premium 162            Index Future Premium
+     :miscellaneous-stats 165             Miscellaneous Stats
+     :mark-price 221                      Mark Price (used in TWS P&L computations)
+     :auction-values 225                  Auction values (volume, price and imbalance)
+     :realtime-volume 233                 RTVolume
+     :shortable 236                       Shortable
+     :inventory 256                       Inventory
+     :fundamental-ratios 258              Fundamental Ratios
+     :realtime-historical-volatility 411  Realtime Historical Volatility
 
-tick-list (optional)
-A list of tick types:
-:option-volume                       Option Volume (currently for stocks)
-:option-open-interest                Option Open Interest (currently for stocks)
-:historical-volatility 104           Historical Volatility (currently for stocks)
-:option-implied-volatility 106       Option Implied Volatility (currently for stocks)
-:index-future-premium 162            Index Future Premium
-:miscellaneous-stats 165             Miscellaneous Stats
-:mark-price 221                      Mark Price (used in TWS P&L computations)
-:auction-values 225                  Auction values (volume, price and imbalance)
-:realtime-volume 233                 RTVolume
-:shortable 236                       Shortable
-:inventory 256                       Inventory
-:fundamental-ratios 258              Fundamental Ratios
-:realtime-historical-volatility 411  Realtime Historical Volatility
-
-if no tick list is specified, a single snapshot of market data will come back
-and have the market data subscription will be immediately canceled."
+     if no tick list is specified, a single snapshot of market data will come back
+     and have the market data subscription will be immediately canceled."
   ([connection id contract tick-list]
      (let [ib-tick-list (map translate-to-ib-tick-type tick-list)]
        (.reqMktData connection id contract ib-tick-list false))
      id)
   ([connection id contract]
-     (.reqMktData connection id contract "" true)
+     (.reqMktData connection id contract "" false)
      id))
 
 (defn request-historical-data
   "Start receiving historical price bars stretching back <duration> <duration-unit>s back,
-up till <end> for the specified contract. The messages will have :request-id of <id>.
-
-duration-unit should be one of :second(s), :day(s), :week(s), or :year(s).
-
-bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
-
-what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :historical-volatility,
-:option-implied-volatility, :option-volume, or :option-open-interest."
+   up till <end> for the specified contract. The messages will have :request-id of <id>.
+   
+   duration-unit should be one of :second(s), :day(s), :week(s), or :year(s).
+   
+   bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
+   
+   what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :historical-volatility,
+   :option-implied-volatility, :option-volume, or :option-open-interest."
   ([connection id contract end duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
      (let [ib-end (translate-to-ib-date-time end)
            ib-duration (translate-to-ib-duration duration duration-unit)
@@ -275,10 +289,50 @@ what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :histori
      (request-historical-data connection id contract end duration duration-unit bar-size bar-size-unit :trades true)))
 
 (defn request-news-bulletins
+  "Call this function to start receiving news bulletins. Each bulletin will
+   be sent in a :news-bulletin, :exchange-unavailable, or :exchange-available
+   message."
   ([connection] (request-news-bulletins connection true))
   ([connection all-messages?]
      (.reqNewsBulletins connection all-messages?)))
 
-(defn request-fundamental-data [connection request-id contract report-type]
+(defn cancel-news-bulletins
+  "Call this function to stop receiving news bulletins."
+  [connection]
+  (.cancelNewsBulletins connection))
+
+(defn request-fundamental-data
+  "Call this function to receive Reuters global fundamental data. There must be a
+   subscription to Reuters Fundamental set up in Account Management before you
+   can receive this data."
+  [connection request-id contract report-type]
   (.reqFundamentalData connection request-id contract
                        (translate-to-ib-report-type report-type)))
+
+(defn cancel-fundamental-data
+  "Call this function to stop receiving Reuters global fundamental data."
+  [connection request-id]
+  (.cancelFundamentalData connection request-id))
+
+(defn request-contract-details [connection request-id contract]
+  (.reqContractDetails connection request-id contract))
+
+(defn is-end?
+  "Predicate to determine if a message indicates a tick snapshot is done"
+  [msg]
+  (contains? [:tick-snapshot-end :error]))
+
+(defmulti warning? class)
+
+(defmethod warning? java.lang.Integer [code]
+  (>= code 2100))
+
+(defmethod warning? java.lang.Long [code]
+  (>= code 2100))
+
+(defmethod warning? clojure.lang.IPersistentMap [{code :code}]
+  (and (not (nil? code))
+       (warning? code)))
+
+(defmethod warning? :default [_]
+  false)
