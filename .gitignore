@@ -4,3 +4,5 @@ pom.xml
 /classes/
 .lein-failures
 .lein-deps-sum
+/ticks.csv
+/errors.log

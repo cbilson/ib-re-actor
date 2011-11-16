@@ -16,29 +16,27 @@
      :pp pp
      :s1 s1 :s2 s2 :s3 s3}))
 
-(defn is-end? [msg]
-  (contains? [:tick-snapshot-end :error]))
+(def historic-prices (atom {}))
 
-(defn warning? [msg]
-  (and (contains? msg :code)
-       (>= (:code msg) 2100)))
-
-(defn process-error [msg]
+(defmulti historic-handler :type)
+(defmethod historic-handler :error [msg]
   (cond
    (contains? msg :message) (println "*** " (:message msg))
    (contains? msg :exception) (println "*** " (.toString (:exception msg))))
   (if (not (warning? msg))
-    (swap! historic-prices assoc :done? true :failed? true)))(defmulti historic-handler :type)
+    (swap! historic-prices assoc :done? true :failed? true)))
 
-(def historic-prices (atom {}))
-(defmethod historic-handler :error [msg] (process-error msg))
 (defmethod historic-handler :price-bar [msg]
-  (swap! historic-prices assoc :bars (conj (:bars @historic-prices)) {:high (:high msg)
-                               :low (:low msg)
-                               :close (:close msg)}))
+  (swap! historic-prices assoc
+         :bars (conj (:bars @historic-prices)
+                     {:time (:time msg)
+                      :high (:high msg)
+                      :low (:low msg)
+                      :close (:close msg)})))
 
 (defmethod historic-handler :complete [msg]
   (swap! historic-prices assoc :done? true))
+
 (defmethod historic-handler :default [msg]
   (prn msg))
 
@@ -51,10 +49,35 @@
         (print ".")
         (java.lang.Thread/sleep 250))
       (if (:failed? @historic-prices)
-        nil
-        (compute-pivots @historic-prices))
+        (println "*** failed to get historic prices")
+        (compute-pivots (first (:bars @historic-prices))))
       (finally
        (disconnect connection)))))
+
+(defmulti tick-handler :type)
+
+(defmethod tick-handler :error [msg]
+  (cond
+   (contains? msg :message) (println "*** " (:message msg))
+   (contains? msg :exception) (println "*** " (.toString (:exception msg))))
+  (if (not (warning? msg))
+    (swap! historic-prices assoc :done? true :failed? true)))
+
+(def current-prices (atom {}))
+(defmethod tick-handler :price-tick [{ticker-id :ticker-id field :field price :price}]
+  (swap! current-prices assoc ticker-id {}))
+(defmethod tick-handler :price-tick :bid-size [{price :price}])
+(defmethod tick-handler :price-tick :ask-price [{price :price}])
+(defmethod tick-handler :price-tick :ask-size [{price :price}])
+
+
+(def last-ticker-id (atom 0))
+(defn watch
+  "Watch a contract and keep a scoreboard updates with the latest ticks"
+  [contract]
+  (let [connection (connect tick-handler)
+        ticker-id (swap! last-ticker-id inc)]
+    (request-market-data connection ticker-id contract ticker-id)))
 
 (defn print-pivots [pivots]
   (println "H/L/C: " (:high pivots) "/" (:low pivots) "/" (:close pivots))
@@ -68,45 +91,7 @@
 
 (defn get-opening-trade [date]
   (let [cash-contract (index "INDU" "NYSE")
-        future (futures-contract "YM" "ECBOT" (date-time 2011 12))]
-    (if-let [pivots (compute-daily-pivots cash-contract date)]
-      (print-pivots pivots))))
+        future (futures-contract "YM" "ECBOT" (date-time 2011 12))
+        pivots (compute-daily-pivots cash-contract date)]
+    (watch )))
 
-(def news-complete? (atom false))
-(defmulti news-handler :type)
-(defmethod news-handler :error [msg]
-  (process-error msg)
-  (if (not (warning? msg))
-    (reset! news-complete? true)))
-(defmethod news-handler :default [msg] (prn msg))
-(defmethod news-handler :update-news-bulletin [{message :message}]
-  (println message))
-
-(defn watch-news []
-  (let [connection (connect news-handler)]
-    (try
-      (reset! news-complete? false)
-      (request-news-bulletins connection)
-      (while (not @news-complete?)
-        (java.lang.Thread/sleep 100))
-      (finally (disconnect connection)))))
-
-(def fundamental-data-complete? (atom false))
-(defmulti fundamental-data-handler :type)
-(defmethod fundamental-data-handler :error [msg]
-  (process-error msg)
-  (if (not (warning? msg))
-    (reset! fundamental-data-complete? true)))
-(defmethod fundamental-data-handler :default [msg] (prn msg))
-(defmethod fundamental-data-handler :fundamental-data [{report :report}]
-  (prn report)
-  (reset! fundamental-data-complete? true))
-
-(defn get-fundamentals []
-  (let [connection (connect fundamental-data-handler)]
-    (try
-      (reset! fundamental-data-complete? false)
-      (request-fundamental-data connection -1 (equity "C" "NYSE") :summary)
-      (while (not @fundamental-data-complete?)
-        (java.lang.Thread/sleep 100))
-      (finally (disconnect connection)))))
