@@ -15,6 +15,7 @@
 (field-based-property contract-id m_conId)
 (field-based-property security-id-type m_secIdType translate-from-ib-security-id-type translate-to-ib-security-id-type)
 (field-based-property security-id m_secId)
+(field-based-property security-type m_secType translate-from-ib-security-type translate-to-ib-security-type)
 
 (defn make-contract [contract-type]
   (let [contract (Contract.)]
