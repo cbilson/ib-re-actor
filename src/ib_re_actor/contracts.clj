@@ -24,13 +24,15 @@
 
 (defn futures-contract
   ([] (make-contract :future))
-  ([expiry-val]
+  ([local-symbol-val exchange-val]
      (-> (futures-contract)
-         (expiry expiry-val)))
+         (local-symbol local-symbol-val)
+         (exchange exchange-val)))
   ([symbol-val exchange-val expiry-val]
-     (-> (futures-contract expiry-val)
+     (-> (futures-contract) 
          (exchange exchange-val)
-         (underlying-symbol symbol-val))))
+         (underlying-symbol symbol-val)
+         (expiry expiry-val))))
 
 (defn index [symbol-val exchange-val]
   (-> (make-contract :index)
