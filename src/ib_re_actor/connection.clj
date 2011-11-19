@@ -330,9 +330,13 @@
 (defmethod warning? java.lang.Long [code]
   (>= code 2100))
 
-(defmethod warning? clojure.lang.IPersistentMap [{code :code}]
-  (and (not (nil? code))
-       (warning? code)))
+(defmethod warning? clojure.lang.IPersistentMap [{code :code exception :exception}]
+  (cond
+   (not (nil? exception)) false
+   (nil? code) false
+   :default (warning? code)))
 
 (defmethod warning? :default [_]
   false)
+
+(def error? (comp not warning?))
