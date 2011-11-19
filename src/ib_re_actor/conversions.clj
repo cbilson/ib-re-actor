@@ -344,7 +344,7 @@
 (defn translate-from-ib-contract [^com.ib.client.Contract contract]
   (-> {}
       (if-assoc :symbol (. contract m_symbol))
-      (if-assoc :security-type (. contract m_secType))
+      (if-assoc :security-type (. contract m_secType) translate-from-ib-security-type)
       (if-assoc :expiry (. contract m_expiry) translate-from-ib-expiry)
       (if-assoc :strike (. contract m_strike))
       (if-assoc :right (. contract m_right) translate-from-ib-right)
