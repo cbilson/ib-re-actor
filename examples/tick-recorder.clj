@@ -5,8 +5,8 @@
         [clj-time.coerce :only [to-long]]
         [clojure.java.io]))
 
-(def contracts {1 (futures-contract "YMZ1" "ECBOT") ; ?
-                2 (futures-contract "YMH2" "ECBOT") ; ?
+(def contracts {1 (futures-contract "YM   DEC 11" "ECBOT")
+                2 (futures-contract "YM   MAR 12" "ECBOT")
                 3 (index "YM" "ECBOT")
                 4 (futures-contract "TFZ1" "NYBOT")
                 5 (futures-contract "TFH2" "NYBOT")
@@ -18,9 +18,9 @@
                 11 (futures-contract "NQH2" "GLOBEX")
                 12 (index "NQ" "GLOBEX")
                 13 (futures-contract "E7Z1" "GLOBEX")
-                14 (futures-contract "EAZ1" "GLOBEX") ; ?
-                15 (futures-contract "ZQZ1" "ECBOT")  ; ?
-                16 (futures-contract "ZNZ1" "ECBOT")  ; ?
+    ;            14 (futures-contract "EAZ1" "GLOBEX")
+                15 (futures-contract "ZQ   DEC 11" "ECBOT")
+                16 (futures-contract "ZN   DEC 11" "ECBOT")
                 17 (index "TICK-NYSE" "NYSE")
                 18 (index "TRIN-NYSE" "NYSE")})
 
