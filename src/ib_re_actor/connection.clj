@@ -204,8 +204,8 @@
 
    client-id identifies this client. Only one connection to a gateway can
    be made per client-id at a time."
-  ([handler-fn] (connect handler-fn "localhost"))
-  ([handler-fn host] (connect handler-fn host 7496))
+  ([handler-fn] (connect handler-fn "localhost" 7496))
+  ([handler-fn client-id] (connect handler-fn "localhost" 7496 client-id))
   ([handler-fn host port] (connect handler-fn host port 1))
   ([handler-fn host port client-id]
      (let [wrapper (create-wrapper handler-fn)
