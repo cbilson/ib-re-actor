@@ -5,28 +5,30 @@
         [clj-time.coerce :only [to-long]]
         [clojure.java.io]))
 
-(def contracts {1 (futures-contract "YM   DEC 11" "ECBOT")
-                2 (futures-contract "YM   MAR 12" "ECBOT")
-                3 (index "YM" "ECBOT")
-                4 (futures-contract "TFZ1" "NYBOT")
-                5 (futures-contract "TFH2" "NYBOT")
-                6 (index "TF" "NYBOT")
-                7 (futures-contract "ESZ1" "GLOBEX")
-                8 (futures-contract "ESH2" "GLOBEX")
-                9 (index "ES" "GLOBEX")
-                10 (futures-contract "NQZ1" "GLOBEX")
-                11 (futures-contract "NQH2" "GLOBEX")
-                12 (index "NQ" "GLOBEX")
-                13 (futures-contract "E7Z1" "GLOBEX")
-    ;            14 (futures-contract "EAZ1" "GLOBEX")
-                15 (futures-contract "ZQ   DEC 11" "ECBOT")
-                16 (futures-contract "ZN   DEC 11" "ECBOT")
-                17 (index "TICK-NYSE" "NYSE")
-                18 (index "TRIN-NYSE" "NYSE")})
+(def contracts
+  {
+   1 (futures-contract "YM   MAR 12" "ECBOT")
+   2 (futures-contract "YM   JUN 12" "ECBOT")
+   3 (index "YM" "ECBOT")
+   4 (futures-contract "TFH2" "NYBOT")
+   5 (futures-contract "TFM2" "NYBOT")
+   6 (index "TF" "NYBOT")
+   7 (futures-contract "ESH2" "GLOBEX")
+   8 (futures-contract "ESM2" "GLOBEX")
+   9 (index "ES" "GLOBEX")
+   10 (futures-contract "NQH2" "GLOBEX")
+   11 (futures-contract "NQM2" "GLOBEX")
+   12 (index "NQ" "GLOBEX")
+   13 (futures-contract "E7H2" "GLOBEX")
+   14 (futures-contract "ZQ   MAR 12" "ECBOT")
+   15 (futures-contract "ZN   MAR 12" "ECBOT")
+   16 (index "TICK-NYSE" "NYSE")
+   17 (index "TRIN-NYSE" "NYSE")
+   })
 
-(def handler-done (atom false))
+(def done (java.util.concurrent.CountDownLatch. 1))
 
-(def log-agent (agent nil))
+(def log-agent (agent *out*))
 
 (defn log-tick [writer received ticker-id field val]
   (let [contract (get contracts ticker-id)
@@ -36,7 +38,7 @@
     (.write writer (str (to-long received) "," symbol "," (name field) "," val "\n"))
     writer))
 
-(def error-agent (agent nil))
+(def error-agent (agent *err*))
 
 (defn log-error [writer message]
   (.write writer message)
@@ -52,21 +54,21 @@
      (contains? msg :message) (send-off error-agent log-error (str "*** [" req "] " (:message msg) "\n"))
      (contains? msg :exception) (send-off error-agent log-error (str "*** [" req "] " (.toString (:exception msg)) "\n")))
     (if (not (warning? msg))
-      (do 
-        (await error-agent)
-        (reset! handler-done true)))))
+      (do
+        (await error-agent log-agent)
+        (.countDown done)))))
 
-(defmethod message-handler :price-tick [msg]
+(defmethod message-handler :price-tick [_ msg]
   (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:price msg)))
 
-(defmethod message-handler :size-tick [msg]
+(defmethod message-handler :size-tick [_ msg]
   (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:size msg)))
 
-(defmethod message-handler :string-tick [msg]
+(defmethod message-handler :string-tick [_ msg]
   (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:value msg)))
 
-(defmethod message-handler :default [msg]
-  (prn msg))
+(defmethod message-handler :default [_ msg]
+  (send-off error-agent log-error (str "??? unhandled message: " (prn-str msg))))
 
 (defn not-nil? [x]
   (not (nil? x)))
@@ -74,21 +76,30 @@
 (defn agent-errs []
   (filter not-nil? (map agent-errors [log-agent])))
 
+(defn print-ticks []
+  (let [connection (connect prn "localhost" 7496 2)]
+    (try
+      (doseq [[ticker-id contract] contracts]
+        (request-market-data connection ticker-id contract))
+      (Thread/sleep 60000)
+      (finally
+       (disconnect connection)))))
+
 (defn record-ticks []
   (with-open [log-writer (writer (file "ticks.csv") :append false)
-              error-writer (writer (file "errors.log") :append false)]
+              error-writer (writer (file "errors.log") :append false)
+              done (java.util.concurrent.CountDownLatch. 1)]
     (send-off log-agent (fn [_] log-writer))
     (send-off error-agent (fn [_] error-writer))
-    (let [connection (connect message-handler)] 
+    (let [connection (connect (partial message-handler done) "localhost" 7496 2)]
       (try
         (doseq [[ticker-id contract] contracts]
           (request-market-data connection ticker-id contract))
-        (while (not (:done @handler-done))
-          (let [errors (agent-errs)]
-            (if (empty? errors)
-              (Thread/sleep 250)
-              (doseq [error errors]
-                (println "*** Error: " error))))
-          (reset! handler-done true))
+        (.await done)
+        (let [errors (agent-errs)]
+          (if (empty? errors)
+            (Thread/sleep 250)
+            (doseq [error errors]
+              (println "*** Error: " error))))
         (finally
          (disconnect connection))))))
