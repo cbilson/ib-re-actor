@@ -258,7 +258,7 @@
      if no tick list is specified, a single snapshot of market data will come back
      and have the market data subscription will be immediately canceled."
   ([connection id contract tick-list]
-     (let [ib-tick-list (map translate-to-ib-tick-type tick-list)]
+     (let [ib-tick-list tick-list #_(map translate-to-ib-tick-type tick-list)]
        (.reqMktData connection id contract ib-tick-list false))
      id)
   ([connection id contract]
