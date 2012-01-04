@@ -58,16 +58,16 @@
         (await error-agent log-agent)
         (.countDown done)))))
 
-(defmethod message-handler :price-tick [_ msg]
+(defmethod message-handler :price-tick [msg]
   (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:price msg)))
 
-(defmethod message-handler :size-tick [_ msg]
+(defmethod message-handler :size-tick [msg]
   (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:size msg)))
 
-(defmethod message-handler :string-tick [_ msg]
+(defmethod message-handler :string-tick [msg]
   (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:value msg)))
 
-(defmethod message-handler :default [_ msg]
+(defmethod message-handler :default [msg]
   (send-off error-agent log-error (str "??? unhandled message: " (prn-str msg))))
 
 (defn not-nil? [x]
@@ -87,11 +87,10 @@
 
 (defn record-ticks []
   (with-open [log-writer (writer (file "ticks.csv") :append false)
-              error-writer (writer (file "errors.log") :append false)
-              done (java.util.concurrent.CountDownLatch. 1)]
+              error-writer (writer (file "errors.log") :append false)]
     (send-off log-agent (fn [_] log-writer))
     (send-off error-agent (fn [_] error-writer))
-    (let [connection (connect (partial message-handler done) "localhost" 7496 2)]
+    (let [connection (connect message-handler "localhost" 7496 2)]
       (try
         (doseq [[ticker-id contract] contracts]
           (request-market-data connection ticker-id contract))
