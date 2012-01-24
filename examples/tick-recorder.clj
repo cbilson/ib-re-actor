@@ -24,9 +24,29 @@
    15 (futures-contract "ZN   MAR 12" "ECBOT")
    16 (index "TICK-NYSE" "NYSE")
    17 (index "TRIN-NYSE" "NYSE")
+   18 (equity "XOM" "NYSE")
+   19 (equity "AAPL" "SMART")
+   20 (equity "IBM" "NYSE")
+   21 (equity "MSFT" "SMART")
+   22 (equity "CVX" "NYSE")
+   23 (equity "GE" "NYSE")
+   24 (equity "T" "NYSE")
+   25 (equity "PG" "NYSE")
+   26 (equity "JNJ" "NYSE")
+   27 (equity "PFE" "NYSE")
+   28 (equity "SPY" "ARCA")
+   29 (equity "SPYV" "ARCA")
+   30 (equity "SPYG" "ARCA")
+   31 (equity "IWM" "ARCA")
+   32 (equity "IWN" "ARCA")
+   33 (equity "IWO" "ARCA")
    })
 
-(def done (java.util.concurrent.CountDownLatch. 1))
+(def done (atom nil))
+
+(defn count-down [latch]
+  (.countDown latch)
+  latch)
 
 (def log-agent (agent *out*))
 
@@ -41,7 +61,7 @@
 (def error-agent (agent *err*))
 
 (defn log-error [writer message]
-  (.write writer message)
+  (.write writer (str (now) message))
   writer)
 
 (defmulti message-handler :type)
@@ -56,7 +76,7 @@
     (if (not (warning? msg))
       (do
         (await error-agent log-agent)
-        (.countDown done)))))
+        #_(swap! done count-down)))))
 
 (defmethod message-handler :price-tick [msg]
   (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:price msg)))
@@ -91,10 +111,13 @@
     (send-off log-agent (fn [_] log-writer))
     (send-off error-agent (fn [_] error-writer))
     (let [connection (connect message-handler "localhost" 7496 2)]
+      (reset! done (java.util.concurrent.CountDownLatch. 1))
       (try
         (doseq [[ticker-id contract] contracts]
           (request-market-data connection ticker-id contract))
-        (.await done)
+        (println "recording...")
+        (.await @done)
+        (println "done!")
         (let [errors (agent-errs)]
           (if (empty? errors)
             (Thread/sleep 250)
