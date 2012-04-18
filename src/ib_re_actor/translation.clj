@@ -1,13 +1,10 @@
-(ns ib-re-actor.conversions
-  (:use [clojure.contrib.def :only [defmacro-]]
-        [clj-time.core :only [year month day date-time
-                              plus minus years months weeks days hours minutes secs millis
-                              from-time-zone to-time-zone time-zone-for-id]]
-        [clj-time.format :only [formatter formatters parse unparse]]
-        [clj-time.coerce :only [from-long to-long]]
-        [ib-re-actor.util]))
+(ns ib-re-actor.translation
+  (:require [clj-time.core :as time]
+            [clj-time.format :as tf]
+            [clj-time.coerce :as tc]
+            [ib-re-actor.util :as util]))
 
-(defmacro- translation-table [name vals]
+(defmacro translation-table [name vals]
   `(let [vals# ~vals]
      (defn ~(symbol (str "translate-to-ib-" name)) [val#]
        (get vals# val#))
@@ -15,13 +12,6 @@
        (get (zipmap (vals vals#)
                     (keys vals#))
             val#))))
-
-;; example
-#_ (translation-table size-tick-field-code
-                      {:bid-size 0
-                       :ask-size 3
-                       :last-size 5
-                       :volume 8})
 
 (translation-table duration-unit
                    {
@@ -313,29 +303,44 @@
                    {:put "PUT"
                     :call "CALL"})
 
+(translation-table rule-80A
+                   {:individual "I"
+                    :agency "A"
+                    :agent-other-member "W"
+                    :individual-PTIA "J"
+                    :agency-PTIA "U"
+                    :agent-other-member-PTIA "M"
+                    :individual-PT "K"
+                    :agency-PT "Y"
+                    :agent-other-member-PT "N"})
+
+(translation-table boolean-int
+                   {true 1
+                    false 0})
+
 (defn translate-to-ib-duration [val unit]
   (str val " " (translate-to-ib-duration-unit unit)))
 
 (defn translate-from-ib-date-time [val]
   (condp instance? val
     String (translate-from-ib-date-time (Long/parseLong val))
-    Long (from-long (* 1000 val))))
+    Long (tc/from-long (* 1000 val))))
 
 (defn translate-to-ib-expiry [val]
-  (let [y (year val)
+  (let [y (time/year val)
         ys (.toString y)
-        m (month val)
+        m (time/month val)
         ms (format "%02d" m)]
     (str ys ms)))
 
 (defn translate-from-ib-expiry [val]
   (condp = (.length val)
-    6 (parse (formatter "yyyyMM") val)
-    8 (parse (formatter "yyyyMMdd") val)))
+    6 (tf/parse (tf/formatter "yyyyMM") val)
+    8 (tf/parse (tf/formatter "yyyyMMdd") val)))
 
 (defn translate-to-ib-date-time [value]
-  (-> (formatter "yyyyMMdd HH:mm:ss")
-      (unparse value)
+  (-> (tf/formatter "yyyyMMdd HH:mm:ss")
+      (tf/unparse value)
       (str " UTC")))
 
 (defn translate-to-ib-bar-size [val unit]
@@ -343,41 +348,41 @@
 
 (defn translate-from-ib-contract [^com.ib.client.Contract contract]
   (-> {}
-      (if-assoc :symbol (. contract m_symbol))
-      (if-assoc :security-type (. contract m_secType) translate-from-ib-security-type)
-      (if-assoc :expiry (. contract m_expiry) translate-from-ib-expiry)
-      (if-assoc :strike (. contract m_strike))
-      (if-assoc :right (. contract m_right) translate-from-ib-right)
-      (if-assoc :multiplier (. contract m_multiplier))
-      (if-assoc :exchange (. contract m_exchange))
-      (if-assoc :currency (. contract m_currency))
-      (if-assoc :local-symbol (. contract m_localSymbol))
-      (if-assoc :primary-exchange (. contract m_primaryExch))
-      (if-assoc :include-expired? (. contract m_includeExpired))
-      (if-assoc :combo-legs-description (. contract m_comboLegsDescrip))
-      (if-assoc :combo-legs (. contract m_comboLegs))
-      (if-assoc :contract-id (. contract m_conId))
-      (if-assoc :security-id-type (. contract m_secIdType))
-      (if-assoc :security-id (. contract m_secId))))
+      (util/if-assoc :symbol (. contract m_symbol))
+      (util/if-assoc :security-type (. contract m_secType) translate-from-ib-security-type)
+      (util/if-assoc :expiry (. contract m_expiry) translate-from-ib-expiry)
+      (util/if-assoc :strike (. contract m_strike))
+      (util/if-assoc :right (. contract m_right) translate-from-ib-right)
+      (util/if-assoc :multiplier (. contract m_multiplier))
+      (util/if-assoc :exchange (. contract m_exchange))
+      (util/if-assoc :currency (. contract m_currency))
+      (util/if-assoc :local-symbol (. contract m_localSymbol))
+      (util/if-assoc :primary-exchange (. contract m_primaryExch))
+      (util/if-assoc :include-expired? (. contract m_includeExpired))
+      (util/if-assoc :combo-legs-description (. contract m_comboLegsDescrip))
+      (util/if-assoc :combo-legs (. contract m_comboLegs))
+      (util/if-assoc :contract-id (. contract m_conId))
+      (util/if-assoc :security-id-type (. contract m_secIdType))
+      (util/if-assoc :security-id (. contract m_secId))))
 
 (defn translate-to-ib-contract [attributes]
   (let [contract (com.ib.client.Contract.)]
-    (if-set attributes :symbol contract m_symbol)
-    (if-set attributes :security-type contract m_secType translate-to-ib-security-type)
-    (if-set attributes :expiry contract m_expiry translate-to-ib-expiry)
-    (if-set attributes :strike contract m_strike)
-    (if-set attributes :right contract m_right)
-    (if-set attributes :multiplier contract m_multiplier)
-    (if-set attributes :exchange contract m_exchange)
-    (if-set attributes :currency contract m_currency)
-    (if-set attributes :local-symbol contract m_localSymbol)
-    (if-set attributes :primary-exchange contract m_primaryExch)
-    (if-set attributes :include-expired? contract m_includeExpired)
-    (if-set attributes :combo-legs-description contract m_combLegsDescrip)
-    (if-set attributes :combo-legs contract m_comboLegs)
-    (if-set attributes :contract-id contract m_conId)
-    (if-set attributes :security-id-type contract m_secIdType)
-    (if-set attributes :security-id contract m_secId)
+    (util/if-set attributes :symbol contract m_symbol)
+    (util/if-set attributes :security-type contract m_secType translate-to-ib-security-type)
+    (util/if-set attributes :expiry contract m_expiry translate-to-ib-expiry)
+    (util/if-set attributes :strike contract m_strike)
+    (util/if-set attributes :right contract m_right)
+    (util/if-set attributes :multiplier contract m_multiplier)
+    (util/if-set attributes :exchange contract m_exchange)
+    (util/if-set attributes :currency contract m_currency)
+    (util/if-set attributes :local-symbol contract m_localSymbol)
+    (util/if-set attributes :primary-exchange contract m_primaryExch)
+    (util/if-set attributes :include-expired? contract m_includeExpired)
+    (util/if-set attributes :combo-legs-description contract m_combLegsDescrip)
+    (util/if-set attributes :combo-legs contract m_comboLegs)
+    (util/if-set attributes :contract-id contract m_conId)
+    (util/if-set attributes :security-id-type contract m_secIdType)
+    (util/if-set attributes :security-id contract m_secId)
     contract))
 
 (defn translate-from-ib-contract-details [attributes]
