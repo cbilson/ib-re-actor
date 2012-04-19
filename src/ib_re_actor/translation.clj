@@ -2,39 +2,58 @@
   (:require [clj-time.core :as time]
             [clj-time.format :as tf]
             [clj-time.coerce :as tc]
-            [ib-re-actor.util :as util]))
+            [clojure.string :as str]))
+
+(defmulti ^:dynamic translate (fn [direction table-name _] [direction table-name]))
+(defmulti ^:dynamic validate (fn [direction table-name _] [direction table-name]))
 
 (defmacro translation-table [name vals]
-  `(let [vals# ~vals]
-     (defn ~(symbol (str "translate-to-ib-" name)) [val#]
-       (get vals# val#))
-     (defn ~(symbol (str "translate-from-ib-" name)) [val#]
-       (get (zipmap (vals vals#)
-                    (keys vals#))
-            val#))))
+  (let [table-name (keyword name)]
+    `(let [to-table# ~vals
+           from-table# (zipmap (vals to-table#) (keys to-table#))]
+
+       (defmethod validate [:to-ib ~table-name] [_# _# val#]
+         (contains? to-table# val#))
+
+       (defmethod translate [:to-ib ~table-name] [_# _# val#]
+         (if val#
+           (if (validate :to-ib ~table-name val#)
+             (to-table# val#)
+             (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
+                             {:value val#
+                              :table ~table-name
+                              :valid-values (keys to-table#)})))))
+
+       (defmethod validate [:from-ib ~table-name] [_# _# val#]
+         (contains? from-table# val#))
+
+       (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
+         (if val#
+           (if (validate :from-ib ~table-name val#)
+             (from-table# val#)
+             (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
+                             {:value val#
+                              :table ~table-name
+                              :valid-values (vals to-table#)}))))))))
 
 (translation-table duration-unit
-                   {
-                    :second "S"
+                   {:second "S"
                     :seconds "S"
                     :day "D"
                     :days "D"
                     :week "W"
                     :weeks "W"
                     :year "Y"
-                    :years "Y"
-                    })
+                    :years "Y"})
 
 (translation-table security-type
-                   {
-                    :equity "STK"
+                   {:equity "STK"
                     :option "OPT"
                     :future "FUT"
                     :index "IND"
                     :future-option "FOP"
                     :cash "CASH"
-                    :bag "BAG"
-                    })
+                    :bag "BAG"})
 
 (translation-table bar-size-unit
                    {:second "sec"
@@ -118,7 +137,7 @@
                     :trailing-limit-if-touched "TRAILLIT"
                     :trailing-market-if-touched "TRAILMIT"
                     :trailing-stop "TRAIL"
-                    :trailing-stop-limit "TRAILLIMIT"
+                    :trailing-stop-limit "TRAILLMT"
                     :VWAP "VWAP"
                     :volatility "VOL"
                     :what-if "WHATIF"})
@@ -318,103 +337,77 @@
                    {true 1
                     false 0})
 
-(defn translate-to-ib-duration [val unit]
-  (str val " " (translate-to-ib-duration-unit unit)))
+(defmethod translate [:to-ib :duration] [_ _ [val unit]]
+  (str val " " (translate :to-ib :duration-unit unit)))
 
-(defn translate-from-ib-date-time [val]
+(defmethod translate [:from-ib :duration] [_ _ val]
+  (if val
+    (let [[amount unit] (.split val " ")]
+      (vector (Integer/parseInt amount)
+              (translate :from-ib :duration-unit unit)))))
+
+(defmethod translate [:from-ib :date-time] [_ _ val]
   (condp instance? val
-    String (translate-from-ib-date-time (Long/parseLong val))
+    java.util.Date (tc/from-date val)
+    String (translate :from-ib :date-time (Long/parseLong val))
     Long (tc/from-long (* 1000 val))))
 
-(defn translate-to-ib-expiry [val]
+(defmethod translate [:to-ib :date-time] [_ _ value]
+  (if val
+    (-> (tf/formatter "yyyyMMdd HH:mm:ss")
+        (tf/unparse value)
+        (str " UTC"))))
+
+(defmethod translate [:to-ib :timestamp] [_ _ val]
+  (condp instance? val
+    java.util.Date (tc/from-date val)
+    org.joda.time.DateTime (translate :to-ib :timestamp
+                                      (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
+                                          (tf/unparse val)
+                                          (str " UTC")))
+    String val))
+
+(defmethod translate [:from-ib :timestamp] [_ _ val]
+  (if val
+    (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
+        (tf/parse val))))
+
+(defmethod translate [:to-ib :date] [_ _ val]
+  (tf/unparse (tf/formatter "MM/dd/yyyy") val))
+
+(defmethod translate [:from-ib :date] [_ _ val]
+  (if val
+    (try
+      (tf/parse (tf/formatter "MM/dd/yyyy") val)
+      (catch Exception e
+        (throw (ex-info "Failed to translate from IB date value."
+                        {:value val
+                         :expected-forme "MM/dd/yyyy"}))))))
+
+(defmethod translate [:to-ib :expiry] [_ _ val]
   (let [y (time/year val)
         ys (.toString y)
         m (time/month val)
         ms (format "%02d" m)]
     (str ys ms)))
 
-(defn translate-from-ib-expiry [val]
+(defmethod translate [:from-ib :expiry] [_ _ val]
   (condp = (.length val)
     6 (tf/parse (tf/formatter "yyyyMM") val)
     8 (tf/parse (tf/formatter "yyyyMMdd") val)))
 
-(defn translate-to-ib-date-time [value]
-  (-> (tf/formatter "yyyyMMdd HH:mm:ss")
-      (tf/unparse value)
-      (str " UTC")))
+(defmethod translate [:to-ib :bar-size] [_ _ [val unit]]
+  (str val " " (translate :to-ib :bar-size-unit unit)))
 
-(defn translate-to-ib-bar-size [val unit]
-  (str val " " (translate-to-ib-bar-size-unit unit)))
+(defmethod translate [:to-ib :double-string] [_ _ val]
+  (str val))
 
-(defn translate-from-ib-contract [^com.ib.client.Contract contract]
-  (-> {}
-      (util/if-assoc :symbol (. contract m_symbol))
-      (util/if-assoc :security-type (. contract m_secType) translate-from-ib-security-type)
-      (util/if-assoc :expiry (. contract m_expiry) translate-from-ib-expiry)
-      (util/if-assoc :strike (. contract m_strike))
-      (util/if-assoc :right (. contract m_right) translate-from-ib-right)
-      (util/if-assoc :multiplier (. contract m_multiplier))
-      (util/if-assoc :exchange (. contract m_exchange))
-      (util/if-assoc :currency (. contract m_currency))
-      (util/if-assoc :local-symbol (. contract m_localSymbol))
-      (util/if-assoc :primary-exchange (. contract m_primaryExch))
-      (util/if-assoc :include-expired? (. contract m_includeExpired))
-      (util/if-assoc :combo-legs-description (. contract m_comboLegsDescrip))
-      (util/if-assoc :combo-legs (. contract m_comboLegs))
-      (util/if-assoc :contract-id (. contract m_conId))
-      (util/if-assoc :security-id-type (. contract m_secIdType))
-      (util/if-assoc :security-id (. contract m_secId))))
+(defmethod translate [:from-ib :double-string] [_ _ val]
+  (Double/parseDouble val))
 
-(defn translate-to-ib-contract [attributes]
-  (let [contract (com.ib.client.Contract.)]
-    (util/if-set attributes :symbol contract m_symbol)
-    (util/if-set attributes :security-type contract m_secType translate-to-ib-security-type)
-    (util/if-set attributes :expiry contract m_expiry translate-to-ib-expiry)
-    (util/if-set attributes :strike contract m_strike)
-    (util/if-set attributes :right contract m_right)
-    (util/if-set attributes :multiplier contract m_multiplier)
-    (util/if-set attributes :exchange contract m_exchange)
-    (util/if-set attributes :currency contract m_currency)
-    (util/if-set attributes :local-symbol contract m_localSymbol)
-    (util/if-set attributes :primary-exchange contract m_primaryExch)
-    (util/if-set attributes :include-expired? contract m_includeExpired)
-    (util/if-set attributes :combo-legs-description contract m_combLegsDescrip)
-    (util/if-set attributes :combo-legs contract m_comboLegs)
-    (util/if-set attributes :contract-id contract m_conId)
-    (util/if-set attributes :security-id-type contract m_secIdType)
-    (util/if-set attributes :security-id contract m_secId)
-    contract))
+(defmethod translate [:from-ib :order-types] [_ _ val]
+  (->> (.split val ",")
+       (map (partial translate :from-ib :order-type))))
 
-(defn translate-from-ib-contract-details [attributes]
-  {:contract (translate-from-ib-contract (.m_summary attributes))
-   :market-name (.m_marketName attributes)
-   :trading-class (.m_tradingClass attributes)
-   :minimum-prices-tick (.m_minTick attributes)
-   :price-magnifier (.m_priceMagnifier attributes)
-   :order-types (vec (map translate-from-ib-order-type (.split (.m_orderTypes attributes) ",")))
-   :valid-exchanges (vec (.split (.m_validExchanges attributes) ","))
-   :underlying-contract-id (.m_underConId attributes)
-   :long-name (.m_longName attributes)
-   :CUSIP (.m_cusip attributes)
-   :ratings (.m_ratings attributes)
-   :description (.m_descAppend attributes)
-   :bond-type (.m_bondType attributes)
-   :coupon-type (.m_couponType attributes)
-   :callable? (.m_callable attributes)
-   :putable? (.m_putable attributes)
-   :coupon (.m_coupon attributes)
-   :convertible (.m_convertible attributes)
-   :maturity (.m_maturity attributes)
-   :issue-date (.m_issueDate attributes)
-   :next-option-date (.m_nextOptionDate attributes)
-   :next-option-type (.m_nextOptionType attributes)
-   :next-option-partial (.m_nextOptionPartial attributes)
-   :notes (.m_notes attributes)
-   :contract-month (.m_contractMonth attributes)
-   :industry (.m_industry attributes)
-   :category (.m_category attributes)
-   :subcategory (.m_subcategory attributes)
-   :time-zone-id (.m_timeZoneId attributes)
-   :trading-hours (vec (.split (.m_tradingHours attributes) ";"))
-   :liquid-hours (vec (.split (.m_liquidHours attributes) ";"))
-   })
+(defmethod translate [:to-ib :order-types] [_ _ val]
+  (str/join "," (map name val)))

@@ -1,7 +1,7 @@
 (ns ib-re-actor.gateway
   "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
-  (:require [ib-re-actor.translation :as t]
-            [ib-re-actor.execution-filter :as exf]
+  (:use [ib-re-actor.translation :only [translate]])
+  (:require [ib-re-actor.execution-filter :as exf]
             [clojure.xml :as xml]))
 
 (defprotocol PricingDataProvider
@@ -148,28 +148,31 @@
     (historicalData [this requestId date open high low close volume count wap hasGaps]
       (if (is-finish? date)
         (process-message {:type :complete :request-id requestId})
-        (process-message {:type :price-bar :request-id requestId :time (t/translate-from-ib-date-time date)
+        (process-message {:type :price-bar :request-id requestId
+                          :time (translate :from-ib :date-time date)
                           :open open :high high :low low :close close :volume volume
                           :count count :WAP wap :has-gaps? hasGaps})))
 
     (realtimeBar [this requestId time open high low close volume wap count]
-      (process-message {:type :price-bar :request-id requestId :time (t/translate-from-ib-date-time time)
+      (process-message {:type :price-bar :request-id requestId
+                        :time (translate :from-ib :date-time time)
                         :open open :high high :low low :close close :volume volume
                         :count count :WAP wap}))
 
     (tickPrice [this tickerId field price canAutoExecute]
-      (process-message {:type :price-tick :field (t/translate-from-ib-tick-field-code field)
+      (process-message {:type :price-tick :field (translate :from-ib :tick-field-code field)
                         :ticker-id tickerId
                         :price price
                         :can-auto-execute? (= 1 canAutoExecute)}))
 
     (tickSize [this tickerId field size]
-      (process-message {:type :size-tick :field (t/translate-from-ib-tick-field-code field)
+      (process-message {:type :size-tick :field (translate :from-ib :tick-field-code field)
                         :ticker-id tickerId
                         :size size}))
 
     (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice]
-      (process-message {:type :option-computation-tick :field (t/translate-from-ib-tick-field-code field)
+      (process-message {:type :option-computation-tick
+                        :field (translate :from-ib :tick-field-code field)
                         :ticker-id tickerId
                         :implied-volatility impliedVol
                         :option-price optPrice
@@ -178,19 +181,21 @@
                         :delta delta :gamma gamma :theta theta :vega vega }))
 
     (tickGeneric [this tickerId tickType value]
-      (process-message {:type :generic-tick :field (t/translate-from-ib-tick-field-code tickType)
+      (process-message {:type :generic-tick
+                        :field (translate :from-ib :tick-field-code tickType)
                         :ticker-id tickerId :value value}))
 
     (tickString [this tickerId tickType value]
-      (let [field (t/translate-from-ib-tick-field-code tickType)
+      (let [field (translate :from-ib :tick-field-code tickType)
             val (condp = field
-                  :last-timestamp (t/translate-from-ib-date-time value)
+                  :last-timestamp (translate :from-ib :date-time value)
                   value)]
         (process-message {:type :string-tick :field field
                           :ticker-id tickerId :value val})))
 
     (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
-      (process-message {:type :efp-tick :field (t/translate-from-ib-tick-field-code tickType)
+      (process-message {:type :efp-tick
+                        :field (translate :from-ib :tick-field-code tickType)
                         :ticker-id tickerId
                         :basis-points basisPoints :formatted-basis-points formattedBasisPoints
                         :implied-future impliedFuture :hold-days holdDays :future-expiry futureExpiry
@@ -212,10 +217,10 @@
       (process-message {:type :error :exception ex}))
 
     (currentTime [this time]
-      (process-message {:type :current-time :value (t/translate-from-ib-date-time time)}))
+      (process-message {:type :current-time :value (translate :from-ib :date-time time)}))
 
     (orderStatus [this orderId status filled remaining avgFillPrice permId parentId lastFillPrice clientId whyHeld]
-      (process-message {:type :order-status :order-id orderId :status (t/translate-from-ib-order-status status)
+      (process-message {:type :order-status :order-id orderId :status (translate :from-ib :order-status status)
                         :filled filled :remaining remaining :average-fill-price avgFillPrice
                         :permanent-id permId :parent-id parentId
                         :last-fill-price lastFillPrice :client-id clientId
@@ -231,7 +236,7 @@
       (process-message {:type :next-valid-order-id :value orderId}))
 
     (updateAccountValue [this key value currency accountName]
-      (let [account-value-key (t/translate-from-ib-account-value-key key)]
+      (let [account-value-key (translate :from-ib :account-value-key key)]
         (if (= account-value-key :day-trades-remaining)
           (process-message {:type :update-account-day-trades-remaining
                             :value (Integer/parseInt value)
@@ -247,11 +252,12 @@
                         :account accountName}))
 
     (updateAccountTime [this timeStamp]
-      (process-message {:type :update-account-time :value (t/translate-from-ib-date-time timeStamp)}))
+      (process-message {:type :update-account-time
+                        :value (translate :from-ib :date-time timeStamp)}))
 
     (contractDetails [this requestId contractDetails]
       (process-message {:type :contract-details :request-id requestId
-                        :value (t/translate-from-ib-contract-details contractDetails)}))
+                        :value contractDetails}))
 
     (bondContractDetails [this requestId contractDetails]
       (process-message {:type :contract-details :request-id requestId :value contractDetails}))
@@ -267,15 +273,15 @@
 
     (updateMktDepth [this tickerId position operation side price size]
       (process-message {:type :update-market-depth :ticker-id tickerId :position position
-                        :operation (t/translate-from-ib-market-depth-row-operation operation)
-                        :side (t/translate-from-ib-market-depth-side side)
+                        :operation (translate :from-ib :market-depth-row-operation operation)
+                        :side (translate :from-ib :market-depth-side side)
                         :price price :size size}))
 
     (updateMktDepthL2 [this tickerId position marketMaker operation side price size]
       (process-message {:type :update-market-depth-level-2 :ticker-id tickerId :position position
                         :market-maker marketMaker
-                        :operation (t/translate-from-ib-market-depth-row-operation operation)
-                        :side (t/translate-from-ib-market-depth-side side)
+                        :operation (translate :from-ib :market-depth-row-operation operation)
+                        :side (translate :from-ib :market-depth-side side)
                         :price price :size size}))
 
     (updateNewsBulletin [this msgId msgType message origExchange]
@@ -320,7 +326,7 @@
   PricingDataProvider
   (request-market-data
     ([this id contract tick-list]
-       (let [ib-tick-list tick-list #_(map t/translate-to-ib-tick-type tick-list)]
+       (let [ib-tick-list tick-list #_(map (partial translate :to-ib :tick-type) tick-list)]
          (.reqMktData this id contract ib-tick-list false))
        id)
     ([this id contract]
@@ -329,10 +335,10 @@
 
   (request-historical-data
     ([this id contract end duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
-       (let [ib-end (t/translate-to-ib-date-time end)
-             ib-duration (t/translate-to-ib-duration duration duration-unit)
-             ib-bar-size (t/translate-to-ib-bar-size bar-size bar-size-unit)
-             ib-what-to-show (t/translate-to-ib-what-to-show what-to-show)]
+       (let [ib-end (translate :to-ib :date-time end)
+             ib-duration (translate :to-ib :duration [duration duration-unit])
+             ib-bar-size (translate :to-ib :bar-size [bar-size bar-size-unit])
+             ib-what-to-show (translate :to-ib :what-to-show what-to-show)]
          (.reqHistoricalData this id contract ib-end ib-duration ib-bar-size ib-what-to-show
                              (if use-regular-trading-hours? 1 0)
                              2)))
@@ -356,7 +362,7 @@
   (request-fundamental-data
     [this request-id contract report-type]
     (.reqFundamentalData this request-id contract
-                         (t/translate-to-ib-report-type report-type)))
+                         (translate :to-ib :report-type report-type)))
 
   (cancel-fundamental-data
     [this request-id]

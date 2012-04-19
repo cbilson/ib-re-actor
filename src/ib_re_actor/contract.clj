@@ -1,7 +1,6 @@
-(ns ib-re-actor.contracts
-  (:require [ib-re-actor.util :refer [field-props]]
-            [clj-time.core :as time]
-            [clojure.pprint :as pp]))
+(ns ib-re-actor.contract
+  (:use [ib-re-actor.util :only [field-props Mappable assoc-if]]
+        [clojure.pprint :only [simple-dispatch cl-format]]))
 
 (defprotocol Contract
   (contract-id [this] [this val]
@@ -20,7 +19,8 @@
      trade in GBP or USD). Given the existence of this kind of ambiguity, it is a
      good idea to always specify the currency.")
   (security-type [this] [this val]
-    "This is the security type. Valid values are: STK, OPT, FUT, IND, FOP, CASH, BAG")
+    "This is the security type. Valid values are: :equity, :option, :future, :index,
+     :future-option, :cash, :bag")
   (include-expired? [this] [this val]
     "If set to true, contract details requests and historical data queries can be
      performed pertaining to expired contracts.
@@ -45,7 +45,7 @@
 
 (defprotocol FixedIncomeContract
   (put-call-right [this] [this val]
-    "Specifies a Put or Call. Valid values are: P, PUT, C, CALL."))
+    "Specifies a Put or Call. Valid values are: :put, :call"))
 
 (defprotocol DerivativeContract
   (expiry [this] [this val]
@@ -79,19 +79,43 @@
   DerivativeContract
   (field-props
    [expiry m_expiry :translation :expiry]
-   [multiplier m_multiplier :translation :double-string]))
+   [multiplier m_multiplier :translation :double-string])
 
-(defn pprint-contract [contract]
-  (pp/cl-format true "#<Contract{~A ~A, ~A}>"
-                (name (security-type contract))
-                (local-symbol contract)
-                (exchange contract)))
+  FixedIncomeContract
+  (field-props
+   [put-call-right m_right :translation :right])
 
-(.addMethod pp/simple-dispatch com.ib.client.Contract pprint-contract)
+  Mappable
+  {:to-map (fn [this]
+             (-> {}
+                 (assoc-if :contract-id (contract-id this))
+                 (assoc-if :underlying-symbol (underlying-symbol this))
+                 (assoc-if :exchange (exchange this))
+                 (assoc-if :local-symbol (local-symbol this))
+                 (assoc-if :primary-exchange (primary-exchange this))
+                 (assoc-if :currency (currency this))
+                 (assoc-if :security-type (security-type this))
+                 (assoc-if :include-expired? (include-expired? this))
+                 (assoc-if :security-id-type (security-id-type this))
+                 (assoc-if :security-id (security-id this))
+                 (assoc-if :combo-legs-description (combo-legs-description this))
+                 (assoc-if :expiry (expiry this))
+                 (assoc-if :multiplier (multiplier this))
+                 (assoc-if :put-call-right (put-call-right this))))})
+
+(defmethod simple-dispatch com.ib.client.Contract [contract]
+  (cl-format true "#<Contract{id ~A, security-type ~A, symbol ~A, exchange ~A}>"
+             (contract-id contract)
+             (security-type contract)
+             (or (local-symbol contract) (underlying-symbol contract))
+             (exchange contract)))
+
+(defn contract []
+  (com.ib.client.Contract.))
 
 (defn futures-contract
   ([]
-     (doto (com.ib.client.Contract.)
+     (doto (contract)
        (security-type :future)))
   ([local-symbol-val exchange-val]
      (doto (futures-contract)
@@ -99,13 +123,13 @@
        (exchange exchange-val)))
   ([symbol-val exchange-val expiry-val]
      (doto (futures-contract)
-       (exchange exchange-val)
        (underlying-symbol symbol-val)
+       (exchange exchange-val)
        (expiry expiry-val))))
 
 (defn index
   ([]
-     (doto (com.ib.client.Contract.)
+     (doto (contract)
        (security-type :index)))
   ([symbol-val exchange-val]
      (doto (index)
@@ -114,9 +138,10 @@
 
 (defn equity
   ([]
-     (doto (com.ib.client.Contract.)
+     (doto (contract)
        (security-type :equity)))
-  ([local-symbol-val exchange-val]
+  ([underlying-symbol-val exchange-val currency-val]
      (doto (equity)
-       (local-symbol local-symbol-val)
-       (exchange exchange-val))))
+       (underlying-symbol underlying-symbol-val)
+       (exchange exchange-val)
+       (currency currency-val))))
