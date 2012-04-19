@@ -2,39 +2,32 @@
   (:require [ib-re-actor.gateway :as g]
             [ib-re-actor.translation :as t]))
 
-(defn- message-handler [latch results error msg]
-  (let [{type :type} msg]
+(defn- message-handler [target-request-id acc results {:keys [request-id type value] :as msg}]
+  (if (= target-request-id request-id)
     (condp = type
-
       :contract-details
-      (swap! results conj (:value msg))
+      (swap! acc conj value)
 
       :contract-details-end
-      (.countDown latch)
+      (deliver results @acc)
 
       :error
       (if (g/error? msg)
-        (do
-          (reset! error msg)
-          (.countDown latch)))
+        (deliver results msg))
 
       nil)))
 
 (defn lookup-security
-  [client-id contract]
-  (let [latch (java.util.concurrent.CountDownLatch. 1)
-        results (atom [])
-        error (atom nil)
-        handler (partial message-handler latch results error)]
-    (g/with-open-connection [connection (g/connect handler client-id)]
-      (g/request-contract-details connection 1 contract)
-      (.await latch))
-    (if (not (nil? @error))
-      (let [{error-message :message exception :exception code :code} @error]
-        (cond
-         (not (nil? error-message)) (println "*** " error-message)
-         (not (nil? exception)) (println "*** " (.toString exception))
-         :default (prn @error))
-        @error)
-      @results)))
-
+  ([contract]
+     (lookup-security 1 contract))
+  ([client-id contract]
+     (let [results (promise)
+           request-id (.. (java.util.Random.) nextInt)
+           handler (partial message-handler request-id (atom []) results)]
+       (g/with-open-connection [connection (g/connect handler client-id)]
+         (g/request-contract-details connection request-id contract)
+         (if (and (map? @results) (g/error? @results))
+           (do
+             (println "err")
+             (throw (ex-info "Failed to lookup security" @results)))
+           @results)))))
