@@ -1,7 +1,10 @@
 ;;
 ;; Examples of looking up securities
 ;;
-(ns ib-re-actor.examples.basic.looking-up-a-security.easy)
+(ns ib-re-actor.examples.basic.looking-up-a-security.easy
+  (:use [ib-re-actor.contract]
+        [ib-re-actor.contract-details]
+        [ib-re-actor.synchronous :as sync]))
 
 ;; the easy, synchronous way
 (defn -main [type ticker exch ccy]
@@ -10,10 +13,10 @@
                    (underlying-symbol ticker)
                    (exchange exch)
                    (currency ccy))
-                 ib-re-actor.synchronous/lookup-security
-                 (map to-map)
+                 sync/lookup-security
+                 (map ib-re-actor.util/to-map)
                  )]
-    (pprint c)))
+    (clojure.pprint/pprint c)))
 
 (ns ib-re-actor.examples.basic.looking-up-a-security.low-level
   (:use [ib-re-actor.contract]
@@ -116,16 +119,18 @@
 ;; Examples of managing orders orders
 ;;
 (ns ib-re-actor.examples.basic.orders
+  (:require [ib-re-actor.synchronous :as sync])
   (:use [ib-re-actor.contract]
         [ib-re-actor.order]
         [ib-re-actor.gateway]
         [clj-time.core :only [date-time]]))
 
 (def nasdaq-future (doto (futures-contract)
-                   (underlying-symbol "NQ")
-                   (expiry (date-time 2012 6 15))
-                   (exchange "ECBOT")
-                   (currency "USD")))
+                   (local-symbol "NQM2")
+                   (exchange "GLOBEX")))
+
+(defn get-current-price []
+  (sync/get-current-price nasdaq-future))
 
 (defn get-open-orders []
   (let [results (promise)
@@ -140,13 +145,26 @@
     (with-open-connection [c (connect handler)]
       @results)))
 
+(defn get-account-update []
+  (let [results (promise)
+        attributes (atom {})
+        handler  (fn [{:keys [type key value currency] :as msg}]
+                   (case type
+                     :update-account-value (swap! attributes assoc key {:value value :currency currency})
+                     :update-account-time (deliver results @attributes)
+                     :error (if (error? msg) (deliver results msg))
+                     nil))]
+    (with-open-connection [c (connect handler)]
+      (request-account-updates c true nil)
+      @results)))
+
 (defn get-portfolio []
   (let [results (promise)
-        positions (atom [])
+        positions (atom #{})
         handler  (fn [{:keys [type] :as msg}]
-                   (prn msg)
                    (case type
                      :update-portfolio (swap! positions conj msg)
+                     :update-account-time (deliver results @positions)
                      :error (if (error? msg) (deliver results msg))
                      nil))]
     (with-open-connection [c (connect handler)]
@@ -164,23 +182,15 @@
     (with-open-connection [c (connect handler)]
       @done-with-orders)))
 
-(defn place-nasdaq-future-order []
-  (let [order-id (atom 0)
-        order (limit-order :buy 1 11000.0)
-        result (promise)
-        handler (fn [{:keys [type value] :as msg}]
-                  (prn msg)
-                  (case type
-                    :next-valid-order-id (reset! order-id value)
-                    :error (if (error? msg)
-                             (deliver result false))
-                    nil))]
-    (with-open-connection [conn (connect handler)]
-      (place-order conn @order-id nasdaq-future order)
-      @result)
-    @order-id))
+(defn sell-everything []
+  (doseq [{:keys [position contract market-value average-cost]} (get-portfolio)] 
+    (if (not= position 0)
+      (let [resolved-contract (-> contract
+                                  ib-re-actor.synchronous/lookup-security
+                                  first
+                                  ib-re-actor.contract-details/summary)]
+        (println "*** closing " position "x" (local-symbol resolved-contract))
+        (sync/execute-order resolved-contract (if (> 0 position) :buy :sell) position )))))
 
-(defn order-nasdaq-futures []
-  (collect-messages :price-bar :complete
-                    (fn [c r]
-                      )))
+
+

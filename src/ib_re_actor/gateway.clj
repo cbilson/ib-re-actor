@@ -6,7 +6,7 @@
 
 (defprotocol PricingDataProvider
   (request-market-data
-    [this id contract tick-list]
+    [this id contract tick-list snapshot?]
     [this id contract]
     "Call this function to request market data. The market data will be returned by
    :price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
@@ -58,7 +58,11 @@
    bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
 
    what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :historical-volatility,
-   :option-implied-volatility, :option-volume, or :option-open-interest."))
+   :option-implied-volatility, :option-volume, or :option-open-interest.")
+
+  (request-real-time-bars
+    [this id contract what-to-show use-regular-trading-hours?]
+    "Start receiving real time bar results."))
 
 (defprotocol MarketNewsProvider
   (request-news-bulletins
@@ -121,7 +125,7 @@
   (cond
    (not (nil? exception)) false
    (nil? code) false
-   :default (warning? code)))
+   :else (warning? code)))
 
 (defmethod warning? :default [_]
   false)
@@ -160,18 +164,17 @@
                         :count count :WAP wap}))
 
     (tickPrice [this tickerId field price canAutoExecute]
-      (process-message {:type :price-tick :field (translate :from-ib :tick-field-code field)
+      (process-message {:type :tick :field (translate :from-ib :tick-field-code field)
                         :ticker-id tickerId
-                        :price price
+                        :value price
                         :can-auto-execute? (= 1 canAutoExecute)}))
 
     (tickSize [this tickerId field size]
-      (process-message {:type :size-tick :field (translate :from-ib :tick-field-code field)
-                        :ticker-id tickerId
-                        :size size}))
+      (process-message {:type :tick :field (translate :from-ib :tick-field-code field)
+                        :ticker-id tickerId :value size}))
 
     (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice]
-      (process-message {:type :option-computation-tick
+      (process-message {:type :tick
                         :field (translate :from-ib :tick-field-code field)
                         :ticker-id tickerId
                         :implied-volatility impliedVol
@@ -181,20 +184,25 @@
                         :delta delta :gamma gamma :theta theta :vega vega }))
 
     (tickGeneric [this tickerId tickType value]
-      (process-message {:type :generic-tick
+      (process-message {:type :tick
                         :field (translate :from-ib :tick-field-code tickType)
                         :ticker-id tickerId :value value}))
 
     (tickString [this tickerId tickType value]
-      (let [field (translate :from-ib :tick-field-code tickType)
-            val (condp = field
-                  :last-timestamp (translate :from-ib :date-time value)
-                  value)]
-        (process-message {:type :string-tick :field field
-                          :ticker-id tickerId :value val})))
+      (let [field (translate :from-ib :tick-field-code tickType)]
+        (cond
+         (= field :last-timestamp)
+         (process-message {:type :timestamp-tick :field field
+                           :ticker-id tickerId
+                           :value (translate :from-ib :date-time value)})
+
+         :else
+         (process-message {:type :string-tick :field field
+                           :ticker-id tickerId
+                           :value val}))))
 
     (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
-      (process-message {:type :efp-tick
+      (process-message {:type :tick
                         :field (translate :from-ib :tick-field-code tickType)
                         :ticker-id tickerId
                         :basis-points basisPoints :formatted-basis-points formattedBasisPoints
@@ -240,18 +248,16 @@
             val (cond
                  (integer-account-value? avk) (Integer/parseInt value)
                  (numeric-account-value? avk) (Double/parseDouble value)
-                 :default value)]
+                 :else value)]
         (process-message {:type :update-account-value :key avk :value val :currency currency :account accountName})))
 
     (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
-      (prn "updatePortfolio " contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName)
       (process-message {:type :update-portfolio :contract contract :position position
                         :market-price marketPrice :market-value marketValue
                         :average-cost averageCost :unrealized-gain-loss unrealizedPNL :realized-gain-loss realizedPNL
                         :account accountName}))
 
     (updateAccountTime [this timeStamp]
-      (prn "updateAccountTime " timeStamp)
       (process-message {:type :update-account-time
                         :value (translate :from-ib :time-of-day timeStamp)}))
 
@@ -322,12 +328,12 @@
   Connection
   (disconnect [this]
     (.eDisconnect this))
-  
+
   PricingDataProvider
   (request-market-data
-    ([this id contract tick-list]
-       (let [ib-tick-list tick-list #_(map (partial translate :to-ib :tick-type) tick-list)]
-         (.reqMktData this id contract ib-tick-list false))
+    ([this id contract tick-list snapshot?]
+       (let [ib-tick-list (translate :to-ib :tick-list tick-list)]
+         (.reqMktData this id contract ib-tick-list snapshot?))
        id)
     ([this id contract]
        (.reqMktData this id contract "" false)
@@ -346,6 +352,12 @@
        (request-historical-data this id contract end duration duration-unit bar-size bar-size-unit what-to-show true))
     ([this id contract end duration duration-unit bar-size bar-size-unit]
        (request-historical-data this id contract end duration duration-unit bar-size bar-size-unit :trades true)))
+
+  (request-real-time-bars
+    [this id contract what-to-show use-regular-trading-hours?]
+     (.reqRealTimeBars this id contract 5
+                       (translate :to-ib :what-to-show what-to-show)
+                       use-regular-trading-hours?))
 
   MarketNewsProvider
   (request-news-bulletins

@@ -86,6 +86,21 @@
 
 (def ^:dynamic *client-order-id* (atom 1))
 
+(defn order
+  ([] (com.ib.client.Order.))
+  ([typ actn qty]
+     (doto (order)
+       (order-type typ)
+       (action actn)
+       (quantity qty))))
+
+(defn market-order
+  [act qty]
+  (doto (com.ib.client.Order.)
+    (order-type :market)
+    (action act)
+    (quantity qty)))
+
 (defn limit-order
   "Create a limit order.
 

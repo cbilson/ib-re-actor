@@ -5,31 +5,31 @@
             [clojure.string :as str]))
 
 (defmulti ^:dynamic translate (fn [direction table-name _] [direction table-name]))
-(defmulti ^:dynamic validate (fn [direction table-name _] [direction table-name]))
+(defmulti ^:dynamic valid? (fn [direction table-name _] [direction table-name]))
 
 (defmacro translation-table [name vals]
   (let [table-name (keyword name)]
     `(let [to-table# ~vals
            from-table# (zipmap (vals to-table#) (keys to-table#))]
 
-       (defmethod validate [:to-ib ~table-name] [_# _# val#]
+       (defmethod valid? [:to-ib ~table-name] [_# _# val#]
          (contains? to-table# val#))
 
        (defmethod translate [:to-ib ~table-name] [_# _# val#]
          (if val#
-           (if (validate :to-ib ~table-name val#)
+           (if (valid? :to-ib ~table-name val#)
              (to-table# val#)
              (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
                              {:value val#
                               :table ~table-name
                               :valid-values (keys to-table#)})))))
 
-       (defmethod validate [:from-ib ~table-name] [_# _# val#]
+       (defmethod valid? [:from-ib ~table-name] [_# _# val#]
          (contains? from-table# val#))
 
        (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
          (if val#
-           (if (validate :from-ib ~table-name val#)
+           (if (valid? :from-ib ~table-name val#)
              (from-table# val#)
              (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
                              {:value val#
@@ -220,7 +220,7 @@
                     :volume-rate 56}
                    )
 
-(translation-table tick-type
+(translation-table generic-tick-type
                    {
                     :option-volume 100                   ; :option-call-volume, :option-put-volume
                     :option-open-interest 101            ; :option-call-open-interest, :option-put-open-interest
@@ -236,6 +236,19 @@
                     :fundamental-ratios 258              ; :fundamental-ratios
                     :realtime-historical-volatility 411  ; 58?
                     })
+
+(defmethod translate [:to-ib :tick-list] [_ _ val]
+  (->> val
+       (map #(cond
+             (valid? :to-ib :tick-field-code %)
+             (translate :to-ib :tick-field-code %)
+
+             (valid? :to-ib :generic-tick-type %)
+             (translate :to-ib :generic-tick-type %)
+
+             :else %))
+       (map str)
+       (clojure.string/join ",")))
 
 (translation-table fundamental-ratio
                    {
@@ -530,25 +543,25 @@
       (catch Exception e
         (throw (ex-info "Failed to translate from IB date value."
                         {:value val
-                         :expected-forme "MM/dd/yyyy"}))))))
+                         :expected-form "MM/dd/yyyy"}))))))
 
 (defmethod translate [:from-ib :time-of-day] [_ _ val]
   (if val
     (try
-      (tf/parse (tf/formatter "hh:mm") val)
+      (tf/parse (tf/formatter "HH:mm") val)
       (catch Exception e
         (throw (ex-info "Failed to translate from IB time-of-day value."
                         {:value val
-                         :expected-forme "hh:mm"}))))))
+                         :expected-form "HH:mm"}))))))
 
 (defmethod translate [:to-ib :time-of-day] [_ _ val]
   (if val
     (try
-      (tf/unparse (tf/formatter "hh:mm") val)
+      (tf/unparse (tf/formatter "HH:mm") val)
       (catch Exception e
         (throw (ex-info "Failed to translate from IB time-of-day value."
                         {:value val
-                         :expected-forme "hh:mm"}))))))
+                         :expected-form "HH:mm"}))))))
 (defmethod translate [:to-ib :expiry] [_ _ val]
   (let [y (time/year val)
         ys (.toString y)
