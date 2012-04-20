@@ -290,13 +290,161 @@
 
 (translation-table account-value-key
                    {
+                    :account-code "AccountCode"
+                    :account-ready "AccountReady"
+                    :account-type "AccountType"
+                    :accrued-cash "AccruedCash"
+                    :accrued-cash-c "AccruedCash-C"
+                    :accrued-dividend "AccruedDividend"
+                    :accrued-dividend-c "AccruedDividend-C"
+                    :accrued-dividend-s "AccruedDividend-S"
+                    :accrued-cash-s "AccruedCash-S"
+                    :available-funds "AvailableFunds"
+                    :available-funds-c "AvailableFunds-C"
+                    :available-funds-s "AvailableFunds-S"
+                    :billable "Billable"
+                    :billable-c "Billable-C"
+                    :billable-s "Billable-S"
+                    :buying-power "BuyingPower"
                     :cash-balance "CashBalance"
+                    :corporate-bond-value "CorporateBondValue"
+                    :currency "Currency"
+                    :cushion "Cushion"
                     :day-trades-remaining "DayTradesRemaining"
+                    :day-trades-remaining-T+1 "DayTradesRemainingT+1"
+                    :day-trades-remaining-T+2 "DayTradesRemainingT+2"
+                    :day-trades-remaining-T+3 "DayTradesRemainingT+3"
+                    :day-trades-remaining-T+4 "DayTradesRemainingT+4"
                     :equity-with-loan-value "EquityWithLoanValue"
-                    :initial-margin-required "InitMarginReq"
-                    :maintenance-margin-required "MaintMarginReq"
+                    :equity-with-loan-value-c "EquityWithLoanValue-C"
+                    :equity-with-loan-value-s "EquityWithLoanValue-S"
+                    :excess-liquidity "ExcessLiquidity"
+                    :excess-liquidity-c "ExcessLiquidity-C"
+                    :excess-liquidity-s "ExcessLiquidity-S"
+                    :exchange-rate "ExchangeRate"
+                    :full-available-funds "FullAvailableFunds"
+                    :full-available-funds-C "FullAvailableFunds-C"
+                    :full-available-funds-S "FullAvailableFunds-S"
+                    :full-excess-liquidity "FullExcessLiquidity"
+                    :full-excess-liquidity-C "FullExcessLiquidity-C"
+                    :full-excess-liquidity-S "FullExcessLiquidity-S"
+                    :full-initial-margin-requirement "FullInitMarginReq"
+                    :full-initial-margin-requirement-C "FullInitMarginReq-C"
+                    :full-initial-margin-requirement-S "FullInitMarginReq-S"
+                    :full-maintenance-margin-requirement "FullMaintMarginReq"
+                    :full-maintenance-margin-requirement-C "FullMaintMarginReq-C"
+                    :full-maintenance-margin-requirement-S "FullMaintMarginReq-S"
+                    :fund-value "FundValue"
+                    :future-option-value "FutureOptionValue"
+                    :futures-profit-loss "FuturesPNL"
+                    :fx-cash-balance "FxCashBalance"
+                    :gross-position-value "GrossPositionValue"
                     :net-liquidation "NetLiquidation"
+                    :gross-position-value-S "GrossPositionValue-S"
+                    :indian-stock-haircut "IndianStockHaircut"
+                    :indian-stock-haircut-C "IndianStockHaircut-C"
+                    :indian-stock-haircut-S "IndianStockHaircut-S"
+                    :initial-margin-requirement "InitMarginReq"
+                    :initial-margin-requirement-C "InitMarginReq-C"
+                    :initial-margin-requirement-S "InitMarginReq-S"
+                    :leverage-S "Leverage-S"
+                    :look-ahead-available-funds "LookAheadAvailableFunds"
+                    :look-ahead-available-funds-C "LookAheadAvailableFunds-C"
+                    :look-ahead-available-funds-S "LookAheadAvailableFunds-S"
+                    :look-ahead-excess-liquidity "LookAheadExcessLiquidity"
+                    :look-ahead-excess-liquidity-C "LookAheadExcessLiquidity-C"
+                    :look-ahead-excess-liquidity-S "LookAheadExcessLiquidity-S"
+                    :look-ahead-initial-margin-requirement "LookAheadInitMarginReq"
+                    :look-ahead-initial-margin-requirement-C "LookAheadInitMarginReq-C"
+                    :look-ahead-initial-margin-requirement-S "LookAheadInitMarginReq-S"
+                    :look-ahead-maintenance-margin-requirement "LookAheadMaintMarginReq"
+                    :look-ahead-maintenance-margin-requirement-C "LookAheadMaintMarginReq-C"
+                    :look-ahead-maintenance-margin-requirement-S "LookAheadMaintMarginReq-S"
+                    :look-ahead-next-change "LookAheadNextChange"
+                    :maintenance-margin-requirement "MaintMarginReq"
+                    :maintenance-margin-requirement-C "MaintMarginReq-C"
+                    :maintenance-margin-requirement-S "MaintMarginReq-S"
+                    :money-market-fund-value "MoneyMarketFundValue"
+                    :mutual-fund-value "MutualFundValue"
+                    :net-dividend "NetDividend"
+                    :net-liquidation-C "NetLiquidation-C"
+                    :net-liquidation-S "NetLiquidation-S"
+                    :net-liquidation-by-currency "NetLiquidationByCurrency"
+                    :option-market-value "OptionMarketValue"
+                    :pa-shares-value "PASharesValue"
+                    :pa-shares-value-C "PASharesValue-C"
+                    :pa-shares-value-S "PASharesValue-S"
+                    :profit-loss "PNL"
+                    :previous-day-equity-with-loan-value "PreviousDayEquityWithLoanValue"
+                    :previous-day-equity-with-loan-value-S "PreviousDayEquityWithLoanValue-S"
+                    :realized-profit-loss "RealizedPnL"
+                    :regulation-T-equity "RegTEquity"
+                    :regulation-T-equity-S "RegTEquity-S"
+                    :regulation-T-margin "RegTMargin"
+                    :regulation-T-margin-S "RegTMargin-S"
+                    :sma "SMA"
+                    :sma-s "SMA-S"
+                    :stock-market-value "StockMarketValue"
+                    :t-bill-value "TBillValue"
+                    :t-bond-value "TBondValue"
+                    :total-cash-balance "TotalCashBalance"
+                    :total-cash-value "TotalCashValue"
+                    :total-cash-value-C "TotalCashValue-C"
+                    :total-cash-value-S "TotalCashValue-S"
+                    :trading-type-s "TradingType-S"
+                    :unaltered-initial-margin-requirement "UnalteredInitMarginReq"
+                    :unaltered-maintenance-margin-requirement "UnalteredMaintMarginReq"
+                    :unrealized-profit-loss "UnrealizedPnL"
+                    :warrants-value "WarrantValue"
+                    :what-if-portfolio-margin-enabled "WhatIfPMEnabled"
                     })
+
+(defn numeric-account-value? [key]
+  (contains? #{:accrued-cash :accrued-cash-c :accrued-cash-s
+               :accrued-dividend :accrued-dividend-c :accrued-dividend-s
+               :available-funds :available-funds-c :available-funds-s
+               :billable :billable-c :billable-s
+               :buying-power :cash-balance :corporate-bond-value :cushion
+               :equity-with-loan-value :equity-with-loan-value-c :equity-with-loan-value-s
+               :excess-liquidity :excess-liquidity-c :excess-liquidity-s
+               :exchange-rate
+               :full-available-funds :full-available-funds-c :full-available-funds-s
+               :full-excess-liquidity :full-excess-liquidity-c :full-excess-liquidity-s
+               :full-initial-margin-requirement :full-initial-margin-requirement-c :full-initial-margin-requirement-s
+               :full-maintenance-margin-requirement :full-maintenance-margin-requirement-c :full-maintenance-margin-requirement-s
+               :fund-value :future-option-value :futures-profit-loss :fx-cash-balance
+               :gross-position-value :gross-position-values-c :gross-position-value-s
+               :indian-stock-haricut :indian-stock-haricut-c :indian-stock-haricut-s
+               :initial-margin-requirement :initial-margin-requirement-c :initial-margin-requirement-s
+               :leverage :leverage-c :leverage-s
+               :look-ahead-available-funds :look-ahead-available-funds-c :look-ahead-available-funds-s
+               :look-ahead-excess-liquidity :look-ahead-excess-liquidity-c :look-ahead-excess-liquidity-s
+               :look-ahead-initial-margin-requirement :look-ahead-initial-margin-requirement-c :look-ahead-initial-margin-requirement-s
+               :look-ahead-maintenance-margin-requirement :look-ahead-maintenance-margin-requirement-c :look-ahead-maintenance-margin-requirement-s
+               :look-ahead-next-change
+               :maintenance-margin-required :maintenance-margin-required-c :maintenance-margin-required-s
+               :money-market-fund-value :mutual-fund-value :net-dividend
+               :net-liquidation :net-liquidation-c :net-liquidation-s
+               :net-liquidation-by-currency :option-market-value
+               :pa-shares-value :pa-shares-value-c :pa-shares-value-s
+               :previous-day-equity-with-loan-value :previous-day-equity-with-loan-value-c :previous-day-equity-with-loan-value-s
+               :realized-profit-loss
+               :regulation-T-equity :regulation-T-equity-c :regulation-T-equity-s
+               :regulation-T-margin :regulation-T-margin-c :regulation-T-margin-s
+               :sma :sma-c :sma-s
+               :stock-market-value :t-bill-value :t-bond-value :total-cash-balance
+               :total-cash-value :total-cash-value-c :total-cash-value-s
+               :unaltered-initial-margin-requirement :unaltered-maintenance-margin-requirement
+               :unrealized-profit-loss :warrants-value               
+               } key))
+
+(defn integer-account-value? [key]
+  (contains? #{:day-trades-remaining :day-trades-remaining-T+1 :day-trades-remaining-T+2
+               :day-trades-remaining-T+3 :day-trades-remaining-T+4
+               } key))
+
+(defn boolean-account-value? [key]
+  (contains? #{:account-ready :profit-loss :what-if-portfolio-margin-enabled} key))
 
 (translation-table market-depth-row-operation
                    {
@@ -384,6 +532,23 @@
                         {:value val
                          :expected-forme "MM/dd/yyyy"}))))))
 
+(defmethod translate [:from-ib :time-of-day] [_ _ val]
+  (if val
+    (try
+      (tf/parse (tf/formatter "hh:mm") val)
+      (catch Exception e
+        (throw (ex-info "Failed to translate from IB time-of-day value."
+                        {:value val
+                         :expected-forme "hh:mm"}))))))
+
+(defmethod translate [:to-ib :time-of-day] [_ _ val]
+  (if val
+    (try
+      (tf/unparse (tf/formatter "hh:mm") val)
+      (catch Exception e
+        (throw (ex-info "Failed to translate from IB time-of-day value."
+                        {:value val
+                         :expected-forme "hh:mm"}))))))
 (defmethod translate [:to-ib :expiry] [_ _ val]
   (let [y (time/year val)
         ys (.toString y)

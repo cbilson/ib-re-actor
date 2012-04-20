@@ -1,6 +1,6 @@
 (ns ib-re-actor.gateway
   "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
-  (:use [ib-re-actor.translation :only [translate]])
+  (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value?]])
   (:require [ib-re-actor.execution-filter :as exf]
             [clojure.xml :as xml]))
 
@@ -93,7 +93,7 @@
   (request-executions [this client-id]))
 
 (defprotocol AccountDataProvider
-  (request-account-updates [this]))
+  (request-account-updates [this subscribe account-code]))
 
 (defprotocol Connection
   (disconnect
@@ -151,7 +151,7 @@
         (process-message {:type :price-bar :request-id requestId
                           :time (translate :from-ib :date-time date)
                           :open open :high high :low low :close close :volume volume
-                          :count count :WAP wap :has-gaps? hasGaps})))
+                          :trade-count count :WAP wap :has-gaps? hasGaps})))
 
     (realtimeBar [this requestId time open high low close volume wap count]
       (process-message {:type :price-bar :request-id requestId
@@ -236,24 +236,24 @@
       (process-message {:type :next-valid-order-id :value orderId}))
 
     (updateAccountValue [this key value currency accountName]
-      (let [account-value-key (translate :from-ib :account-value-key key)]
-        (if (= account-value-key :day-trades-remaining)
-          (process-message {:type :update-account-day-trades-remaining
-                            :value (Integer/parseInt value)
-                            :account accountName})
-          (process-message {:type :update-account-value :key account-value-key
-                            :value (Double/parseDouble value) :currency currency
-                            :account accountName}))))
+      (let [avk (translate :from-ib :account-value-key key)
+            val (cond
+                 (integer-account-value? avk) (Integer/parseInt value)
+                 (numeric-account-value? avk) (Double/parseDouble value)
+                 :default value)]
+        (process-message {:type :update-account-value :key avk :value val :currency currency :account accountName})))
 
     (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
+      (prn "updatePortfolio " contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName)
       (process-message {:type :update-portfolio :contract contract :position position
                         :market-price marketPrice :market-value marketValue
                         :average-cost averageCost :unrealized-gain-loss unrealizedPNL :realized-gain-loss realizedPNL
                         :account accountName}))
 
     (updateAccountTime [this timeStamp]
+      (prn "updateAccountTime " timeStamp)
       (process-message {:type :update-account-time
-                        :value (translate :from-ib :date-time timeStamp)}))
+                        :value (translate :from-ib :time-of-day timeStamp)}))
 
     (contractDetails [this requestId contractDetails]
       (process-message {:type :contract-details :request-id requestId
@@ -375,7 +375,7 @@
   OrderManager
   (place-order
     [this order-id contract order]
-    (.placeOrder this order-id))
+    (.placeOrder this order-id contract order))
 
   (cancel-order
     [this order-id]
@@ -391,8 +391,8 @@
 
   AccountDataProvider
   (request-account-updates
-    [this]
-    (.reqAccountUpdates this)))
+    [this subscribe account-code]
+    (.reqAccountUpdates this subscribe account-code)))
 
 (defn connect
   "This function must be called before any other. There is no feedback
@@ -409,7 +409,7 @@
    be made per client-id at a time."
   ([handler-fn] (connect handler-fn "localhost" 7496))
   ([handler-fn client-id] (connect handler-fn "localhost" 7496 client-id))
-  ([handler-fn host port] (connect handler-fn host port 1))
+  ([handler-fn host port] (connect handler-fn host port (.. (java.util.Random.) nextInt)))
   ([handler-fn host port client-id]
      (let [wrapper (create-wrapper handler-fn)
            connection (com.ib.client.EClientSocket. wrapper)]
@@ -422,3 +422,18 @@
        ~@body
        (finally
         (disconnect ~(bindings 0))))))
+
+(defn collect-messages [start end action]
+  (let [req-id (.. (java.util.Random.) nextInt)
+        results (promise)
+        accum (atom [])
+        handler (fn [{:keys [type request-id] :as msg}]
+                  (prn "Raw: " msg)
+                  (if (= req-id request-id)
+                    (cond
+                     (= type start) (swap! accum conj msg)
+                     (= type end) (deliver results @accum)
+                     (= type :error) (if (error? msg) (deliver results msg)))))
+        connection (connect handler)]
+    (action connection req-id)
+    @results))
