@@ -1,6 +1,6 @@
 (ns ib-re-actor.examples.tick-recorder
-  (:use [ib-re-actor.connection]
-        [ib-re-actor.contracts]
+  (:use [ib-re-actor.contract]
+        [ib-re-actor.gateway]
         [clj-time.core :only [date-time minus now]]
         [clj-time.coerce :only [to-long]]
         [clojure.java.io]))
@@ -42,11 +42,7 @@
    33 (equity "IWO" "ARCA")
    })
 
-(def done (atom nil))
-
-(defn count-down [latch]
-  (.countDown latch)
-  latch)
+(def done (promise))
 
 (def log-agent (agent *out*))
 
@@ -66,62 +62,38 @@
 
 (defmulti message-handler :type)
 
-(defmethod message-handler :error [msg]
-  (let [req (if (contains? msg :request-id)
-              (.toString (:request-id msg))
-              "???")]
+(defmethod message-handler :error [{:keys [request-id message exception] :as msg}]
+  (let [req (or request-id "???")]
     (cond
-     (contains? msg :message) (send-off error-agent log-error (str "*** [" req "] " (:message msg) "\n"))
-     (contains? msg :exception) (send-off error-agent log-error (str "*** [" req "] " (.toString (:exception msg)) "\n")))
+     (contains? msg :message) (send-off error-agent log-error (str "*** [" req "] " message "\n"))
+     (contains? msg :exception) (send-off error-agent log-error (str "*** [" req "] " (.toString exception) "\n")))
     (if (not (warning? msg))
       (do
         (await error-agent log-agent)
-        #_(swap! done count-down)))))
+        (deliver done)))))
 
-(defmethod message-handler :price-tick [msg]
-  (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:price msg)))
+(defmethod message-handler :price-tick [{:keys [ticker-id field price]}]
+  (send-off log-agent log-tick (now) ticker-id field price))
 
-(defmethod message-handler :size-tick [msg]
-  (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:size msg)))
+(defmethod message-handler :size-tick [{:keys [ticker-id field size]}]
+  (send-off log-agent log-tick (now) ticker-id field size))
 
-(defmethod message-handler :string-tick [msg]
-  (send-off log-agent log-tick (now) (:ticker-id msg) (:field msg) (:value msg)))
+(defmethod message-handler :string-tick [{:keys [ticker-id field value]}]
+  (send-off log-agent log-tick (now) ticker-id field value))
 
 (defmethod message-handler :default [msg]
   (send-off error-agent log-error (str "??? unhandled message: " (prn-str msg))))
 
-(defn not-nil? [x]
-  (not (nil? x)))
-
 (defn agent-errs []
-  (filter not-nil? (map agent-errors [log-agent])))
-
-(defn print-ticks []
-  (let [connection (connect prn "localhost" 7496 2)]
-    (try
-      (doseq [[ticker-id contract] contracts]
-        (request-market-data connection ticker-id contract))
-      (Thread/sleep 60000)
-      (finally
-       (disconnect connection)))))
+  (filter identity (map agent-errors [log-agent])))
 
 (defn record-ticks []
   (with-open [log-writer (writer (file "ticks.csv") :append false)
               error-writer (writer (file "errors.log") :append false)]
     (send-off log-agent (fn [_] log-writer))
     (send-off error-agent (fn [_] error-writer))
-    (let [connection (connect message-handler "localhost" 7496 2)]
-      (reset! done (java.util.concurrent.CountDownLatch. 1))
-      (try
-        (doseq [[ticker-id contract] contracts]
-          (request-market-data connection ticker-id contract))
-        (println "recording...")
-        (.await @done)
-        (println "done!")
-        (let [errors (agent-errs)]
-          (if (empty? errors)
-            (Thread/sleep 250)
-            (doseq [error errors]
-              (println "*** Error: " error))))
-        (finally
-         (disconnect connection))))))
+    (with-open-connection [connection (connect message-handler)]
+      (doseq [[ticker-id contract] contracts]
+        (request-market-data connection ticker-id contract))
+      @done)))
+
