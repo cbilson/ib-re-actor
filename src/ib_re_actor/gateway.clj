@@ -1,8 +1,11 @@
 (ns ib-re-actor.gateway
   "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
-  (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value?]])
+  (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]])
   (:require [ib-re-actor.execution-filter :as exf]
             [clojure.xml :as xml]))
+
+(def ^:dynamic *client-id* 100)
+(def ^:dynamic *order-id* (atom 0))
 
 (defprotocol PricingDataProvider
   (request-market-data
@@ -66,11 +69,11 @@
 
 (defprotocol MarketNewsProvider
   (request-news-bulletins
+    [this]
+    [this all-messages?]
     "Call this function to start receiving news bulletins. Each bulletin will
    be sent in a :news-bulletin, :exchange-unavailable, or :exchange-available
-   message."
-    [this]
-    [this all-messages?])
+   message.")
 
   (cancel-news-bulletins
     [this]
@@ -91,13 +94,13 @@
     [this request-id contract]))
 
 (defprotocol OrderManager
-  (place-order [this order-id contract order])
+  (place-order [this contract order] [this order-id contract order])
   (cancel-order [this order-id])
   (request-open-orders [this])
-  (request-executions [this client-id]))
+  (request-executions [this] [this client-id]))
 
 (defprotocol AccountDataProvider
-  (request-account-updates [this subscribe account-code]))
+  (request-account-updates [this subscribe? account-code]))
 
 (defprotocol Connection
   (disconnect
@@ -241,6 +244,8 @@
       (process-message {:type :open-order-end}))
 
     (nextValidId [this orderId]
+      (dosync
+       (reset! *order-id* orderId))
       (process-message {:type :next-valid-order-id :value orderId}))
 
     (updateAccountValue [this key value currency accountName]
@@ -248,6 +253,7 @@
             val (cond
                  (integer-account-value? avk) (Integer/parseInt value)
                  (numeric-account-value? avk) (Double/parseDouble value)
+                 (boolean-account-value? avk) (Boolean/parseBoolean value)
                  :else value)]
         (process-message {:type :update-account-value :key avk :value val :currency currency :account accountName})))
 
@@ -355,14 +361,14 @@
 
   (request-real-time-bars
     [this id contract what-to-show use-regular-trading-hours?]
-     (.reqRealTimeBars this id contract 5
-                       (translate :to-ib :what-to-show what-to-show)
-                       use-regular-trading-hours?))
+    (.reqRealTimeBars this id contract 5
+                      (translate :to-ib :what-to-show what-to-show)
+                      use-regular-trading-hours?))
 
   MarketNewsProvider
   (request-news-bulletins
     ([this]
-       (.request-news-bulletins this true))
+       (.reqNewsBulletins this true))
     ([this all-messages?]
        (.reqNewsBulletins this all-messages?)))
 
@@ -386,8 +392,10 @@
 
   OrderManager
   (place-order
-    [this order-id contract order]
-    (.placeOrder this order-id contract order))
+    ([this contract order]
+       (.placeOrder this @*order-id* order))
+    ([this order-id contract order]
+       (.placeOrder this order-id contract order)))
 
   (cancel-order
     [this order-id]
@@ -398,13 +406,15 @@
     (.reqOpenOrders this))
 
   (request-executions
-    [this client-id]
-    (.reqExecutions this (exf/execution-filter client-id)))
+    ([this]
+       (.reqExecutions this nil))
+    ([this client-id]
+       (.reqExecutions this (exf/execution-filter client-id))))
 
   AccountDataProvider
   (request-account-updates
-    [this subscribe account-code]
-    (.reqAccountUpdates this subscribe account-code)))
+    [this subscribe? account-code]
+    (.reqAccountUpdates this subscribe? account-code)))
 
 (defn connect
   "This function must be called before any other. There is no feedback
@@ -421,7 +431,7 @@
    be made per client-id at a time."
   ([handler-fn] (connect handler-fn "localhost" 7496))
   ([handler-fn client-id] (connect handler-fn "localhost" 7496 client-id))
-  ([handler-fn host port] (connect handler-fn host port (.. (java.util.Random.) nextInt)))
+  ([handler-fn host port] (connect handler-fn host port *client-id*))
   ([handler-fn host port client-id]
      (let [wrapper (create-wrapper handler-fn)
            connection (com.ib.client.EClientSocket. wrapper)]

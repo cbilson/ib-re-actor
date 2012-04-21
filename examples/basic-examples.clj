@@ -132,18 +132,6 @@
 (defn get-current-price []
   (sync/get-current-price nasdaq-future))
 
-(defn get-open-orders []
-  (let [results (promise)
-        orders (atom [])
-        handler  (fn [{:keys [type] :as msg}]
-                   (prn msg)
-                   (case type
-                     :open-order (swap! orders conj msg)
-                     :open-order-end (deliver results @orders)
-                     :error (if (error? msg) (deliver results msg))
-                     nil))]
-    (with-open-connection [c (connect handler)]
-      @results)))
 
 (defn get-account-update []
   (let [results (promise)

@@ -145,3 +145,11 @@
        (underlying-symbol underlying-symbol-val)
        (exchange exchange-val)
        (currency currency-val))))
+
+(defn fx
+  ([base other]
+     (doto (contract)
+       (security-type :cash)
+       (exchange "IDEALPRO")
+       (currency base)
+       (underlying-symbol other))))

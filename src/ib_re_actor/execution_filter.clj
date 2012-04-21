@@ -34,6 +34,8 @@
     [side m_side :translation :order-action]))
 
 (defn execution-filter
+  ([]
+     (com.ib.client.ExecutionFilter.))
   ([client-id-val]
      (execution-filter client-id-val nil nil nil))
   ([client-id-val account-code-val order-time-val symbol-val]
