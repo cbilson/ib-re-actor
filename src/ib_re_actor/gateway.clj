@@ -407,7 +407,7 @@
   OrderManager
   (place-order
     ([this contract order]
-       (.placeOrder this @*next-order-id* order))
+       (place-order this @*next-order-id* contract order))
     ([this order-id contract order]
        (.placeOrder this order-id contract order)))
 
