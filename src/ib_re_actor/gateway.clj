@@ -6,6 +6,7 @@
 
 (def ^:dynamic *client-id* 100)
 (def ^:dynamic *next-order-id* (atom 0))
+(def ^:dynamic *next-request-id* (atom 0))
 
 (defprotocol PricingDataProvider
   (request-market-data
@@ -82,6 +83,7 @@
 (defprotocol SecurityDataProvider
   (request-fundamental-data
     [this request-id contract report-type]
+    [this contract report-type]
     "Call this function to receive Reuters global fundamental data. There must be a
    subscription to Reuters Fundamental set up in Account Management before you
    can receive this data.")
@@ -91,7 +93,8 @@
     [this request-id])
 
   (request-contract-details
-    [this request-id contract]))
+    [this request-id contract]
+    [this contract]))
 
 (defprotocol OrderManager
   (place-order [this contract order] [this order-id contract order])
