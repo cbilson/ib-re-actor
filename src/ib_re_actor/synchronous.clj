@@ -27,12 +27,9 @@
          (g/request-contract-details connection contract)
          @results))))
 
-(defn execute-order [contract ord-typ act qty outside-rth?]
+(defn execute-order [contract order]
   "Place a market order, wait for it to finish and report on progress."
-  (let [order (doto (o/order ord-typ act qty)
-                (o/outside-regular-trading-hours? outside-rth?)
-                (o/transmit? true))
-        result (promise)
+  (let [result (promise)
         report (atom {:progress []})
         add-progress (fn [{progress :progress :as report} msg]
                        (assoc report :progress (conj progress msg)))
