@@ -9,24 +9,22 @@
      (lookup-security 1 contract))
   ([client-id contract]
      (let [results (promise)
-           this-request-id (.. (java.util.Random.) nextInt)
            acc (atom [])
-           handler (fn [{:keys [request-id type value] :as msg}]
-                     (if (= this-request-id request-id)
-                       (condp = type
-                         :contract-details
-                         (swap! acc conj value)
+           handler (fn [{:keys [ type value] :as msg}]
+                     (condp = type
+                       :contract-details
+                       (swap! acc conj value)
 
-                         :contract-details-end
-                         (deliver results @acc)
+                       :contract-details-end
+                       (deliver results @acc)
 
-                         :error
-                         (if (g/error? msg)
-                           (deliver results msg))
+                       :error
+                       (if (g/error? msg)
+                         (deliver results msg))
 
-                         nil)))]
+                       nil))]
        (g/with-open-connection [connection (g/connect handler client-id)]
-         (g/request-contract-details connection this-request-id contract)
+         (g/request-contract-details connection contract)
          @results))))
 
 (defn execute-order [contract ord-typ act qty outside-rth?]
@@ -58,7 +56,6 @@
 (defn get-current-price [contract]
   (let [results (promise)
         snapshot (atom {})
-        id (.. (java.util.Random.) nextInt)
         handler  (fn [{:keys [type field value] :as msg}]
                    (case type
                      :tick (swap! snapshot assoc field value)
@@ -66,7 +63,7 @@
                      :error (if (g/error? msg) (deliver results msg))
                      nil))]
     (g/with-open-connection [c (g/connect handler)]
-      (g/request-market-data c id contract [] true)
+      (g/request-market-data c 1 contract [] true)
       @results)))
 
 (defn get-open-orders []
