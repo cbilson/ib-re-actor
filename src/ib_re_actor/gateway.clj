@@ -5,7 +5,7 @@
             [clojure.xml :as xml]))
 
 (def ^:dynamic *client-id* 100)
-(def ^:dynamic *order-id* (atom 0))
+(def ^:dynamic *next-order-id* (atom 0))
 
 (defprotocol PricingDataProvider
   (request-market-data
@@ -245,7 +245,7 @@
 
     (nextValidId [this orderId]
       (dosync
-       (reset! *order-id* orderId))
+       (reset! *next-order-id* orderId))
       (process-message {:type :next-valid-order-id :value orderId}))
 
     (updateAccountValue [this key value currency accountName]
@@ -378,22 +378,28 @@
 
   SecurityDataProvider
   (request-fundamental-data
-    [this request-id contract report-type]
-    (.reqFundamentalData this request-id contract
-                         (translate :to-ib :report-type report-type)))
+    ([this contract report-type]
+       (.reqFundamentalData this (swap! *next-request-id* inc) contract
+                            (translate :to-ib :report-type report-type)))
+    ([this request-id contract report-type]
+       (.reqFundamentalData this request-id contract
+                            (translate :to-ib :report-type report-type))))
 
   (cancel-fundamental-data
     [this request-id]
     (.cancelFundamentalData this request-id))
 
   (request-contract-details
-    [this request-id contract]
-    (.reqContractDetails this request-id contract))
+    ([this contract]
+       (request-contract-details this (swap! *next-request-id* inc) contract))
+    ([this request-id contract]
+       (.reqContractDetails this request-id contract)
+       request-id))
 
   OrderManager
   (place-order
     ([this contract order]
-       (.placeOrder this @*order-id* order))
+       (.placeOrder this @*next-order-id* order))
     ([this order-id contract order]
        (.placeOrder this order-id contract order)))
 
