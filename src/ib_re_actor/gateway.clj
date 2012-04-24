@@ -7,6 +7,7 @@
 (def ^:dynamic *client-id* 100)
 (def ^:dynamic *next-order-id* (atom 0))
 (def ^:dynamic *next-request-id* (atom 0))
+(def ^:dynamic *default-server-log-level* :error)
 
 (defprotocol PricingDataProvider
   (request-market-data
@@ -109,7 +110,9 @@
   (disconnect
     [this]
     "Call this function to terminate the connections with TWS.
-   Calling this function does not cancel orders that have already been sent."))
+   Calling this function does not cancel orders that have already been sent.")
+  (set-server-log-level [this log-level]
+    "Call this function to set the log level used on the server."))
 
 (defn- is-finish? [date-string]
   (.startsWith date-string "finished"))
@@ -337,6 +340,8 @@
   Connection
   (disconnect [this]
     (.eDisconnect this))
+  (set-server-log-level [this level]
+    (.setServerLogLevel this (translate :to-ib :log-level level)))
 
   PricingDataProvider
   (request-market-data
@@ -444,8 +449,10 @@
   ([handler-fn host port client-id]
      (let [wrapper (create-wrapper handler-fn)
            connection (com.ib.client.EClientSocket. wrapper)]
-       (doto connection
-         (.eConnect host port client-id)))))
+       (.eConnect connection host port client-id)
+       (if (not= *default-server-log-level* :error)
+         (set-server-log-level connection *default-server-log-level*))
+       connection)))
 
 (defmacro with-open-connection [bindings & body]
   `(let ~(subvec bindings 0 2)

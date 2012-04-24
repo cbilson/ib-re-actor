@@ -237,6 +237,13 @@
                     :realtime-historical-volatility 411  ; 58?
                     })
 
+(translation-table log-level
+                   {:system 1
+                    :error 2
+                    :warning 3
+                    :informational 4
+                    :detail 5})
+
 (defmethod translate [:to-ib :tick-list] [_ _ val]
   (->> val
        (map #(cond
