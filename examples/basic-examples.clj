@@ -125,13 +125,10 @@
         [ib-re-actor.gateway]
         [clj-time.core :only [date-time]]))
 
-(def nasdaq-future (doto (futures-contract)
-                   (local-symbol "NQM2")
-                   (exchange "GLOBEX")))
+(def nasdaq-future (doto (futures-contract "NQM2" "GLOBEX")))
 
 (defn get-current-price []
   (sync/get-current-price nasdaq-future))
-
 
 (defn get-account-update []
   (let [results (promise)
@@ -147,17 +144,7 @@
       @results)))
 
 (defn get-portfolio []
-  (let [results (promise)
-        positions (atom #{})
-        handler  (fn [{:keys [type] :as msg}]
-                   (case type
-                     :update-portfolio (swap! positions conj msg)
-                     :update-account-time (deliver results @positions)
-                     :error (if (error? msg) (deliver results msg))
-                     nil))]
-    (with-open-connection [c (connect handler)]
-      (request-account-updates c true nil)
-      @results)))
+  (sync/get-portfolio))
 
 (defn cancel-all-orders [connection]
   (let [done-with-orders (promise)
@@ -178,7 +165,18 @@
                                   first
                                   ib-re-actor.contract-details/summary)]
         (println "*** closing " position "x" (local-symbol resolved-contract))
-        (sync/execute-order resolved-contract (if (> 0 position) :buy :sell) position )))))
+        (let [ord (order :market (if (> 0 position) :buy :sell) position)]
+          (sync/execute-order resolved-contract ord))))))
 
-
+(defn open-order [contract order]
+  (let [result (promise)
+        handler (fn [{:keys [type field value status] :as msg}]
+                  (case type
+                    :open-order (swap! result msg)
+                    :error (if (error? msg)
+                             (deliver result false))
+                    nil))]
+    (with-open-connection [conn (connect handler)]
+      (place-order conn contract order)
+      @result)))
 
