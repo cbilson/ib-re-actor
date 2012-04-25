@@ -112,7 +112,11 @@
     "Call this function to terminate the connections with TWS.
    Calling this function does not cancel orders that have already been sent.")
   (set-server-log-level [this log-level]
-    "Call this function to set the log level used on the server."))
+    "Call this function to set the log level used on the server.")
+  (request-current-time [this])
+  (is-connected? [this])
+  (connection-time [this])
+  (server-version [this]))
 
 (defn- is-finish? [date-string]
   (.startsWith date-string "finished"))
@@ -342,6 +346,15 @@
     (.eDisconnect this))
   (set-server-log-level [this level]
     (.setServerLogLevel this (translate :to-ib :log-level level)))
+  (request-current-time [this]
+    (.requestCurrentTime this))
+  (is-connected? [this]
+    (.isConnected this))
+  (connection-time [this]
+    (->> (.TwsConnectionTime this)
+         (translate :from-ib :connection-time)))
+  (server-version [this]
+    (.serverVersion this))
 
   PricingDataProvider
   (request-market-data
