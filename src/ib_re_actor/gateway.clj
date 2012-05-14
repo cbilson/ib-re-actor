@@ -356,7 +356,8 @@
 (extend-type com.ib.client.EClientSocket
   Connection
   (disconnect [this]
-    (.eDisconnect this))
+    (.eDisconnect this)
+    nil)
   (set-server-log-level [this level]
     (.setServerLogLevel this (translate :to-ib :log-level level)))
   (request-current-time [this]
