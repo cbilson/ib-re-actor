@@ -276,6 +276,9 @@
                  :else value)]
         (process-message {:type :update-account-value :key avk :value val :currency currency :account accountName})))
 
+    (accountDownloadEnd [this account-code]
+      (process-message {:type :account-download-end :account-code account-code}))
+
     (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
       (process-message {:type :update-portfolio :contract contract :position position
                         :market-price marketPrice :market-value marketValue
