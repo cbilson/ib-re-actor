@@ -9,6 +9,12 @@
 (def ^:dynamic *next-request-id* (atom 0))
 (def ^:dynamic *default-server-log-level* :error)
 
+(defn get-order-id []
+  (swap! *next-order-id* inc))
+
+(defn get-request-id []
+  (swap! *next-request-id* inc))
+
 (defprotocol PricingDataProvider
   (request-market-data
     [this id contract tick-list snapshot?]
@@ -400,7 +406,7 @@
   SecurityDataProvider
   (request-fundamental-data
     ([this contract report-type]
-       (.reqFundamentalData this (swap! *next-request-id* inc) contract
+       (.reqFundamentalData this (get-request-id) contract
                             (translate :to-ib :report-type report-type)))
     ([this request-id contract report-type]
        (.reqFundamentalData this request-id contract
@@ -412,7 +418,7 @@
 
   (request-contract-details
     ([this contract]
-       (request-contract-details this (swap! *next-request-id* inc) contract))
+       (request-contract-details this (get-request-id) contract))
     ([this request-id contract]
        (.reqContractDetails this request-id contract)
        request-id))
@@ -420,7 +426,7 @@
   OrderManager
   (place-order
     ([this contract order]
-       (place-order this @*next-order-id* contract order))
+       (place-order this (get-order-id) contract order))
     ([this order-id contract order]
        (.placeOrder this order-id contract order)))
 
