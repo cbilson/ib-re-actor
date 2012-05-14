@@ -247,14 +247,17 @@
       (process-message {:type :current-time :value (translate :from-ib :date-time time)}))
 
     (orderStatus [this orderId status filled remaining avgFillPrice permId parentId lastFillPrice clientId whyHeld]
-      (process-message {:type :order-status :order-id orderId :status (translate :from-ib :order-status status)
-                        :filled filled :remaining remaining :average-fill-price avgFillPrice
+      (process-message {:type :order-status :order-id orderId
+                        :status (translate :from-ib :order-status status)
+                        :filled filled :remaining remaining
+                        :average-fill-price avgFillPrice
                         :permanent-id permId :parent-id parentId
                         :last-fill-price lastFillPrice :client-id clientId
                         :why-held whyHeld}))
 
     (openOrder [this orderId contract order orderState]
-      (process-message {:type :open-order :order-id orderId :contract contract :order order :order-state orderState}))
+      (process-message {:type :open-order :order-id orderId :contract contract
+                        :order order :order-state orderState}))
 
     (openOrderEnd [this]
       (process-message {:type :open-order-end}))
@@ -276,7 +279,8 @@
     (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
       (process-message {:type :update-portfolio :contract contract :position position
                         :market-price marketPrice :market-value marketValue
-                        :average-cost averageCost :unrealized-gain-loss unrealizedPNL :realized-gain-loss realizedPNL
+                        :average-cost averageCost :unrealized-gain-loss unrealizedPNL
+                        :realized-gain-loss realizedPNL
                         :account accountName}))
 
     (updateAccountTime [this timeStamp]
