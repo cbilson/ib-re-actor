@@ -110,8 +110,13 @@
              (or (local-symbol contract) (underlying-symbol contract))
              (exchange contract)))
 
-(defn contract []
-  (com.ib.client.Contract.))
+(defn contract
+  ([] (com.ib.client.Contract.))
+  ([typ local-sym exch]
+     (doto (contract)
+       (security-type typ)
+       (local-symbol local-sym)
+       (exchange exch))))
 
 (defn futures-contract
   ([]
