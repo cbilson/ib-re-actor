@@ -552,13 +552,14 @@
 
 (defmethod translate [:from-ib :connection-time] [_ _ val]
   (if val
-    (let [tokens (.split val " ")
-          timezone-token (nth tokens 2)
-          timezone-offset (translate :from-ib :time-zone timezone-token)
-          tokens-with-adjusted-timezone (concat (take 2 tokens) [timezone-offset])
-          adjusted-date-time-string (apply str (interpose " " tokens-with-adjusted-timezone))]
-      (-> (tf/formatter "yyyyMMdd HH:mm:ss Z")
-          (tf/parse adjusted-date-time-string)))))
+    (let [tokens (vec (.split val " "))
+          timezone-token (get tokens 2)]
+      (if timezone-token
+        (let [timezone-offset (translate :from-ib :time-zone timezone-token)
+              tokens-with-adjusted-timezone (concat (take 2 tokens) [timezone-offset])
+              adjusted-date-time-string (apply str (interpose " " tokens-with-adjusted-timezone))]
+          (-> (tf/formatter "yyyyMMdd HH:mm:ss Z")
+              (tf/parse adjusted-date-time-string)))))))
 
 (defmethod translate [:to-ib :connection-time] [_ _ val]
   (if val
