@@ -12,6 +12,8 @@
     `(let [to-table# ~vals
            from-table# (zipmap (vals to-table#) (keys to-table#))]
 
+       (def ~name to-table#)
+
        (defmethod valid? [:to-ib ~table-name] [_# _# val#]
          (contains? to-table# val#))
 
