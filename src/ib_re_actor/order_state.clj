@@ -1,5 +1,5 @@
 (ns ib-re-actor.order-state
-  (:use [ib-re-actor.util :only [field-props]]
+  (:use [ib-re-actor.util :only [field-props Mappable to-map assoc-if]]
         [clojure.pprint :only [simple-dispatch pprint]]))
 
 (defprotocol OrderState
@@ -37,18 +37,34 @@
    [minimum-commission m_minCommission :read-only]
    [maximum-commission m_maxCommission :read-only]
    [commission-currency m_commissionCurrency :read-only]
-   [warning-text m_warningText :read-only]))
+   [warning-text m_warningText :read-only])
 
-(defn order-status [kw-attribs])
+  Mappable
+  {:to-map (fn [this]
+             (-> {}
+                 (assoc-if :status (status this))
+                 (assoc-if :initial-margin (initial-margin this))
+                 (assoc-if :maintenance-margin (maintenance-margin this))
+                 (assoc-if :equity-with-loan (equity-with-loan this))
+                 (assoc-if :commission (commission this))
+                 (assoc-if :minimum-commission (minimum-commission this))
+                 (assoc-if :maximum-commission (maximum-commission this))
+                 (assoc-if :commission-currency (commission-currency this))
+                 (assoc-if :warning-text (warning-text this))))})
 
-(defmethod simple-dispatch com.ib.client.Order [order-status]
-  (print "#ib-re-actor.order-status ")
-  (pprint {:status (status order-status)
-           :initial-margin (initial-margin order-status)
-           :maintenance-margin (maintenance-margin order-status)
-           :equity-with-loan (equity-with-loan order-status)
-           :commission (commission order-status)
-           :minimum-commission (minimum-commission order-status)
-           :maximum-commission (maximum-commission order-status)
-           :commission-currency (commission-currency order-status)
-           :warning-text (warning-text order-status)}))
+;; TODO: find constructor for com.ib.client.OrderState
+#_(defn map->orders-status [m]
+  (let [this (com.ib.client.OrderState.)]
+    (status this (:status m))
+    (initial-margin this (:initial-margin m))
+    (maintenance-margin this (:maintenance-margin m))
+    (equity-with-loan this (:equity-with-loan m))
+    (commission this (:commission m))
+    (minimum-commission this (:minimum-commission m))
+    (maximum-commission this (:maximum-commission m))
+    (commission-currency this (:commission-currency m))
+    (warning-text this (:warning-text m))))
+
+(defmethod simple-dispatch com.ib.client.OrderState [order-state]
+  (print "#ib-re-actor.order-state ")
+  (pprint (to-map order-state)))

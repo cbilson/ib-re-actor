@@ -18,7 +18,7 @@
          (contains? to-table# val#))
 
        (defmethod translate [:to-ib ~table-name] [_# _# val#]
-         (if val#
+         (when val#
            (if (valid? :to-ib ~table-name val#)
              (to-table# val#)
              (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
@@ -30,7 +30,7 @@
          (contains? from-table# val#))
 
        (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
-         (if val#
+         (when val#
            (if (valid? :from-ib ~table-name val#)
              (from-table# val#)
              (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
@@ -512,7 +512,7 @@
   (str val " " (translate :to-ib :duration-unit unit)))
 
 (defmethod translate [:from-ib :duration] [_ _ val]
-  (if val
+  (when val
     (let [[amount unit] (.split val " ")]
       (vector (Integer/parseInt amount)
               (translate :from-ib :duration-unit unit)))))
@@ -524,7 +524,7 @@
     Long (tc/from-long (* 1000 val))))
 
 (defmethod translate [:to-ib :date-time] [_ _ value]
-  (if val
+  (when val
     (-> (tf/formatter "yyyyMMdd HH:mm:ss")
         (tf/unparse value)
         (str " UTC"))))
@@ -539,7 +539,7 @@
     String val))
 
 (defmethod translate [:from-ib :timestamp] [_ _ val]
-  (if val
+  (when val
     (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
         (tf/parse val))))
 
@@ -554,10 +554,10 @@
     "AET" "+1000"))
 
 (defmethod translate [:from-ib :connection-time] [_ _ val]
-  (if val
+  (when val
     (let [tokens (vec (.split val " "))
           timezone-token (get tokens 2)]
-      (if timezone-token
+      (when timezone-token
         (let [timezone-offset (translate :from-ib :time-zone timezone-token)
               tokens-with-adjusted-timezone (concat (take 2 tokens) [timezone-offset])
               adjusted-date-time-string (apply str (interpose " " tokens-with-adjusted-timezone))]
@@ -565,7 +565,7 @@
               (tf/parse adjusted-date-time-string)))))))
 
 (defmethod translate [:to-ib :connection-time] [_ _ val]
-  (if val
+  (when val
     (-> (tf/formatter "yyyyMMdd HH:mm:ss z")
         (tf/unparse val))))
 
@@ -573,7 +573,7 @@
   (tf/unparse (tf/formatter "MM/dd/yyyy") val))
 
 (defmethod translate [:from-ib :date] [_ _ val]
-  (if val
+  (when val
     (try
       (tf/parse (tf/formatter "MM/dd/yyyy") val)
       (catch Exception e
@@ -582,7 +582,7 @@
                          :expected-form "MM/dd/yyyy"}))))))
 
 (defmethod translate [:from-ib :time-of-day] [_ _ val]
-  (if val
+  (when val
     (try
       (tf/parse (tf/formatter "HH:mm") val)
       (catch Exception e
@@ -591,19 +591,21 @@
                          :expected-form "HH:mm"}))))))
 
 (defmethod translate [:to-ib :time-of-day] [_ _ val]
-  (if val
+  (when val
     (try
       (tf/unparse (tf/formatter "HH:mm") val)
       (catch Exception e
         (throw (ex-info "Failed to translate from IB time-of-day value."
                         {:value val
                          :expected-form "HH:mm"}))))))
+
 (defmethod translate [:to-ib :expiry] [_ _ val]
-  (let [y (time/year val)
-        ys (.toString y)
-        m (time/month val)
-        ms (format "%02d" m)]
-    (str ys ms)))
+  (when val
+    (let [y (time/year val)
+          ys (.toString y)
+          m (time/month val)
+          ms (format "%02d" m)]
+      (str ys ms))))
 
 (defmethod translate [:from-ib :expiry] [_ _ val]
   (condp = (.length val)

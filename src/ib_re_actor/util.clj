@@ -25,10 +25,6 @@
                                  ~this)))))))
           {} property-descriptors))
 
-(defprotocol Mappable
-  (to-map [this]
-    "Create with a map with the all the non-the non-null properties of object."))
-
 (defn assoc-if [map key val]
   (if val
     (assoc map key val)

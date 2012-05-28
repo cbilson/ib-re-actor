@@ -1,6 +1,6 @@
 (ns ib-re-actor.order
   (:use [ib-re-actor.translation :only [translate]]
-        [ib-re-actor.util :only [field-props]]
+        [ib-re-actor.util :only [field-props Mappable assoc-if]]
         [clojure.pprint :only [cl-format simple-dispatch]])
   (:require [clj-time.format :as tf]))
 
@@ -82,7 +82,27 @@
 
   StopLimitOrder
   (field-props
-   [stop-price m_auxPrice]))
+   [stop-price m_auxPrice])
+
+  Mappable
+  {:to-map
+   (fn [this]
+     (-> {}
+         (assoc-if :order-id (order-id this))
+         (assoc-if :client-id (client-id this))
+         (assoc-if :permanent-id (permanent-id this))
+         (assoc-if :transmit? (transmit? this))
+         (assoc-if :quantity (quantity this))
+         (assoc-if :action (action this))
+         (assoc-if :order-type (order-type this))
+         (assoc-if :block-order? (block-order? this))
+         (assoc-if :sweep-to-fill? (sweep-to-fill? this))
+         (assoc-if :time-in-force (time-in-force this))
+         (assoc-if :good-after-time (good-after-time this))
+         (assoc-if :good-till-date (good-till-date this))
+         (assoc-if :outside-regular-trading-hours? (outside-regular-trading-hours? this))
+         (assoc-if :hidden? (hidden? this))
+         (assoc-if :all-or-none? (all-or-none? this))))})
 
 (def ^:dynamic *client-order-id* (atom 1))
 
@@ -129,3 +149,21 @@ Valid actions are: :buy, :sell, :sell-short."
              (order-type order)
              (action order)
              (quantity order)))
+
+(defn map->order [m]
+  (let [ord (order)]
+    (when (:order-id m) (order-id ord (:order-id m)))
+    (when (:client-id m) (client-id ord (:client-id m)))
+    (transmit? ord (or (:transmit? m) false))
+    (when (:quantity m) (quantity ord (:quantity m)))
+    (action ord (:action m))
+    (order-type ord (:order-type m))
+    (block-order? ord (or (:block-order? m) false))
+    (sweep-to-fill? ord (or (:sweep-to-fill? m) false))
+    (time-in-force ord (:time-in-force m))
+    (good-after-time ord (:good-after-time m))
+    (outside-regular-trading-hours? ord (or (:outside-regular-trading-hours? m) false))
+    (hidden? ord (or (:hidden? m) false))
+    (all-or-none? ord (or (:all-or-none? m) false))
+    ord))
+

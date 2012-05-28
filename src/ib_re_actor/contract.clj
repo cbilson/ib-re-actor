@@ -83,25 +83,7 @@
 
   FixedIncomeContract
   (field-props
-   [put-call-right m_right :translation :right])
-
-  Mappable
-  {:to-map (fn [this]
-             (-> {}
-                 (assoc-if :contract-id (contract-id this))
-                 (assoc-if :underlying-symbol (underlying-symbol this))
-                 (assoc-if :exchange (exchange this))
-                 (assoc-if :local-symbol (local-symbol this))
-                 (assoc-if :primary-exchange (primary-exchange this))
-                 (assoc-if :currency (currency this))
-                 (assoc-if :security-type (security-type this))
-                 (assoc-if :include-expired? (include-expired? this))
-                 (assoc-if :security-id-type (security-id-type this))
-                 (assoc-if :security-id (security-id this))
-                 (assoc-if :combo-legs-description (combo-legs-description this))
-                 (assoc-if :expiry (expiry this))
-                 (assoc-if :multiplier (multiplier this))
-                 (assoc-if :put-call-right (put-call-right this))))})
+   [put-call-right m_right :translation :right]))
 
 (defmethod simple-dispatch com.ib.client.Contract [contract]
   (cl-format true "#<Contract{id ~A, security-type ~A, symbol ~A, exchange ~A}>"
@@ -158,3 +140,21 @@
        (exchange "IDEALPRO")
        (currency base)
        (underlying-symbol other))))
+
+(defn map->contract [m]
+  (let [contr (contract)]
+    (when (get :contract-id m) (contract-id contr (:contract-id m)))
+    (underlying-symbol contr (:underlying-symbol m))
+    (exchange contr (:exchange m))
+    (local-symbol contr (:local-symbol m))
+    (primary-exchange contr (:primary-exchange m))
+    (currency contr (:currency m))
+    (security-type contr (:security-type m))
+    (include-expired? contr (or (:include-expired? m) false))
+    (security-id-type contr (:security-id-type m))
+    (security-id contr (:security-id m))
+    (combo-legs-description contr (:combo-legs-description m))
+    (expiry contr (:expiry m))
+    (multiplier contr (:multiplier m))
+    (put-call-right contr (:put-call-right m))
+    contr))

@@ -1,6 +1,8 @@
 (ns ib-re-actor.gateway
   "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
-  (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]])
+  (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]]
+        [ib-re-actor.contract :only [map->contract]]
+        [ib-re-actor.order :only [map->order]])
   (:require [ib-re-actor.execution-filter :as exf]
             [clojure.xml :as xml]))
 
@@ -436,7 +438,9 @@
     ([this contract order]
        (place-order this (get-order-id) contract order))
     ([this order-id contract order]
-       (.placeOrder this order-id contract order)))
+       (let [contr (if (map? contract) (map->contract contract) contract)
+             ord (if (map? order) (map->order order) order)]
+         (.placeOrder this order-id contr ord))))
 
   (cancel-order
     [this order-id]
