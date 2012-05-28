@@ -1,10 +1,8 @@
 (ns ib-re-actor.gateway
   "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
   (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]]
-        [ib-re-actor.contract :only [map->contract]]
-        [ib-re-actor.order :only [map->order]])
-  (:require [ib-re-actor.execution-filter :as exf]
-            [clojure.xml :as xml]))
+        [ib-re-actor.mapping])
+  (:require [clojure.xml :as xml]))
 
 (def ^:dynamic *client-id* 100)
 (def ^:dynamic *next-order-id* (atom 0))
@@ -202,7 +200,7 @@
                         :option-price optPrice
                         :pv-dividends pvDividend
                         :underlying-price undPrice
-                        :delta delta :gamma gamma :theta theta :vega vega }))
+                        :delta delta :gamma gamma :theta theta :vega vega}))
 
     (tickGeneric [this tickerId tickType value]
       (process-message {:type :tick
@@ -258,8 +256,8 @@
                         :why-held whyHeld}))
 
     (openOrder [this orderId contract order orderState]
-      (process-message {:type :open-order :order-id orderId :contract contract
-                        :order order :order-state orderState}))
+      (process-message {:type :open-order :order-id orderId :contract (->map contract)
+                        :order (->map order) :order-state (->map orderState)}))
 
     (openOrderEnd [this]
       (process-message {:type :open-order-end}))
@@ -282,7 +280,7 @@
       (process-message {:type :account-download-end :account-code account-code}))
 
     (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
-      (process-message {:type :update-portfolio :contract contract :position position
+      (process-message {:type :update-portfolio :contract (->map contract) :position position
                         :market-price marketPrice :market-value marketValue
                         :average-cost averageCost :unrealized-gain-loss unrealizedPNL
                         :realized-gain-loss realizedPNL
@@ -294,7 +292,7 @@
 
     (contractDetails [this requestId contractDetails]
       (process-message {:type :contract-details :request-id requestId
-                        :value contractDetails}))
+                        :value (->map contractDetails)}))
 
     (bondContractDetails [this requestId contractDetails]
       (process-message {:type :contract-details :request-id requestId :value contractDetails}))
@@ -303,7 +301,7 @@
       (process-message {:type :contract-details-end :request-id requestId}))
 
     (execDetails [this requestId contract execution]
-      (process-message {:type :execution-details :request-id requestId :contract contract :value execution}))
+      (process-message {:type :execution-details :request-id requestId :contract (-> map contract) :value execution}))
 
     (execDetailsEnd [this requestId]
       (process-message {:type :execution-details-end :request-id requestId}))
@@ -344,7 +342,7 @@
 
     (scannerData [this requestId rank contractDetails distance benchmark projection legsStr]
       (process-message {:type :scan-result :request-id requestId :rank rank
-                        :contract-details contractDetails :distance distance
+                        :contract-details (->map contractDetails) :distance distance
                         :benchmark benchmark :projection projection
                         :legs legsStr}))
 
@@ -376,10 +374,10 @@
   (request-market-data
     ([this id contract tick-list snapshot?]
        (let [ib-tick-list (translate :to-ib :tick-list tick-list)]
-         (.reqMktData this id contract ib-tick-list snapshot?))
+         (.reqMktData this id (map-> com.ib.client.Contract contract) ib-tick-list snapshot?))
        id)
     ([this id contract]
-       (.reqMktData this id contract "" false)
+       (.reqMktData this id (map-> com.ib.client.Contract) contract "" false)
        id))
 
   (request-historical-data
@@ -388,7 +386,7 @@
              ib-duration (translate :to-ib :duration [duration duration-unit])
              ib-bar-size (translate :to-ib :bar-size [bar-size bar-size-unit])
              ib-what-to-show (translate :to-ib :what-to-show what-to-show)]
-         (.reqHistoricalData this id contract ib-end ib-duration ib-bar-size ib-what-to-show
+         (.reqHistoricalData this id (map-> com.ib.client.Contract contract) ib-end ib-duration ib-bar-size ib-what-to-show
                              (if use-regular-trading-hours? 1 0)
                              2)))
     ([this id contract end duration duration-unit bar-size bar-size-unit what-to-show]
@@ -416,10 +414,10 @@
   SecurityDataProvider
   (request-fundamental-data
     ([this contract report-type]
-       (.reqFundamentalData this (get-request-id) contract
+       (.reqFundamentalData this (get-request-id) (map-> com.ib.client.Contract contract)
                             (translate :to-ib :report-type report-type)))
     ([this request-id contract report-type]
-       (.reqFundamentalData this request-id contract
+       (.reqFundamentalData this request-id (map-> com.ib.client.Contract contract)
                             (translate :to-ib :report-type report-type))))
 
   (cancel-fundamental-data
@@ -430,7 +428,7 @@
     ([this contract]
        (request-contract-details this (get-request-id) contract))
     ([this request-id contract]
-       (.reqContractDetails this request-id contract)
+       (.reqContractDetails this request-id (map-> com.ib.client.Contract contract))
        request-id))
 
   OrderManager
@@ -438,9 +436,7 @@
     ([this contract order]
        (place-order this (get-order-id) contract order))
     ([this order-id contract order]
-       (let [contr (if (map? contract) (map->contract contract) contract)
-             ord (if (map? order) (map->order order) order)]
-         (.placeOrder this order-id contr ord))))
+       (.placeOrder this order-id (map-> com.ib.client.Contract contract) (map-> com.ib.client.Order order))))
 
   (cancel-order
     [this order-id]
@@ -454,7 +450,7 @@
     ([this]
        (.reqExecutions this nil))
     ([this client-id]
-       (.reqExecutions this (exf/execution-filter client-id))))
+       (.reqExecutions this client-id)))
 
   AccountDataProvider
   (request-account-updates

@@ -1,7 +1,6 @@
 (ns ib-re-actor.synchronous
   (:require [ib-re-actor.gateway :as g]
-            [ib-re-actor.translation :as t]
-            [ib-re-actor.order :as o]))
+            [ib-re-actor.translation :as t]))
 
 (defn lookup-security
   "Synchronously lookup a security and return the matches."
