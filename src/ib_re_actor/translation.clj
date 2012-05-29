@@ -626,4 +626,4 @@
        (map (partial translate :from-ib :order-type))))
 
 (defmethod translate [:to-ib :order-types] [_ _ val]
-  (str/join "," (map name val)))
+  (str/join "," (map (partial translate :to-ib :order-type) val)))
