@@ -491,7 +491,8 @@
 (translation-table right
                    {:put "PUT"
                     :call "CALL"
-                    :none "0"})
+                    :none "0"
+                    :unknown "?"})
 
 (translation-table rule-80A
                    {:individual "I"
