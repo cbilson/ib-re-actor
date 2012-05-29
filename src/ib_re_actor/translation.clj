@@ -627,3 +627,10 @@
 
 (defmethod translate [:to-ib :order-types] [_ _ val]
   (str/join "," (map (partial translate :to-ib :order-type) val)))
+
+(defmethod translate [:from-ib :exchanges] [_ _ val]
+  (str/split val #","))
+
+(defmethod translate [:to-ib :exchanges] [_ _ val]
+  (str/join "," val))
+

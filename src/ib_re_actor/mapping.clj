@@ -1,5 +1,6 @@
 (ns ib-re-actor.mapping
-  (:use [ib-re-actor.translation :only [translate]]))
+  (:use [clojure.string :only [join]]
+        [ib-re-actor.translation :only [translate]]))
 
 (defprotocol Mappable
   (->map [this]
@@ -78,7 +79,7 @@
   [:min-tick m_minTick]
   [:price-magnifier m_priceMagnifier]
   [:order-types m_orderTypes :translation :order-types]
-  [:valid-exchanges m_validExchanges]
+  [:valid-exchanges m_validExchanges :translation :exchanges]
   [:underlying-contract-id m_underConId]
   [:long-name m_longName]
   [:cusip m_cusip]
