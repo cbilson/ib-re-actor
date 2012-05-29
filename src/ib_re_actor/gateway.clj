@@ -8,6 +8,7 @@
 (def ^:dynamic *next-order-id* (atom 0))
 (def ^:dynamic *next-request-id* (atom 0))
 (def ^:dynamic *default-server-log-level* :error)
+(def ^:dynamic *prn-raw-messages* false)
 
 (defn get-order-id []
   (swap! *next-order-id* inc))
@@ -493,7 +494,7 @@
         results (promise)
         accum (atom [])
         handler (fn [{:keys [type request-id] :as msg}]
-                  (prn "Raw: " msg)
+                  (when *prn-raw-messages* (prn "Raw: " msg))
                   (if (= req-id request-id)
                     (cond
                      (= type start) (swap! accum conj msg)
