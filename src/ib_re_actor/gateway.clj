@@ -435,7 +435,8 @@
   OrderManager
   (place-order
     ([this contract order]
-       (place-order this (get-order-id) contract order))
+       (let [order-id (get-order-id)]
+         (place-order this order-id contract (assoc order :order-id order-id))))
     ([this order-id contract order]
        (.placeOrder this order-id (map-> com.ib.client.Contract contract) (map-> com.ib.client.Order order))))
 
