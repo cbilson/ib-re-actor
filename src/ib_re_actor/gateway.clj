@@ -4,7 +4,7 @@
         [ib-re-actor.mapping])
   (:require [clojure.xml :as xml]))
 
-(def ^:dynamic *client-id* 100)
+(def ^:dynamic *client-id* 103)
 (def ^:dynamic *next-order-id* (atom 0))
 (def ^:dynamic *next-request-id* (atom 0))
 (def ^:dynamic *default-server-log-level* :error)
@@ -171,7 +171,7 @@
     com.ib.client.EWrapper
     (historicalData [this requestId date open high low close volume count wap hasGaps]
       (if (is-finish? date)
-        (process-message {:type :complete :request-id requestId})
+        (process-message {:type :price-bar-complete :request-id requestId})
         (process-message {:type :price-bar :request-id requestId
                           :time (translate :from-ib :date-time date)
                           :open open :high high :low low :close close :volume volume
@@ -378,13 +378,14 @@
          (.reqMktData this id (map-> com.ib.client.Contract contract) ib-tick-list snapshot?))
        id)
     ([this id contract]
-       (.reqMktData this id (map-> com.ib.client.Contract) contract "" false)
+       (.reqMktData this id (map-> com.ib.client.Contract contract) "" false)
        id))
 
   (request-historical-data
     ([this id contract end duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
        (let [ib-end (translate :to-ib :date-time end)
-             ib-duration (translate :to-ib :duration [duration duration-unit])
+             [acceptable-duration acceptable-duration-unit] (translate :to-ib :acceptable-duration [duration duration-unit])
+             ib-duration (translate :to-ib :duration [acceptable-duration acceptable-duration-unit])
              ib-bar-size (translate :to-ib :bar-size [bar-size bar-size-unit])
              ib-what-to-show (translate :to-ib :what-to-show what-to-show)]
          (.reqHistoricalData this id (map-> com.ib.client.Contract contract) ib-end ib-duration ib-bar-size ib-what-to-show

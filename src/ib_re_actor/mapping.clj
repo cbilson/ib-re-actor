@@ -37,7 +37,8 @@
 
 (defmacro defmapping [c & field-keys]
   (let [this (gensym "this")
-        map (gensym "map")]
+        map (gensym "map")
+        valid-keys (gensym "valid-keys")]
     `(do
        (extend-type ~c
          Mappable

@@ -1,45 +1,46 @@
 (ns ib-re-actor.examples.tick-recorder
-  (:use [ib-re-actor.contract]
-        [ib-re-actor.gateway]
+  (:use [ib-re-actor.gateway]
         [clj-time.core :only [date-time minus now]]
         [clj-time.coerce :only [to-long]]
         [clojure.java.io]))
 
 (def contracts
   {
-   1 (futures-contract "YM   MAR 12" "ECBOT")
-   2 (futures-contract "YM   JUN 12" "ECBOT")
-   3 (index "YM" "ECBOT")
-   4 (futures-contract "TFH2" "NYBOT")
-   5 (futures-contract "TFM2" "NYBOT")
-   6 (index "TF" "NYBOT")
-   7 (futures-contract "ESH2" "GLOBEX")
-   8 (futures-contract "ESM2" "GLOBEX")
-   9 (index "ES" "GLOBEX")
-   10 (futures-contract "NQH2" "GLOBEX")
-   11 (futures-contract "NQM2" "GLOBEX")
-   12 (index "NQ" "GLOBEX")
-   13 (futures-contract "E7H2" "GLOBEX")
-   14 (futures-contract "ZQ   MAR 12" "ECBOT")
-   15 (futures-contract "ZN   MAR 12" "ECBOT")
-   16 (index "TICK-NYSE" "NYSE")
-   17 (index "TRIN-NYSE" "NYSE")
-   18 (equity "XOM" "NYSE")
-   19 (equity "AAPL" "SMART")
-   20 (equity "IBM" "NYSE")
-   21 (equity "MSFT" "SMART")
-   22 (equity "CVX" "NYSE")
-   23 (equity "GE" "NYSE")
-   24 (equity "T" "NYSE")
-   25 (equity "PG" "NYSE")
-   26 (equity "JNJ" "NYSE")
-   27 (equity "PFE" "NYSE")
-   28 (equity "SPY" "ARCA")
-   29 (equity "SPYV" "ARCA")
-   30 (equity "SPYG" "ARCA")
-   31 (equity "IWM" "ARCA")
-   32 (equity "IWN" "ARCA")
-   33 (equity "IWO" "ARCA")
+   1 {:type :future :local-symbol "YM   DEC 12" :exchange "ECBOT"}
+   2 {:type :future :local-symbol "YM   MAR 13" :exchange "ECBOT"}
+   3 {:type :index :symbol "YM" :exchange "ECBOT"}
+   4 {:type :future :local-symbol "TFZ2" :exchange "NYBOT"}
+   5 {:type :future :local-symbol "TFH3" :exchange "NYBOT"}
+   6 {:type :index :symbol "TF" :exchange "NYBOT"}
+   7 {:type :future :local-symbol "ESZ2" :exchange "GLOBEX"}
+   8 {:type :future :local-symbol "ESH3" :exchange "GLOBEX"}
+   9 {:type :index :symbol "ES" :exchange "GLOBEX"}
+   10 {:type :future :local-symbol "NQZ2" :exchange "GLOBEX"}
+   11 {:type :future :local-symbol "NQH3" :exchange "GLOBEX"}
+   12 {:type :index :symbol "NQ" :exchange "GLOBEX"}
+   13 {:type :future :local-symbol "E7Z2" :exchange "GLOBEX"}
+   14 {:type :future :local-symbol "ZQ   DEC 12" :exchange "ECBOT"} ; 30-day fed funds
+   15 {:type :future :local-symbol "ZN   MAR 13" :exchange "ECBOT"} ; 10y treasury
+   16 {:type :index :symbol "TICK-NYSE" :exchange "NYSE"}
+   17 {:type :index :symbol "TRIN-NYSE" :exchange "NYSE"}
+   18 {:type :equity :symbol "XOM" :exchange "NYSE"}
+   19 {:type :equity :symbol "AAPL" :exchange "SMART" :currency "USD"}
+   20 {:type :equity :symbol "IBM" :exchange "NYSE" :currency "USD"}
+   21 {:type :equity :symbol "MSFT" :exchange "SMART" :currency "USD"}
+   22 {:type :equity :symbol "CVX" :exchange "NYSE" :currency "USD"}
+   23 {:type :equity :symbol "GE" :exchange "NYSE" :currency "USD"}
+   24 {:type :equity :symbol "T" :exchange "NYSE" :currency "USD"}
+   25 {:type :equity :symbol "PG" :exchange "NYSE" :currency "USD"}
+   26 {:type :equity :symbol "JNJ" :exchange "NYSE" :currency "USD"}
+   27 {:type :equity :symbol "PFE" :exchange "NYSE" :currency "USD"}
+   28 {:type :equity :symbol "SPY" :exchange "ARCA" :currency "USD"}
+   29 {:type :equity :symbol "SPYV" :exchange "ARCA" :currency "USD"}
+   30 {:type :equity :symbol "SPYG" :exchange "ARCA" :currency "USD"}
+   31 {:type :equity :symbol "IWM" :exchange "ARCA" :currency "USD"}
+   32 {:type :equity :symbol "IWN" :exchange "ARCA" :currency "USD"}
+   33 {:type :equity :symbol "IWO" :exchange "ARCA" :currency "USD"}
+   34 {:type :index :symbol "TICK-NASD" :exchange "NASDAQ"}
+   35 {:type :index :symbol "TRIN-NASD" :exchange "NASDAQ"}
    })
 
 (def done (promise))
@@ -48,9 +49,9 @@
 
 (defn log-tick [writer received ticker-id field val]
   (let [contract (get contracts ticker-id)
-        symbol (if (= :future (security-type contract))
-                 (local-symbol contract)
-                 (underlying-symbol contract))]
+        symbol (if (= :future (:type contract))
+                 (:local-symbol contract)
+                 (:symbol contract))]
     (.write writer (str (to-long received) "," symbol "," (name field) "," val "\n"))
     writer))
 
@@ -70,16 +71,16 @@
     (if (not (warning? msg))
       (do
         (await error-agent log-agent)
-        (deliver done)))))
+        (deliver done true)))))
 
-(defmethod message-handler :price-tick [{:keys [ticker-id field price]}]
-  (send-off log-agent log-tick (now) ticker-id field price))
-
-(defmethod message-handler :size-tick [{:keys [ticker-id field size]}]
-  (send-off log-agent log-tick (now) ticker-id field size))
-
-(defmethod message-handler :string-tick [{:keys [ticker-id field value]}]
+(defmethod message-handler :tick [{:keys [ticker-id field value]}]
   (send-off log-agent log-tick (now) ticker-id field value))
+
+(defmethod message-handler :timestamp-tick [_])
+
+(defmethod message-handler :managed-accounts [_])
+
+(defmethod message-handler :next-valid-order-id [_])
 
 (defmethod message-handler :default [msg]
   (send-off error-agent log-error (str "??? unhandled message: " (prn-str msg))))
@@ -96,4 +97,3 @@
       (doseq [[ticker-id contract] contracts]
         (request-market-data connection ticker-id contract))
       @done)))
-

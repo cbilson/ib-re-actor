@@ -48,6 +48,21 @@
                     :year "Y"
                     :years "Y"})
 
+(defmethod translate [:to-ib :acceptable-duration] [_ _ [val unit]]
+  (case unit
+    :second [val :second]
+    :seconds [val :seconds]
+    :minute [(* 60 val) :seconds]
+    :minutes [(* 60 val) :seconds]
+    :hour [(* 60 60 val) :seconds]
+    :hours [(* 60 60 val) :seconds]
+    :day [val :day]
+    :days [val :days]
+    :week [val :week]
+    :weeks [val :weeks]
+    :year [val :year]
+    :years [val :years]))
+
 (translation-table security-type
                    {:equity "STK"
                     :option "OPT"
@@ -58,7 +73,7 @@
                     :bag "BAG"})
 
 (translation-table bar-size-unit
-                   {:second "sec"
+                   {:second "secs"
                     :seconds "secs"
                     :minute "min"
                     :minutes "mins"

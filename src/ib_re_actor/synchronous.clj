@@ -62,6 +62,20 @@
       (g/request-market-data c 1 contract [] true)
       @results)))
 
+(defn get-historic-prices [contract end-time duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
+  (let [results (promise)
+        accum (atom [])
+        handler (fn [{:keys [type] :as msg}]
+                  (prn msg)
+                  (case type
+                    :price-bar (swap! accum conj msg)
+                    :price-bar-complete (deliver results @accum)
+                    :error (if (g/error? msg) (deliver results msg))
+                    nil))]
+    (g/with-open-connection [c (g/connect handler)]
+      (g/request-historical-data c 1 contract end-time duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?)
+      @results)))
+
 (defn get-open-orders []
   (let [results (promise)
         orders (atom [])

@@ -133,7 +133,7 @@
                      :open-order (swap! orders-accumulator conj (dissoc msg :type))
                      :open-order-end (deliver orders @orders-accumulator)
                      nil))]
-    (with-open-connection [c (connect handler)]
+    (with-open-connection [c (connect handler 0)]
       @orders)))
 
 (defn cancel-all-orders []
