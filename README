@@ -4,10 +4,34 @@ A clojure friendly wrapper around the Interactive Brokers java API.
 
 ## Usage
 
-1. Get it via leiningen:
-   [cbilson/ib-re-actor "0.0.1-SNAPSHOT"]
+I don't have permission to redistribute Interactive Broker's jars, so this is a little cludgey:
 
-2. Built an application. See examples in examples folder.
+1. Fetch the source code for ib-re-actor from github:
+
+```bash
+> git clone http://github.com/cbilson/ib-re-actor
+```
+
+2. Download the Interactive Brokers "IB API Software" from
+http://individuals.interactivebrokers.com/en/p.php?f=programInterface&ib_entity=llc. Follow
+the instructions to unpack it. Use maven to install the jtsclient.jar
+with groupId 'com.ib', artifactId 'jtsclient', and version '9.68'. For me, this went like:
+
+```bash
+> cd ~/Downloads
+
+> jar xf twsapi_unixmac_968.jar
+
+> mvn install:install-file -Dfile=IBJts/jtsclient.jar -DgroupId=com.ib -DartifactId=jtsclient -Dversion=9.68 -Dpackaging=jar
+```
+
+You can use ib-re-actor either with IB Trader Workstation or with IB
+Gateway. Personally, I have the gateway running on a linux server that
+I use VNC to connect to when I need to start/restart the gateway
+component. I then run programs on that machine that connect to it
+locally. It would be nice if there were a way to run the gateway
+without X and without having to authenticate, but alas, that's not how
+it works.
 
 ## License
 
