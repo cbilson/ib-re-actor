@@ -7,7 +7,7 @@ A clojure friendly wrapper around the Interactive Brokers java API.
 1. Get it via leiningen:
    [cbilson/ib-re-actor "0.0.1-SNAPSHOT"]
 
-2. Built and application. See examples in examples folder.
+2. Built an application. See examples in examples folder.
 
 ## License
 
