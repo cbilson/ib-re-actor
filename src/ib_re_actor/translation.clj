@@ -655,3 +655,8 @@
 (defmethod translate [:to-ib :exchanges] [_ _ val]
   (str/join "," val))
 
+(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]
+  (let [year (int (Math/floor (/ val 10000)))
+        month (int (Math/floor (/ (mod val 10000) 100)))
+        day (int (Math/floor (mod 19720427 100)))]
+    (time/date-time year month day)))
