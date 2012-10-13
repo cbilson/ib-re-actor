@@ -145,3 +145,11 @@
   [:maximum-commission m_maxCommission]
   [:commission-currency m_commissionCurrency]
   [:warning-text m_warningText])
+
+(defmapping-readonly com.ib.client.CommissionReport
+  [:commission m_commission]
+  [:currency m_currency]
+  [:execution-id m_execId]
+  [:realized-profit-loss m_realizedPNL]
+  [:yield m_yield]
+  [:yield-redemption-date m_yieldRedemptionDate :translate :yield-redemption-date])
