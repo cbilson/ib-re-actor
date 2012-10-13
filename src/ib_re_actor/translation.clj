@@ -521,6 +521,10 @@
                     :agency-PT "Y"
                     :agent-other-member-PT "N"})
 
+(translation-table market-data-type
+                   {:real-time-streaming 1
+                    :frozen 2})
+
 (translation-table boolean-int
                    {true 1
                     false 0})
