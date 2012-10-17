@@ -458,19 +458,22 @@
                :full-maintenance-margin-requirement :full-maintenance-margin-requirement-commodities :full-maintenance-margin-requirement-stock
                :fund-value :future-option-value :futures-profit-loss :fx-cash-balance
                :gross-position-value :gross-position-values-commodities :gross-position-value-stock
-               :indian-stock-haricut :indian-stock-haricut-commodities :indian-stock-haricut-stock
+               :indian-stock-haricut :indian-stock-haircut-commodities :indian-stock-haircut-stock
                :initial-margin-requirement :initial-margin-requirement-commodities :initial-margin-requirement-stock
                :leverage :leverage-commodities :leverage-stock
                :look-ahead-available-funds :look-ahead-available-funds-commodities :look-ahead-available-funds-stock
                :look-ahead-excess-liquidity :look-ahead-excess-liquidity-commodities :look-ahead-excess-liquidity-stock
                :look-ahead-initial-margin-requirement :look-ahead-initial-margin-requirement-commodities :look-ahead-initial-margin-requirement-stock
-               :look-ahead-maintenance-margin-requirement :look-ahead-maintenance-margin-requirement-commodities :look-ahead-maintenance-margin-requirement-stock
+               :look-ahead-maintenance-margin-requirement :look-ahead-maintenance-margin-requirement-commodities
+               :look-ahead-maintenance-margin-requirement-stock
                :look-ahead-next-change
-               :maintenance-margin-required :maintenance-margin-required-commodities :maintenance-margin-required-stock
+               :maintenance-margin-requirement :maintenance-margin-requirement-commodities :maintenance-margin-requirement-stock
                :money-market-fund-value :mutual-fund-value :net-dividend
                :net-liquidation :net-liquidation-commodities :net-liquidation-stock
                :net-liquidation-by-currency :option-market-value
                :pa-shares-value :pa-shares-value-commodities :pa-shares-value-stock
+               :post-expiration-margin-stock :post-expiration-margin-commodities :post-expiration-margin-stock
+               :post-expiration-excess-stock :post-expiration-excess-commodities :post-expiration-excess-stock
                :previous-day-equity-with-loan-value :previous-day-equity-with-loan-value-commodities :previous-day-equity-with-loan-value-stock
                :realized-profit-loss
                :regulation-T-equity :regulation-T-equity-commodities :regulation-T-equity-stock
@@ -479,7 +482,7 @@
                :stock-market-value :t-bill-value :t-bond-value :total-cash-balance
                :total-cash-value :total-cash-value-commodities :total-cash-value-stock
                :unaltered-initial-margin-requirement :unaltered-maintenance-margin-requirement
-               :unrealized-profit-loss :warrants-value               
+               :unrealized-profit-loss :warrants-value
                } key))
 
 (defn integer-account-value? [key]
