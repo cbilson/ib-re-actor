@@ -472,8 +472,10 @@
                :net-liquidation :net-liquidation-commodities :net-liquidation-stock
                :net-liquidation-by-currency :option-market-value
                :pa-shares-value :pa-shares-value-commodities :pa-shares-value-stock
-               :post-expiration-margin-stock :post-expiration-margin-commodities :post-expiration-margin-stock
-               :post-expiration-excess-stock :post-expiration-excess-commodities :post-expiration-excess-stock
+               :post-expiration-margin
+               :post-expiration-margin-commodities :post-expiration-margin-stock
+               :post-expiration-excess
+               :post-expiration-excess-commodities :post-expiration-excess-stock
                :previous-day-equity-with-loan-value :previous-day-equity-with-loan-value-commodities :previous-day-equity-with-loan-value-stock
                :realized-profit-loss
                :regulation-T-equity :regulation-T-equity-commodities :regulation-T-equity-stock
