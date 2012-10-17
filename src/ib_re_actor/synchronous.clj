@@ -1,131 +1,187 @@
 (ns ib-re-actor.synchronous
+  "Functions for doing things with interactive brokers in a synchronous manner.
+   Mostly these are just wrappers that create a temporary handler function,
+   wait for a response, then unsubscribe. These are much easier to use in an
+   interactive context (such as when using the REPL) but probably not what you
+   would want to use in an application, as the asynchronous API is a much more
+   natural fit for building programs that react to events in market data."
   (:require [ib-re-actor.gateway :as g]
-            [ib-re-actor.translation :as t]))
+            [ib-re-actor.translation :as t]
+            [clojure.tools.logging :as log]))
 
-(defn lookup-security
-  "Synchronously lookup a security and return the matches."
-  ([contract]
-     (lookup-security 1 contract))
-  ([client-id contract]
-     (let [results (promise)
-           acc (atom [])
-           handler (fn [{:keys [ type value] :as msg}]
-                     (condp = type
-                       :contract-details
-                       (swap! acc conj value)
+(defmacro subscribe-for
+  "Given a function to call and a predicate, subscribes to the current connection
+   and returns the first message that matches the predicate, unsubscribing once
+   a message has been received."
+  [fn pred]
+  `(let [res# (promise)
+         handler# (fn [msg#]
+                    (log/info "Received: " msg#)
+                    (cond
+                     (~pred msg#) (deliver res# msg#)
+                     (g/is-end? msg#) (deliver res# msg#)))]
+     (g/subscribe handler#)
+     (try
+       (~fn)
+       (log/info "waiting for response")
+       @res#
+       (finally
+         (log/info "unsubscribing")
+         (g/unsubscribe handler#)))))
 
-                       :contract-details-end
-                       (deliver results @acc)
+(defmacro get-response
+  [request-fn & args]
+  `(let [res# (promise)
+         req-id# (g/get-request-id)
+         handler# (fn [{msg-req-id# :request-id :as msg#}]
+                    (log/info "Received: " msg#)
+                    (cond
+                     (= req-id# msg-req-id#) (deliver res# msg#)
+                     (g/is-end? msg#) (deliver res# msg#)))]
+     (g/subscribe handler#)
+     (try
+       (-> req-id# (~request-fn ~@args))
+       (log/info "waiting for response")
+       @res#
+       (finally (g/unsubscribe handler#)))))
 
-                       :error
-                       (if (g/error? msg)
-                         (deliver results msg))
+(defmacro get-responses [request-fn & args]
+  `(let [res# (future)
+         accum# (atom nil)
+         req-id# (g/get-request-id)
+         handler# (fn [{msg-req-id# :request-id type# :type :as msg#}]
+                    (log/info "Received: " msg#)
+                    (when (= msg-req-id# req-id#)
+                      (swap! accum# conj msg#)
+                      (when (g/is-end? msg#)
+                        (deliver res# @accum#))))]
+     (g/subscribe handler#)
+     (try
+       (-> req-id# (~request-fn ~@args))
+       (log/info "waiting for response")
+       @res#
+       (finally (g/unsubscribe handler#)))))
 
-                       nil))]
-       (g/with-open-connection [connection (g/connect handler client-id)]
-         (g/request-contract-details connection contract)
-         @results))))
+(defn get-time []
+  (subscribe-for g/request-current-time
+                 #(= :current-time (:type %))))
+
+(defn get-contract-details [contract]
+  (get-response g/request-contract-details contract))
+
+(defn reduce-responses [accept? reduce-fn done? completion-fn subscribe-fn & args]
+  "Given some functions, subscribes to the message stream, reducing each message into
+   an accumulator, then cleans up when done."
+  (let [responses (atom nil)
+        result (promise)
+        handler (fn [msg]
+                  (when (accept? msg)
+                    (if (g/is-end? msg)
+                      (deliver result msg)
+                      (swap! responses reduce-fn msg))))
+        response-watch (fn [_ k _ v]
+                         (when (done? v)
+                           (remove-watch responses k)
+                           (deliver result v)))]
+    (add-watch responses :result-watch response-watch)
+    (g/subscribe handler)
+    (try
+      (apply subscribe-fn args)
+      @result
+      (finally
+        (log/info "unsubscribing")
+        (g/unsubscribe handler)
+        (log/info "completing")
+        (completion-fn)
+        (log/info "completed")))))
+
+(defn get-current-price [con]
+  (let [fields [:open-tick :bid-price :close-price :last-size :low :ask-size :bid-size :last-price :ask-price :high :volume]
+        accept? (fn [{:keys [type contract]}]
+                  (and (= type :tick) (= contract con)))
+        reduce-fn (fn [accum {:keys [field value]}]
+                    (assoc accum field value))
+        done? (fn [accum]
+                (let [received-fields (-> accum keys set)]
+                  (every? received-fields fields)))
+        complete (partial g/cancel-market-data con)]
+    (reduce-responses accept? reduce-fn done? complete g/request-market-data con)))
 
 (defn execute-order [contract order]
-  "Place a market order, wait for it to finish and report on progress."
-  (let [result (promise)
-        report (atom {:progress []})
-        add-progress (fn [{progress :progress :as report} msg]
-                       (assoc report :progress (conj progress msg)))
-        handler (fn [{:keys [type field value status] :as msg}]
-                  (case type
-                    :open-order (swap! report add-progress msg)
-                    :execution-details (swap! report add-progress msg)
-                    :order-status
-                    (do
-                      (swap! report add-progress msg)
-                      (if (= :filled status)
-                        (deliver result @report)))
+  (let [order-id (g/get-order-id)
+        accept? #(= order-id (:order-id %))
+        reduce-fn conj
+        done? #(some (fn [{:keys [type status]}]
+                       (and (= :order-status type) (= :filled status))))
+        complete (fn [])]
+    (reduce-responses accept? reduce-fn done? complete g/place-order contract order)))
 
-                    :error (if (g/error? msg)
-                             (deliver result false))
-                    nil))]
-    (g/with-open-connection [conn (g/connect handler)]
-      (g/place-order conn contract order)
-      @result)))
+(comment
 
-(defn get-current-price [contract]
-  (let [results (promise)
-        snapshot (atom {})
-        handler  (fn [{:keys [type field value] :as msg}]
-                   (case type
-                     :tick (swap! snapshot assoc field value)
-                     :tick-snapshot-end (deliver results @snapshot)
-                     :error (if (g/error? msg) (deliver results msg))
-                     nil))]
-    (g/with-open-connection [c (g/connect handler)]
-      (g/request-market-data c 1 contract [] true)
-      @results)))
+  (defn get-historic-prices [contract end-time duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
+    (let [results (promise)
+          accum (atom [])
+          handler (fn [{:keys [type] :as msg}]
+                    (prn msg)
+                    (case type
+                      :price-bar (swap! accum conj msg)
+                      :price-bar-complete (deliver results @accum)
+                      :error (if (g/error? msg) (deliver results msg))
+                      nil))]
+      (g/with-open-connection [c (g/connect handler)]
+        (g/request-historical-data c 1 contract end-time duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?)
+        @results)))
 
-(defn get-historic-prices [contract end-time duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
-  (let [results (promise)
-        accum (atom [])
-        handler (fn [{:keys [type] :as msg}]
-                  (prn msg)
-                  (case type
-                    :price-bar (swap! accum conj msg)
-                    :price-bar-complete (deliver results @accum)
-                    :error (if (g/error? msg) (deliver results msg))
-                    nil))]
-    (g/with-open-connection [c (g/connect handler)]
-      (g/request-historical-data c 1 contract end-time duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?)
-      @results)))
+  (defn get-open-orders []
+    (let [results (promise)
+          orders (atom [])
+          handler  (fn [{:keys [type] :as msg}]
+                     (case type
+                       :open-order (swap! orders conj msg)
+                       :open-order-end (deliver results @orders)
+                       :error (if (g/error? msg) (deliver results msg))
+                       nil))]
+      (g/with-open-connection [c (g/connect handler)]
+        (g/request-open-orders c)
+        @results)))
 
-(defn get-open-orders []
-  (let [results (promise)
-        orders (atom [])
-        handler  (fn [{:keys [type] :as msg}]
-                   (case type
-                     :open-order (swap! orders conj msg)
-                     :open-order-end (deliver results @orders)
-                     :error (if (g/error? msg) (deliver results msg))
-                     nil))]
-    (g/with-open-connection [c (g/connect handler)]
-      (g/request-open-orders c)
-      @results)))
+  (defn get-account-update []
+    (let [results (promise)
+          attributes (atom {})
+          handler  (fn [{:keys [type key value currency] :as msg}]
+                     (case type
+                       :update-account-value (swap! attributes assoc key {:value value :currency currency})
+                       :update-account-time (deliver results @attributes)
+                       :error (if (g/error? msg) (deliver results msg))
+                       nil))]
+      (g/with-open-connection [c (g/connect handler)]
+        (g/request-account-updates c true nil)
+        @results)))
 
-(defn get-account-update []
-  (let [results (promise)
-        attributes (atom {})
-        handler  (fn [{:keys [type key value currency] :as msg}]
-                   (case type
-                     :update-account-value (swap! attributes assoc key {:value value :currency currency})
-                     :update-account-time (deliver results @attributes)
-                     :error (if (g/error? msg) (deliver results msg))
-                     nil))]
-    (g/with-open-connection [c (g/connect handler)]
-      (g/request-account-updates c true nil)
-      @results)))
+  (defn get-portfolio []
+    (let [results (promise)
+          positions (atom #{})
+          handler  (fn [{:keys [type] :as msg}]
+                     (case type
+                       :update-portfolio (swap! positions conj msg)
+                       :update-account-time (deliver results @positions)
+                       :error (if (g/error? msg) (deliver results msg))
+                       nil))]
+      (g/with-open-connection [c (g/connect handler)]
+        (g/request-account-updates c true nil)
+        @results)))
 
-(defn get-portfolio []
-  (let [results (promise)
-        positions (atom #{})
-        handler  (fn [{:keys [type] :as msg}]
-                   (case type
-                     :update-portfolio (swap! positions conj msg)
-                     :update-account-time (deliver results @positions)
-                     :error (if (g/error? msg) (deliver results msg))
-                     nil))]
-    (g/with-open-connection [c (g/connect handler)]
-      (g/request-account-updates c true nil)
-      @results)))
-
-(defn listen
-  ([] (listen nil))
-  ([account-code]
-     (let [connection-closed (promise)
-           handler (fn [{:keys [type] :as msg}]
-                     (prn msg)
-                     (if (= :connection-closed type)
-                       (deliver connection-closed true)))]
-       (g/with-open-connection [conn (g/connect prn)]
-         (g/request-open-orders conn)
-         (g/request-executions conn)
-         (g/request-account-updates conn true account-code)
-         (g/request-news-bulletins conn true)
-         @connection-closed))))
+  (defn listen
+    ([] (listen nil))
+    ([account-code]
+       (let [connection-closed (promise)
+             handler (fn [{:keys [type] :as msg}]
+                       (prn msg)
+                       (if (= :connection-closed type)
+                         (deliver connection-closed true)))]
+         (g/with-open-connection [conn (g/connect prn)]
+           (g/request-open-orders conn)
+           (g/request-executions conn)
+           (g/request-account-updates conn true account-code)
+           (g/request-news-bulletins conn true)
+           @connection-closed)))))
