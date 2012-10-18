@@ -265,13 +265,13 @@
 (defmethod translate [:to-ib :tick-list] [_ _ val]
   (->> val
        (map #(cond
-             (valid? :to-ib :tick-field-code %)
-             (translate :to-ib :tick-field-code %)
+              (valid? :to-ib :tick-field-code %)
+              (translate :to-ib :tick-field-code %)
 
-             (valid? :to-ib :generic-tick-type %)
-             (translate :to-ib :generic-tick-type %)
+              (valid? :to-ib :generic-tick-type %)
+              (translate :to-ib :generic-tick-type %)
 
-             :else %))
+              :else %))
        (map str)
        (clojure.string/join ",")))
 
@@ -571,9 +571,21 @@
     String val))
 
 (defmethod translate [:from-ib :timestamp] [_ _ val]
-  (when val
-    (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
-        (tf/parse val))))
+  (cond
+   (nil? val) nil
+
+   (every? #(Character/isDigit %) val)
+   (tc/from-long (* (Long/parseLong val) 1000))
+
+   (= (.length val) 8)
+   (-> (tf/formatter "yyyyMMdd")
+       (tf/parse val))
+
+   (= (.length val) 17)
+   (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
+       (tf/parse val))
+
+   :otherwise val))
 
 (defmethod translate [:from-ib :time-zone] [_ _ val]
   (case val
