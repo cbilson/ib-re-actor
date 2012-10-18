@@ -18,13 +18,13 @@
   ([ex]
      (log-exception "Error" ex)))
 
-(def client-id (atom 100))
-(def next-order-id (atom 0))
-(def next-request-id (atom 0))
-(def default-server-log-level :error)
-(def contract->id (atom {}))
-(def id->contract (atom {}))
-(def next-ticker-id (atom 1))
+(defonce client-id (atom 100))
+(defonce next-order-id (atom 0))
+(defonce next-request-id (atom 0))
+(defonce default-server-log-level :error)
+(defonce contract->id (atom {}))
+(defonce id->contract (atom {}))
+(defonce next-ticker-id (atom 1))
 
 (defn register-contract [contract]
   (let [existing (get @contract->id contract)]
@@ -34,7 +34,8 @@
           (swap! id->contract assoc id contract)
           id))))
 
-(def connection (agent nil))
+(defonce connection (agent nil))
+
 (set-error-mode! connection :continue)
 (set-error-handler! connection
                     (fn [a ex]
@@ -43,7 +44,7 @@
                            (catch Exception ex
                              (log-exception "Error disconnecting" ex)))))
 
-(def listeners (agent nil))
+(defonce listeners (agent nil))
 (set-error-mode! listeners :continue)
 (set-error-handler! listeners
                     (fn [a ex]
