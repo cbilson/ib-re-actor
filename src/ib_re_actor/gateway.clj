@@ -293,12 +293,11 @@
     (historicalData [this requestId date open high low close volume count wap hasGaps]
       (if (is-finish? date)
         (dispatch-message {:type :price-bar-complete :request-id requestId})
-        (do (log/info date)
-            (dispatch-message
-             {:type :price-bar :request-id requestId
-              :time (translate :from-ib :timestamp date)
-              :open open :high high :low low :close close :volume volume
-              :trade-count count :WAP wap :has-gaps? hasGaps}))))
+        (dispatch-message
+         {:type :price-bar :request-id requestId
+          :time (translate :from-ib :timestamp date)
+          :open open :high high :low low :close close :volume volume
+          :trade-count count :WAP wap :has-gaps? hasGaps})))
 
     ;;; Market Scanners
     (scannerParameters [this xml]
