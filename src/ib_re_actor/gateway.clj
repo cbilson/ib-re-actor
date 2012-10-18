@@ -453,7 +453,7 @@ message"
   ([contract]
      (request-contract-details (get-request-id) contract))
   ([request-id contract]
-     (log/info "Requesting contract details #" request-id " for " (pr-str contract))
+     (log/debug "Requesting contract details #" request-id " for " (pr-str contract))
      (send-connection .reqContractDetails request-id (map-> com.ib.client.Contract contract))
      request-id))
 
