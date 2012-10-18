@@ -1,7 +1,7 @@
 (ns ib-re-actor.account
   (:require [ib-re-actor.gateway :as g]))
 
-(def account-details (atom nil))
+(defonce account-details (atom nil))
 
 (defn update-account-details [{:keys [type key value currency]}]
   (case type
