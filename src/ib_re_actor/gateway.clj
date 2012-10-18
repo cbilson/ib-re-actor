@@ -40,7 +40,7 @@
 (set-error-handler! connection
                     (fn [a ex]
                       (log-exception "Connection Error" ex)
-                      (try (disconnect)
+                      (try (.eDisconnect @a)
                            (catch Exception ex
                              (log-exception "Error disconnecting" ex)))))
 
