@@ -124,8 +124,9 @@
       (dispatch-message {:type :error :exception (.toString ex)}))
 
     (connectionClosed [this]
+      (log/info "Connection closed")
       (dispatch-message {:type :connection-closed})
-      (restart-agent connection nil))
+      (send connection nil))
 
     ;;; Market Data
     (tickPrice [this tickerId field price canAutoExecute]
@@ -507,9 +508,6 @@ message"
      (send-off connection
                (fn [c]
                  (try
-                   (when (and c (.isConnected c))
-                     (.eDisconnect c))
-
                    (let [connection (com.ib.client.EClientSocket. (create-wrapper))]
                         (.eConnect connection host port client-id)
                         (if (not= default-server-log-level :error)
@@ -522,7 +520,7 @@ message"
   "Call this function to terminate the connections with TWS.
    Calling this function does not cancel orders that have already been sent."
   []
-  (send-off connection (fn [c] (.eDisconnect c) nil)))
+  (send-off connection (fn [c] (.eDisconnect c) c)))
 
 (defn request-current-time []
   (send-connection .reqCurrentTime))
