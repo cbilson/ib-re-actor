@@ -89,11 +89,11 @@
       (apply subscribe-fn args)
       @result
       (finally
-        (log/info "unsubscribing")
+        (log/debug "unsubscribing")
         (g/unsubscribe handler)
-        (log/info "completing")
+        (log/debug "completing")
         (completion-fn)
-        (log/info "completed")))))
+        (log/debug "completed")))))
 
 (defn get-current-price [con]
   (let [fields [:open-tick :bid-price :close-price :last-size :low :ask-size :bid-size :last-price :ask-price :high :volume]

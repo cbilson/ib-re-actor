@@ -1,10 +1,9 @@
 (ns ib-re-actor.gateway
-  "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
-  (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]]
-        [ib-re-actor.mapping]
-        [clojure.tools.logging :only [info warn error debug]])
-  (:require [clojure.xml :as xml]
-            [clojure.tools.logging :as log]))
+     "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
+     (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]]
+           [ib-re-actor.mapping])
+     (:require [clojure.xml :as xml]
+               [clojure.tools.logging :as log]))
 
 (defn- get-stack-trace [ex]
   (let [sw (java.io.StringWriter.)
@@ -64,7 +63,7 @@
   fs)
 
 (defn- dispatch-message [msg]
-  (info "Dispatching: " msg)
+  (log/debug "Dispatching: " msg)
   (send-off listeners invoke-all msg))
 
 (defn- is-finish? [date-string]
@@ -292,11 +291,12 @@
     (historicalData [this requestId date open high low close volume count wap hasGaps]
       (if (is-finish? date)
         (dispatch-message {:type :price-bar-complete :request-id requestId})
-        (dispatch-message
-         {:type :price-bar :request-id requestId
-          :time (translate :from-ib :date-time date)
-          :open open :high high :low low :close close :volume volume
-          :trade-count count :WAP wap :has-gaps? hasGaps})))
+        (do (log/info date)
+            (dispatch-message
+             {:type :price-bar :request-id requestId
+              :time (translate :from-ib :timestamp date)
+              :open open :high high :low low :close close :volume volume
+              :trade-count count :WAP wap :has-gaps? hasGaps}))))
 
     ;;; Market Scanners
     (scannerParameters [this xml]
