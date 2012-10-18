@@ -1,7 +1,7 @@
 (ns ib-re-actor.positions
   (:require [ib-re-actor.gateway :as g]))
 
-(def positions (atom nil))
+(defonce positions (atom nil))
 
 (defn handle-portfolio-update [{:keys [type contract] :as msg}]
   (when (= type :update-portfolio)
