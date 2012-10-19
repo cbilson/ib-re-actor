@@ -13,8 +13,8 @@
 
 (defn- log-exception
   ([ex msg]
-     (error msg ": " (.getMessage ex))
-     (error "Stack Trace: " (get-stack-trace ex)))
+     (log/error msg ": " (.getMessage ex))
+     (log/error "Stack Trace: " (get-stack-trace ex)))
   ([ex]
      (log-exception "Error" ex)))
 
@@ -109,7 +109,7 @@
     (currentTime [this time]
       (dispatch-message {:type :current-time :value (translate :from-ib :date-time time)}))
 
-    (error [this requestId errorCode message]
+    (log/error [this requestId errorCode message]
       (dispatch-message {:type :error :request-id requestId :code errorCode :message message}))
 
     (^void error [this ^String message]
@@ -119,8 +119,8 @@
       (let [sw (java.io.StringWriter.)
             pw (java.io.PrintWriter. sw)]
         (.printStackTrace ex pw)
-        (error "Error: " (.getMessage ex))
-        (error "Stack Trace: " sw))
+        (log/error "Error: " (.getMessage ex))
+        (log/error "Stack Trace: " sw))
       (dispatch-message {:type :error :exception (.toString ex)}))
 
     (connectionClosed [this]
@@ -513,7 +513,7 @@ message"
                           (set-server-log-level connection default-server-log-level))
                         connection)
                    (catch Exception ex
-                     (error "Error trying to connect to " host ":" port ": " ex)))))))
+                     (log/error "Error trying to connect to " host ":" port ": " ex)))))))
 
 (defn disconnect
   "Call this function to terminate the connections with TWS.
