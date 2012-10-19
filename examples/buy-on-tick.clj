@@ -1,61 +1,32 @@
 (ns ib-re-actor.examples.buy-on-tick
-  (:require [ib-re-actor.contracts :as c]
-            [ib-re-actor.connection :as cnxn]
-            [ib-re-actor.orders :as orders]
-            [clj-time.core :as ctc]
-            [clj-time.format :as ctf]))
+  (:require [clj-time.core :as ctc]
+            [clj-time.format :as ctf]
+            [ib-re-actor.gateway :as g]))
 
-(def contracts
-  [(c/futures-contract "NQM2" "GLOBEX")
-   (c/index "TICK-NASD" "NASDAQ")])
+(def k200 {:type :index :symbol "K200" :exchange "KSE"})
+(def tick-kse {:type :index :symbol "TICK-KSE" :exchange "KSE"})
+(def ksz2 {:type :future :local-symbol "KSZ2" :exchange "KSE"})
+(def ksh3 {:type :future :local-symbol "KSH3" :exchange "KSE"})
 
 (def orders (atom []))
 (def positions (atom []))
-(def last-ticks (atom [{} {}]))
+(def ticks (atom {}))
 (def tick-nasd (atom 0.0))
 (def next-valid-order-id (atom -1))
 (def done (promise))
 
-(defn open-positions? []
-  (not (empty? @positions)))
-
-(defn open-orders? []
-  (not (empty? @orders)))
-
-(defn last-tick-nasd []
-  (:last-price (nth @last-ticks 1)))
-
-(defn oversold? []
-  (> -150.0 (last-tick-nasd)))
-
-(defn overbought? []
-  (< 150.0 (last-tick-nasd)))
-
-(defn sell []
-  (prn `(orders/limit-order (nth contracts 0) :sell 1 (+ (:ask-price (first @last-ticks)) 0.25))))
-
-(defn buy []
-  (prn `(orders/limit-order (nth contracts 0) :buy 1 (- (:ask-price (first @last-ticks)) 0.25))))
-
-(defn act []
-  (cond
-   (open-positions?) nil
-   (open-orders?) nil
-   (oversold?) (sell)
-   (overbought?) (buy)))
-
 (defmulti message-handler :type)
 
-(defmethod message-handler :price-tick [{:keys [field ticker-id price value size]}]
-  (swap! last-ticks (fn [ticks]
-                      (assoc ticks ticker-id (assoc (nth ticks ticker-id) field price))))
+(defmethod message-handler :price-tick
+  [{:keys [field contract price value size]}]
+  (swap! ticks
+         (fn [ticks]
+           (assoc ticks contract
+                  (take 10 (cons ))))
   (act))
 
 (defmethod message-handler :string-tick [_])
 (defmethod message-handler :size-tick [_])
-
-(defmethod message-handler :next-valid-order-id [{value :value}]
-  (reset! next-valid-order-id value))
 
 (defmethod message-handler :error [{:keys [exception] :as msg}]
   (if (nil? exception)
@@ -68,13 +39,12 @@
   (prn msg))
 
 (defn subscribe-to-market-data-for-all-contracts [connection]
-  (doseq [[id contract] (map vector (iterate inc 0) contracts)]
-    (cnxn/request-market-data connection id contract)))
+  (doseq [contract contracts)]
+    (g/request-market-data contract))
 
 (defn -main []
-  (cnxn/with-open-connection [connection (cnxn/connect message-handler "localhost" 7496 3)]
-    (subscribe-to-market-data-for-all-contracts connection)
-      @done))
+  (subscribe-to-market-data-for-all-contracts connection)
+  @done)
 
 ; example messages to use when not connected to a gateway
 (def example-messages
@@ -1195,4 +1165,3 @@
 (defn playback-examples []
   (doseq [msg example-messages]
     (message-handler msg)))
-
