@@ -24,12 +24,13 @@
 (defonce default-server-log-level :error)
 (defonce contract->id (atom {}))
 (defonce id->contract (atom {}))
-(defonce next-ticker-id (atom 1))
+(defonce last-ticker-id (atom 1))
 
 (defn register-contract [contract]
   (let [existing (get @contract->id contract)]
     (or existing
-        (let [id (swap! next-ticker-id inc)]
+        (let [id (swap! last-ticker-id inc)]
+          (log/debug "registering id " id " for " contract)
           (swap! contract->id assoc contract id)
           (swap! id->contract assoc id contract)
           id))))
@@ -49,6 +50,9 @@
 (set-error-handler! listeners
                     (fn [a ex]
                       (log-exception "Error in handler" ex)))
+
+(defn clear-listeners []
+  (send listeners (fn [_] nil)))
 
 (defmacro send-connection [f & args]
   `(send-off connection
