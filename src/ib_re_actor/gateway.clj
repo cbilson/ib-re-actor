@@ -423,6 +423,11 @@
                    (translate :to-ib :what-to-show what-to-show)
                    use-regular-trading-hours?))
 
+(defn cancel-real-time-bars
+  "Call this function to stop receiving real time bars for the passed in request-id"
+  [id]
+  (send-connection .cancelRealTimeBars id))
+
 (defn request-news-bulletins
   "Call this function to start receiving news bulletins. Each bulletin will
    be sent in a :news-bulletin, :exchange-unavailable, or :exchange-available
