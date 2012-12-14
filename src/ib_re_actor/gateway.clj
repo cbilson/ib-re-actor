@@ -416,7 +416,10 @@
 (defn request-real-time-bars
   "Start receiving real time bar results."
   [id contract what-to-show use-regular-trading-hours?]
-  (send-connection .reqRealTimeBars id contract 5
+  (send-connection .reqRealTimeBars
+                   id
+                   (map-> com.ib.client.Contract contract)
+                   5
                    (translate :to-ib :what-to-show what-to-show)
                    use-regular-trading-hours?))
 
