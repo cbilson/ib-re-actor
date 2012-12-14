@@ -416,9 +416,17 @@
 (defn request-real-time-bars
   "Start receiving real time bar results."
   [id contract what-to-show use-regular-trading-hours?]
-  (send-connection .reqRealTimeBars id contract 5
+  (send-connection .reqRealTimeBars
+                   id
+                   (map-> com.ib.client.Contract contract)
+                   5
                    (translate :to-ib :what-to-show what-to-show)
                    use-regular-trading-hours?))
+
+(defn cancel-real-time-bars
+  "Call this function to stop receiving real time bars for the passed in request-id"
+  [id]
+  (send-connection .cancelRealTimeBars id))
 
 (defn request-news-bulletins
   "Call this function to start receiving news bulletins. Each bulletin will
