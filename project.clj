@@ -4,4 +4,8 @@
                  [clj-time "0.4.4"]
                  [com.ib/jtsclient "9.68"]
                  [org.clojure/tools.logging "0.2.3"]
-                 [clj-logging-config "1.9.10"]])
+                 [clj-logging-config "1.9.10"]]
+  :repositories {"stuart" "http://stuartsierra.com/maven2"}
+  :profiles {:dev {:dependencies [[midje "1.4.0"]
+                                  [com.stuartsierra/lazytest "1.2.3"]]
+                   :plugins [[lein-midje "2.0.1"]]}})

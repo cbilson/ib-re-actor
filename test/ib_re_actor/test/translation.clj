@@ -1,10 +1,10 @@
-(ns re-actor.test.conversions
-  (:use [re-actor.conversions]
+(ns re-actor.test.translation
+  (:use [ib-re-actor.translation]
         [clj-time.core :only [date-time]]
         [midje.sweet]))
 
 (tabular
- (fact "it can translate to IB durations"
+ (future-fact "it can translate to IB durations"
    (translate-to-ib-duration ?value ?unit) => ?expected)
  :where
  | ?value | ?unit    | ?expected |
@@ -18,7 +18,7 @@
  | 5      | :years   | "5 Y"     |)
 
 (tabular
- (fact "it can translate to IB security codes"
+ (future-fact "it can translate to IB security codes"
    (translate-to-ib-security-type ?value) => ?expected)
  :where
  | ?value            | ?expected |
@@ -31,7 +31,7 @@
  | :bag              | "BAG"     |)
 
 (tabular
- (fact "it can translate bar sizes"
+ (future-fact "it can translate bar sizes"
    (translate-to-ib-bar-size ?value ?unit) => ?expected)
  :where
  | ?value | ?unit    | ?expected |
@@ -45,7 +45,7 @@
  | 2      | :days    | "2 days"  |)
 
 (tabular
- (fact "it can translate what to show strings"
+ (future-fact "it can translate what to show strings"
    (translate-to-ib-what-to-show ?value) => ?expected)
  :where
  | ?value                     | ?expected                   |
@@ -59,18 +59,18 @@
  | :option-volume             | "OPTION_VOLUME"             |
  | :option-open-interest      | "OPTION_OPEN_INTEREST"      |)
 
-(fact "it can translate from IB date-time values"
+(future-fact "it can translate from IB date-time values"
   (translate-from-ib-date-time (long 1000000000)) => (date-time 2001 9 9 1 46 40)
   (translate-from-ib-date-time "1000000000") => (date-time 2001 9 9 1 46 40))
 
-(fact "it can translate date-times to IB expiry strings"
+(future-fact "it can translate date-times to IB expiry strings"
   (translate-to-ib-expiry (date-time 2011 9 17)) => "201109")
 
-(fact "it can translate from IB expiry strings to joda DateTimes"
+(future-fact "it can translate from IB expiry strings to joda DateTimes"
   (translate-from-ib-expiry "201109") => (date-time 2011 9))
 
-(tabular 
- (fact "it can translate time in force values"
+(tabular
+ (future-fact "it can translate time in force values"
    (translate-to-ib-time-in-force ?value) => ?expected)
  :where
  | ?value               | ?expected |
@@ -81,12 +81,12 @@
 
 ;.;. Intellectual 'work' is misnamed; it is a pleasure, a dissipation, and
 ;.;.                                ; is its own highest reward. -- Twain
-(fact "it can translate date-times to the IB format"
+(future-fact "it can translate date-times to the IB format"
   (translate-to-ib-date-time (date-time 2011)) => "20110101 00:00:00 UTC"
   (translate-to-ib-date-time (date-time 2001 4 1 13 30 29)) => "20010401 13:30:29 UTC")
 
 (tabular
- (fact "it can translate order actions"
+ (future-fact "it can translate order actions"
    (translate-to-ib-order-action ?action) => ?expected)
  :where
  | ?action     | ?expected |
@@ -95,14 +95,14 @@
  | :sell-short | "SSHORT"  |)
 
 (tabular
- (fact "it can translate to IB order types"
+ (future-fact "it can translate to IB order types"
    (translate-to-ib-order-type ?type) => ?expected)
  :where
  | ?type  | ?expected |
  | :limit | "LMT"     |)
 
 (tabular
- (fact "it can translate security id types"
+ (future-fact "it can translate security id types"
    (translate-from-ib-security-id-type ?ib-type) => ?re-actor-type
    (translate-to-ib-security-id-type ?re-actor-type) => ?ib-type)
  :where
@@ -113,7 +113,7 @@
  | :ric           | "RIC"    |)
 
 (tabular
- (fact "it can translate tick field codes"
+ (future-fact "it can translate tick field codes"
    (translate-from-ib-tick-field-code ?ib-code) => ?re-actor-code
    (translate-to-ib-tick-field-code ?re-actor-code) => ?ib-code)
  :where
