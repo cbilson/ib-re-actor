@@ -1,6 +1,9 @@
 (ns ib-re-actor.gateway
-     "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
-     (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]]
+     "Functions for connecting to Interactive Brokers TWS Gateway and sending
+requests to it."
+     (:use [ib-re-actor.translation :only [translate integer-account-value?
+                                           numeric-account-value?
+                                           boolean-account-value?]]
            [ib-re-actor.mapping])
      (:require [clojure.xml :as xml]
                [clojure.tools.logging :as log]))
