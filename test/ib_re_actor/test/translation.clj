@@ -1,4 +1,4 @@
-(ns re-actor.test.translation
+(ns ib-re-actor.test.translation
   (:use [ib-re-actor.translation]
         [clj-time.core :only [date-time]]
         [midje.sweet]))

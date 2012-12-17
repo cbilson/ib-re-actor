@@ -1,4 +1,4 @@
-(ns re-actor.test.mapping
+(ns ib-re-actor.test.mapping
   (:use [ib-re-actor.mapping]
         [clj-time.core :only [date-time]]
         [midje.sweet])
