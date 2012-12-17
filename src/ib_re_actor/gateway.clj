@@ -195,8 +195,8 @@ requests to it."
                          :market-data-type (translate :from-ib :market-data-type type)}))
 
     ;;; Orders
-    (orderStatus [this orderId status filled remaining avgFillPrice permId parentId lastFillPrice clientId whyHeld
-                  ]
+    (orderStatus [this orderId status filled remaining avgFillPrice permId
+                  parentId lastFillPrice clientId whyHeld]
       (dispatch-message {:type :order-status :order-id orderId
                          :status (translate :from-ib :order-status status)
                          :filled filled :remaining remaining
@@ -225,15 +225,18 @@ requests to it."
                  (numeric-account-value? avk) (Double/parseDouble value)
                  (boolean-account-value? avk) (Boolean/parseBoolean value)
                  :else value)]
-        (dispatch-message {:type :update-account-value :key avk :value val :currency currency :account accountName})))
+        (dispatch-message {:type :update-account-value :key avk :value val
+                           :currency currency :account accountName})))
 
     (accountDownloadEnd [this account-code]
       (dispatch-message {:type :account-download-end :account-code account-code}))
 
-    (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
-      (dispatch-message {:type :update-portfolio :contract (->map contract) :position position
-                         :market-price marketPrice :market-value marketValue
-                         :average-cost averageCost :unrealized-gain-loss unrealizedPNL
+    (updatePortfolio [this contract position marketPrice marketValue averageCost
+                      unrealizedPNL realizedPNL accountName]
+      (dispatch-message {:type :update-portfolio :contract (->map contract)
+                         :position position :market-price marketPrice
+                         :market-value marketValue :average-cost averageCost
+                         :unrealized-gain-loss unrealizedPNL
                          :realized-gain-loss realizedPNL
                          :account accountName}))
 
@@ -350,9 +353,8 @@ requests to it."
   (swap! next-request-id inc))
 
 (defn request-market-data
-  "Call this function to request market data. The market data will be returned by
-   :price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
-   and :efp-tick messages.
+  "Call this function to request market data. The market data will be returned in
+   :tick messages.
 
    For snapshots, a :tick-snapshot-end message will indicate the snapshot is done.
 
