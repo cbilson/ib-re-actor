@@ -250,7 +250,8 @@ requests to it."
                          :value (->map contractDetails)}))
 
     (bondContractDetails [this requestId contractDetails]
-      (dispatch-message {:type :contract-details :request-id requestId :value contractDetails}))
+      (dispatch-message {:type :contract-details :request-id requestId
+                         :value (->map  contractDetails)}))
 
     (contractDetailsEnd [this requestId]
       (dispatch-message {:type :contract-details-end :request-id requestId}))
