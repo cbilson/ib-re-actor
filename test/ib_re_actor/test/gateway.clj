@@ -1,196 +1,289 @@
 (ns ib-re-actor.test.gateway
   (:use [ib-re-actor.gateway]
+        [ib-re-actor.translation]
+        [ib-re-actor.mapping]
         [clj-time.core :only [date-time]]
-        [midje.sweet])
+        [midje.sweet]
+        [midje.util :only [testable-privates]])
   (:import [com.ib.client Contract Order OrderState ContractDetails Execution]))
 
-(defn process-to-message []
- ;;; FIXME: this needs to be re-implemented and maybe renamed
-  )
+(testable-privates ib-re-actor.gateway dispatch-message create-wrapper)
 
-(future-fact "it handles historicalData messages from IB"
-  (process-to-messages
-   (.historicalData 1 "1000000000" 2.0 3.0 4.0 5.0 6 7 8.0 true))
-  => [{:type :price-bar :request-id 1 :time (date-time 2001 9 9 1 46 40)
-       :open 2.0 :high 3.0 :low 4.0 :close 5.0 :volume 6 :count 7 :WAP 8.0
-       :has-gaps? true}])
+(def some-contract {:symbol "SOME TICKER"})
+(def some-contract-id (register-contract some-contract))
 
-(future-fact "it handles historicalData complete messages from IB"
-  (process-to-messages
-   (.historicalData 42 "finished" 0.0 0.0 0.0 0.0 0 0 0.0 false))
-  => [{:type :complete :request-id 42}])
+(defn make-order-state []
+  (let [ctor (first (.getDeclaredConstructors OrderState))]
+    (.setAccessible ctor true)
+    (.newInstance ctor nil)))
 
-(future-fact "it handles realtime bars"
-  (process-to-messages
-   (.realtimeBar 51 1000000000 1.0 2.0 3.0 4.0 5 6.0 7))
-  => [{:type :price-bar :request-id 51
-       :time (date-time 2001 9 9 1 46 40)
-       :open 1.0 :high 2.0 :low 3.0 :close 4.0 :volume 5 :count 7
-       :WAP 6.0}])
+(defmacro wrapper->messages
+  "Given 1 or more wrapper calls, creates a wrapper and applies the method calls to the
+wrapper, collecting and returning any messages the wrapper dispatched."
+  [& calls]
+  (let [wrapper (gensym "wrapper")]
+    `(let [messages# (atom nil)
+           ~wrapper (create-wrapper)]
+       (with-redefs [ib-re-actor.gateway/dispatch-message
+                     (fn [m#] (swap! messages# conj m#))]
+         ~@(map #(concat [`. wrapper] %) calls))
+       @messages#)))
 
-(future-fact "it handles price ticks"
-  (process-to-messages
-   (.tickPrice 1 2 3.0 1))
-  => [{:type :price-tick :ticker-id 1 :field :ask-price :price 3.0 :can-auto-execute? true}])
+(defmacro wrapper->message
+  "Given 1 or more wrapper calls, creates a wrapper and applies the method calls to the
+wrapper, collecting and returning any messages the wrapper dispatched."
+  [& calls]
+  (let [wrapper (gensym "wrapper")]
+    `(let [messages# (atom nil)
+           ~wrapper (create-wrapper)]
+       (with-redefs [ib-re-actor.gateway/dispatch-message
+                     (fn [m#] (swap! messages# conj m#))]
+         ~@(map #(concat [`. wrapper] %) calls))
+       (first @messages#))))
 
-(future-fact "it handles size ticks"
-  (process-to-messages
-   (.tickSize 1 3 4))
-  => [{:type :size-tick :ticker-id 1 :field :ask-size :size 4}])
+(fact "when IB sends the current time, it dispatches a current time message"
+      (wrapper->message (currentTime 1000000000))
+      => {:type :current-time :value (date-time 2001 9 9 1 46 40)})
 
-(future-fact "it handles option computation ticks"
-  (process-to-messages (.tickOptionComputation 1 10 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))
-  => [{:type :option-computation-tick :field :bid-option-computation
-       :ticker-id 1
-       :implied-volatility 2.0 :delta 3.0 :option-price 4.0
-       :pv-dividends 5.0 :gamma 6.0 :vega 7.0 :theta 8.0 :underlying-price 9.0}])
+(fact "historicalData messages from IB"
+      (wrapper->message (historicalData 1 "1000000000" 2.0 3.0 4.0 5.0 6 7 8.0 true))
+      => {:type :price-bar :request-id 1 :time (date-time 2001 9 9 1 46 40)
+          :open 2.0 :high 3.0 :low 4.0 :close 5.0 :volume 6 :trade-count 7 :WAP 8.0
+          :has-gaps? true})
 
-(future-fact "it handles generic ticks"
-  (process-to-messages (.tickGeneric 1 50 2.0))
-  => [{:type :generic-tick :field :bid-yield
-       :ticker-id 1 :value 2.0}])
+(fact "historicalData complete messages from IB"
+      (wrapper->message
+       (historicalData 1 "finished" 0.0 0.0 0.0 0.0 0 0 0.0 false))
+      => {:type :price-bar-complete :request-id 1})
 
-(future-fact "it handles string ticks"
-  (process-to-messages (.tickString 1 45 "1000000000"))
-  => [{:type :string-tick :field :last-timestamp
-       :ticker-id 1 :value (date-time 2001 9 9 1 46 40)}])
+(fact "realtime bars"
+      (wrapper->message (realtimeBar 1 1000000000
+                                     1.0 2.0 3.0 4.0 5 6.0 7))
+      => {:type :price-bar :request-id 1
+          :time (date-time 2001 9 9 1 46 40)
+          :open 1.0 :high 2.0 :low 3.0 :close 4.0 :volume 5 :count 7
+          :WAP 6.0})
 
-(future-fact "it handles EFP ticks"
-  (process-to-messages (.tickEFP 1 38 2.0 "0.03 %" 4.0 5 "2001-04-01" 6.0 7.0))
-  => [{:type :efp-tick :field :bid-efp-computation
-       :ticker-id 1 :basis-points 2.0 :formatted-basis-points "0.03 %"
-       :implied-future 4.0 :hold-days 5 :future-expiry "2001-04-01"
-       :dividend-impact 6.0 :dividends-to-expiry 7.0}])
+(fact "price ticks"
+      (wrapper->message (tickPrice some-contract-id 2 3.0 1))
+      => {:type :tick :field :ask-price :value 3.0
+          :can-auto-execute? true :contract some-contract})
 
-(future-fact "it handles snapshot end"
-  (process-to-messages (.tickSnapshotEnd 999))
-  => [{:type :tick-snapshot-end :request-id 999}])
+(fact "size ticks"
+      (wrapper->message (tickSize some-contract-id 3 4))
+      => {:type :tick :field :ask-size :value 4
+          :contract some-contract})
 
-(future-fact "it handles connection closed"
-  (process-to-messages (.connectionClosed))
-  => [{:type :connection-closed}])
+(fact "option computation ticks"
+      (wrapper->message
+       (tickOptionComputation some-contract-id 10 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))
+      => {:type :tick :field :bid-option-computation :contract some-contract
+          :implied-volatility 2.0 :delta 3.0 :option-price 4.0
+          :pv-dividends 5.0 :gamma 6.0 :vega 7.0 :theta 8.0 :underlying-price 9.0})
 
-(future-fact "it handles errors"
-  (let [ex (Exception.)]
-    (process-to-messages
-     (.error 1 2 "some message")
-     (.error "some other message")
-     (.error ex))
-    => [{:type :error :request-id 1 :code 2 :message "some message"}
-        {:type :error :message "some other message"}
-        {:type :error :exception ex}]))
+(fact "generic ticks"
+      (wrapper->message (tickGeneric some-contract-id 50 2.0))
+      => {:type :tick :field :bid-yield
+          :contract some-contract :value 2.0})
 
-(future-fact "it handless time messages"
-  (process-to-messages (.currentTime 1000000000))
-  => [{:type :current-time :value (date-time 2001 9 9 1 46 40)}])
+(fact "string ticks"
+      (fact "last timestamp ticks"
+            (wrapper->message
+             (tickString some-contract-id 45 "1000000000"))
+            => {:type :tick :field :last-timestamp
+                :contract some-contract
+                :value (date-time 2001 9 9 1 46 40)}))
 
-(future-fact "it handles order status updates"
-  (process-to-messages (.orderStatus 1 "PendingSubmit" 2 3 4.0 5 6 7.0 8 "locate"))
-  => [{:type :order-status :order-id 1 :status :pending-submit
-       :filled 2 :remaining 3 :average-fill-price 4.0 :permanent-id 5
-       :parent-id 6 :last-fill-price 7.0 :client-id 8 :why-held "locate"}])
+(fact "EFP ticks"
+      (wrapper->message (tickEFP some-contract-id 38 2.0 "0.03 %" 4.0 5
+                                 "2001-04-01" 6.0 7.0))
+      => {:type :tick :field :bid-efp-computation
+          :contract some-contract :basis-points 2.0
+          :formatted-basis-points "0.03 %"
+          :implied-future 4.0 :hold-days 5 :future-expiry "2001-04-01"
+          :dividend-impact 6.0 :dividends-to-expiry 7.0})
 
-(future-fact "it handles open updates - but I can't construct OrderStates..."
-  (-> (process-to-messages (.openOrder 1 (Contract.) (Order.) (OrderState.)))  first)
-  => (contains {:type :open-order :order-id 1}))
+(fact "snapshot end"
+      (wrapper->message (tickSnapshotEnd 1))
+      => {:type :tick-snapshot-end :request-id 1})
 
-(future-fact "it handles order end messages"
-  (process-to-messages (.openOrderEnd))
-  => [{:type :open-order-end}])
+(fact "connection closed"
+      (wrapper->message (connectionClosed))
+      => {:type :connection-closed})
 
-(future-fact "it can give back the next valid id from the client"
-  (process-to-messages (.nextValidId 42))
-  => [{:type :next-valid-order-id :value 42}])
+(fact "errors"
+      (fact "specific to a particular request"
+            (wrapper->message (error 1 99999 "some message"))
+            => {:type :error :request-id 1 :code 99999 :message "some message"})
+      (fact "just a message"
+            (wrapper->message (error "some message"))
+            => {:type :error :message "some message"})
+      (fact "exceptions"
+            (let [ex (Exception. "some problem")]
+              (wrapper->message (error ex))
+              => {:type :error :exception "java.lang.Exception: some problem"})))
 
-(future-fact "it can give me back updated account value"
-  (process-to-messages (.updateAccountValue "CashBalance" "100.0" "ZWD" "some account this applies to"))
-  => [{:type :update-account-value :key :cash-balance :value 100.0 :currency "ZWD" :account "some account this applies to"}])
+(fact "time messages"
+      (wrapper->message (currentTime 1000000000))
+      => {:type :current-time :value (date-time 2001 9 9 1 46 40)})
 
-(future-fact "it can give me back and integer value for day trades remaining for an account"
-  (process-to-messages (.updateAccountValue "DayTradesRemaining" "5" nil "some account this applies to"))
-  => [{:type :update-account-day-trades-remaining :value 5 :account "some account this applies to"}])
+(fact "order status updates"
+      (wrapper->message (orderStatus 1 "PendingSubmit" 2 3 4.0 5 6 7.0 8 "locate"))
+      => {:type :order-status :order-id 1
+          :status :pending-submit
+          :filled 2 :remaining 3 :average-fill-price 4.0 :permanent-id 5
+          :parent-id 6 :last-fill-price 7.0 :client-id 8
+          :why-held "locate"})
 
-(future-fact "it can handle updates to the portfolio"
-  (let [c1 (Contract.) c2 (Contract.) c3 (Contract.)]
-    (process-to-messages (.updatePortfolio c1 1 2.0 3.0 4.0 5.0 6.0 "some account")
-                         (.updatePortfolio c2 7 8.0 9.0 10.0 11.0 12.0 "some other account")
-                         (.updatePortfolio c3 13 14.0 15.0 16.0 17.0 18.0 "yet another account"))
-    => [{:type :update-portfolio :contract c1 :position 1 :market-price 2.0 :market-value 3.0
-         :average-cost 4.0 :unrealized-gain-loss 5.0 :realized-gain-loss 6.0 :account "some account"}
-        {:type :update-portfolio :contract c2 :position 7 :market-price 8.0 :market-value 9.0
-         :average-cost 10.0 :unrealized-gain-loss 11.0 :realized-gain-loss 12.0 :account "some other account"}
-        {:type :update-portfolio :contract c3 :position 13 :market-price 14.0 :market-value 15.0
-         :average-cost 16.0 :unrealized-gain-loss 17.0 :realized-gain-loss 18.0 :account "yet another account"}]))
+(fact "open order updates"
+      (let [order (Order.)
+            mapped-order (->map order)
+            order-state (make-order-state)
+            mapped-order-state (->map order-state)
+            contract (Contract.)
+            mapped-contract (->map contract)]
+        (wrapper->message (openOrder 1 contract order order-state))
+        => {:type :open-order :order-id 1 :contract mapped-contract
+            :order mapped-order :order-state mapped-order-state}))
 
-(future-fact "it can tell me the last update date of the account information"
-  (process-to-messages (.updateAccountTime "1000000000"))
-  => [{:type :update-account-time :value (date-time 2001 9 9 1 46 40)}])
+(fact "order end messages"
+      (wrapper->messages (openOrderEnd))
+      => [{:type :open-order-end}])
 
-(future-fact "it can relay contract details"
-  (let [cd (ContractDetails.)]
-    (process-to-messages (.contractDetails 1 cd))
-    => [{:type :contract-details :request-id 1 :value cd}]))
+(fact "next valid id"
+      (wrapper->messages (nextValidId 42))
+      => [{:type :next-valid-order-id :value 42}])
 
-(future-fact "it can tell me when contract details are done"
-  (process-to-messages (.contractDetailsEnd 42))
-  => [{:type :contract-details-end :request-id 42}])
+(fact "updating account value"
+      (fact "integer account value"
+            (wrapper->message
+             (updateAccountValue "DayTradesRemaining" "5" nil "some account"))
+            => {:type :update-account-value :key :day-trades-remaining
+                :value 5 :currency nil :account "some account"})
+      (fact "numeric account value"
+            (wrapper->message
+             (updateAccountValue "CashBalance" "123.456" "ZWD" "some account"))
+            => {:type :update-account-value :key :cash-balance
+                :value 123.456 :currency "ZWD" :account "some account"})
+      (fact "boolean account value"
+            (fact "true value"
+                  (wrapper->message
+                   (updateAccountValue "AccountReady" "true" nil "some account"))
+                  => {:type :update-account-value :key :account-ready
+                      :value true :currency nil :account "some account"})
+            (fact "false value"
+                  (wrapper->message
+                   (updateAccountValue "AccountReady" "false" nil "some account"))
+                  => {:type :update-account-value :key :account-ready
+                      :value false :currency nil :account "some account"}))
+      (fact "other type of account value"
+            (wrapper->message
+             (updateAccountValue "AccountCode" "some code" nil "some account"))
+            => {:type :update-account-value :key :account-code
+                :value "some code" :currency nil :account "some account"}))
 
-(future-fact "it can give me bond contract details"
-  (let [cd (ContractDetails.)]
-    (process-to-messages (.bondContractDetails 1 cd))
-    => [{:type :contract-details :request-id 1 :value cd}]))
+(fact "updates to portfolio"
+      (let [contract (Contract.)
+            mapped-contract (->map contract)]
+        (wrapper->message (updatePortfolio contract 1 2.0 3.0 4.0 5.0 6.0 "some account"))
+        => {:type :update-portfolio :contract mapped-contract :position 1
+            :market-price 2.0 :market-value 3.0 :average-cost 4.0
+            :unrealized-gain-loss 5.0 :realized-gain-loss 6.0
+            :account "some account"}))
 
-(future-fact "it can give me execution details"
-  (let [contract (Contract.)
-        execution (Execution.)]
-    (process-to-messages (.execDetails 1 contract execution))
-    => [{:type :execution-details :request-id 1 :contract contract :value execution}]))
+(fact "last update date of the account information"
+      (wrapper->message (updateAccountTime "13:45"))
+      => {:type :update-account-time :value (date-time 1970 1 1 13 45)})
 
-(future-fact "it can tell me when execution details are done"
-  (process-to-messages (.execDetailsEnd 1))
-  => [{:type :execution-details-end :request-id 1}])
+(fact "contract details"
+      (let [cd (ContractDetails.)
+            mapped-cd (->map cd)]
+        (wrapper->message (contractDetails 1 cd))
+        => {:type :contract-details :request-id 1 :value mapped-cd}))
 
-(future-fact "it tells me when market depth changes"
-  (process-to-messages (.updateMktDepth 1 2 0 1 3.0 4))
-  => [{:type :update-market-depth :ticker-id 1 :position 2 :operation :insert :side :bid :price 3.0 :size 4}])
+(fact "when contract details are done"
+      (wrapper->message (contractDetailsEnd 42))
+      => {:type :contract-details-end :request-id 42})
 
-(future-fact "it tells me then the Level II market depth changes"
-  (process-to-messages (.updateMktDepthL2 1 2 "some market maker" 1 0 3.0 4))
-  => [{:type :update-market-depth-level-2 :ticker-id 1 :position 2
-       :market-maker "some market maker" :operation :update :side :ask :price 3.0 :size 4}])
+(fact "it can give me bond contract details"
+      (let [cd (ContractDetails.)
+            mapped-cd (->map cd)]
+        (wrapper->message (bondContractDetails 1 cd))
+        => {:type :contract-details :request-id 1 :value mapped-cd}))
 
-(future-fact "it tells me when there is a new news bulletin - BUT the compiler says that method doesn't exist"
-  (process-to-messages (.updateNewsBulletin 1 0 "some message text" "some exchange")
-                       (.updateNewsBulletin 2 1 "typhoon shuts down HK Exchange!!!" "HKSE")
-                       (.updateNewsBulletin 3 2 "HK Exchange back in business" :exchange "HKSE"))
-  => [{:type :news-bulletin :id 1 :message "some message text" :exchange "some exchange"}
-      {:type :exchange-unavailable :id 2 :message "typhoon shuts down HK Exchange!!!" :exchange "HKSE"}
-      {:type :exchange-available :id 3 :message "HK Exchange back in business" :exchange "HKSE"}])
+(fact "execution details"
+      (let [contract (Contract.)
+            mapped-contract (->map contract)
+            execution (Execution.)
+            mapped-execution (->map execution)]
+        (wrapper->message (execDetails 1 contract execution))
+        => {:type :execution-details :request-id 1
+            :contract mapped-contract :value mapped-execution}))
 
-(future-fact "it can give me a list of managed accounts"
-  (process-to-messages (.managedAccounts "account1, account2, account3"))
-  => [{:type :managed-accounts :accounts ["account1", "account2", "account3"]}])
+(fact "when execution details are done"
+      (wrapper->message (execDetailsEnd 1))
+      => {:type :execution-details-end :request-id 1})
 
-(future-fact "it can give me Financial Advisor information"
-  (process-to-messages (.receiveFA 1 "<some><group-xml /></some>")
-                       (.receiveFA 2 "<some><profile-xml /></some>")
-                       (.receiveFA 3 "<some><account-aliases-xml /></some>"))
-  => [{:type :financial-advisor-groups :value "<some><group-xml /></some>"}
-      {:type :financial-advisor-profile :value "<some><profile-xml /></some>"}
-      {:type :financial-advisor-account-aliases :value "<some><account-aliases-xml /></some>"}])
+(fact "when market depth changes"
+      (wrapper->message (updateMktDepth some-contract-id 2 0 1 3.0 4))
+      => {:type :update-market-depth :contract some-contract :position 2
+          :operation :insert :side :bid :price 3.0 :size 4})
 
-(future-fact "it can give me valid scanner parameters"
-  (process-to-messages (.scannerParameters "<some><scanner><parameters /></scanner></some>"))
-  => [{:type :scan-parameters :value "<some><scanner><parameters /></scanner></some>"}])
+(fact "when the Level II market depth changes"
+      (wrapper->message (updateMktDepthL2 some-contract-id 2 "some market maker"
+                                          1 0 3.0 4))
+      => {:type :update-market-depth-level-2 :contract some-contract :position 2
+          :market-maker "some market maker" :operation :update :side :ask
+          :price 3.0 :size 4})
 
-(future-fact "it gives me scanner results"
-  (let [cd (ContractDetails.)]
-    (process-to-messages (.scannerData 1 2 cd "some distance" "some benchmark" "some projection"
-                                       "some efp combo legs"))
-    => [{:type :scan-result :request-id 1 :rank 2 :contract-details cd
-         :distance "some distance" :benchmark "some benchmark" :projection "some projection"
-         :legs "some efp combo legs"}]))
+(fact "when there is a new news bulletin"
+      (fact "in general"
+            (wrapper->message (updateNewsBulletin 1 0 "some message text" "some exchange"))
+            => {:type :news-bulletin :id 1 :message "some message text"
+                :exchange "some exchange"})
+      (fact "saying an exchange in unavailable"
+            (wrapper->message (updateNewsBulletin 2 1 "typhoon shuts down HK Exchange!!!"
+                                                  "HKSE"))
+            => {:type :exchange-unavailable :id 2
+                :message "typhoon shuts down HK Exchange!!!"
+                :exchange "HKSE"})
+      (fact "saying an exchange is available again"
+            (wrapper->message (updateNewsBulletin 3 2 "HK Exchange back in business"
+                                                  "HKSE"))
+            => {:type :exchange-available :id 3
+                :message "HK Exchange back in business"
+                :exchange "HKSE"}))
 
-(future-fact "it tells me when a scan is done"
-  (process-to-messages (.scannerDataEnd 1))
-  => [{:type :scan-end :request-id 1}])
+(fact "getting a list of managed accounts"
+      (wrapper->message (managedAccounts "account1, account2, account3"))
+      => {:type :managed-accounts :accounts ["account1", "account2", "account3"]})
+
+(fact "getting Financial Advisor information"
+      (fact "groups"
+            (wrapper->message (receiveFA 1 "<some><group-xml /></some>"))
+            => {:type :financial-advisor-groups :value "<some><group-xml /></some>"})
+      (fact "profile"
+            (wrapper->message (receiveFA 2 "<some><profile-xml /></some>"))
+            => {:type :financial-advisor-profile :value "<some><profile-xml /></some>"})
+      (fact "account aliases"
+            (wrapper->message (receiveFA 3 "<some><account-aliases-xml /></some>"))
+            => {:type :financial-advisor-account-aliases
+                :value "<some><account-aliases-xml /></some>"}))
+
+(fact "getting valid scanner parameters"
+      (wrapper->message
+       (scannerParameters "<some><scanner><parameters /></scanner></some>"))
+      => {:type :scan-parameters :value "<some><scanner><parameters /></scanner></some>"})
+
+(fact "getting scanner results"
+      (let [cd (ContractDetails.)
+            mapped-cd (->map cd)]
+        (wrapper->message (scannerData 1 2 cd "some distance" "some benchmark"
+                                       "some projection" "some efp combo legs"))
+        => {:type :scan-result :request-id 1 :rank 2 :contract-details mapped-cd
+            :distance "some distance" :benchmark "some benchmark"
+            :projection "some projection" :legs "some efp combo legs"}))
+
+(fact "when a scan is done"
+      (wrapper->message (scannerDataEnd 1))
+      => {:type :scan-end :request-id 1})
