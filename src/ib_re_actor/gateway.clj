@@ -38,6 +38,9 @@ requests to it."
           (swap! id->contract assoc id contract)
           id))))
 
+(defn lookup-contract [id]
+  (get @id->contract id))
+
 (defonce connection (agent nil))
 
 (set-error-mode! connection :continue)
@@ -138,19 +141,19 @@ requests to it."
     ;;; Market Data
     (tickPrice [this tickerId field price canAutoExecute]
       (dispatch-message {:type :tick :field (translate :from-ib :tick-field-code field)
-                         :contract (get @id->contract tickerId)
+                         :contract (lookup-contract tickerId)
                          :value price
                          :can-auto-execute? (= 1 canAutoExecute)}))
 
     (tickSize [this tickerId field size]
       (dispatch-message {:type :tick :field (translate :from-ib :tick-field-code field)
-                         :contract (get @id->contract tickerId)
+                         :contract (lookup-contract tickerId)
                          :value size}))
 
     (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code field)
-                         :contract (get @id->contract tickerId)
+                         :contract (lookup-contract tickerId)
                          :implied-volatility impliedVol
                          :option-price optPrice
                          :pv-dividends pvDividend
@@ -160,25 +163,25 @@ requests to it."
     (tickGeneric [this tickerId tickType value]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code tickType)
-                         :contract (get @id->contract tickerId) :value value}))
+                         :contract (lookup-contract tickerId) :value value}))
 
     (tickString [this tickerId tickType value]
       (let [field (translate :from-ib :tick-field-code tickType)]
         (cond
          (= field :last-timestamp)
-         (dispatch-message {:type :timestamp-tick :field field
-                            :contract (get @id->contract tickerId)
+         (dispatch-message {:type :tick :field field
+                            :contract (lookup-contract tickerId)
                             :value (translate :from-ib :date-time value)})
 
          :else
-         (dispatch-message {:type :string-tick :field field
-                            :contract (get @id->contract tickerId)
+         (dispatch-message {:type :tick :field field
+                            :contract (lookup-contract tickerId)
                             :value val}))))
 
     (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code tickType)
-                         :contract (get @id->contract tickerId)
+                         :contract (lookup-contract tickerId)
                          :basis-points basisPoints :formatted-basis-points formattedBasisPoints
                          :implied-future impliedFuture :hold-days holdDays :future-expiry futureExpiry
                          :dividend-impact dividendImpact :dividends-to-expiry dividendsToExpiry}))
@@ -264,7 +267,7 @@ requests to it."
     ;;; Market Depth
     (updateMktDepth [this tickerId position operation side price size]
       (dispatch-message {:type :update-market-depth
-                         :contract (get @id->contract tickerId)
+                         :contract (lookup-contract tickerId)
                          :position position
                          :operation (translate :from-ib :market-depth-row-operation operation)
                          :side (translate :from-ib :market-depth-side side)
@@ -272,7 +275,7 @@ requests to it."
 
     (updateMktDepthL2 [this tickerId position marketMaker operation side price size]
       (dispatch-message {:type :update-market-depth-level-2
-                         :contract (get @id->contract tickerId) :position position
+                         :contract (lookup-contract tickerId) :position position
                          :market-maker marketMaker
                          :operation (translate :from-ib :market-depth-row-operation operation)
                          :side (translate :from-ib :market-depth-side side)
