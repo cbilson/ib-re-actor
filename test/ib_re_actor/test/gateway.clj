@@ -17,18 +17,6 @@
     (.setAccessible ctor true)
     (.newInstance ctor nil)))
 
-(defmacro wrapper->messages
-  "Given 1 or more wrapper calls, creates a wrapper and applies the method calls to the
-wrapper, collecting and returning any messages the wrapper dispatched."
-  [& calls]
-  (let [wrapper (gensym "wrapper")]
-    `(let [messages# (atom nil)
-           ~wrapper (create-wrapper)]
-       (with-redefs [ib-re-actor.gateway/dispatch-message
-                     (fn [m#] (swap! messages# conj m#))]
-         ~@(map #(concat [`. wrapper] %) calls))
-       @messages#)))
-
 (defmacro wrapper->message
   "Given 1 or more wrapper calls, creates a wrapper and applies the method calls to the
 wrapper, collecting and returning any messages the wrapper dispatched."
@@ -147,12 +135,12 @@ wrapper, collecting and returning any messages the wrapper dispatched."
             :order mapped-order :order-state mapped-order-state}))
 
 (fact "order end messages"
-      (wrapper->messages (openOrderEnd))
-      => [{:type :open-order-end}])
+      (wrapper->message (openOrderEnd))
+      => {:type :open-order-end})
 
 (fact "next valid id"
-      (wrapper->messages (nextValidId 42))
-      => [{:type :next-valid-order-id :value 42}])
+      (wrapper->message (nextValidId 42))
+      => {:type :next-valid-order-id :value 42})
 
 (fact "updating account value"
       (fact "integer account value"
