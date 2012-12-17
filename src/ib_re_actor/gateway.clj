@@ -251,7 +251,9 @@ requests to it."
 
     ;;; Execution Details
     (execDetails [this requestId contract execution]
-      (dispatch-message {:type :execution-details :request-id requestId :contract (->map contract) :value execution}))
+      (dispatch-message {:type :execution-details :request-id requestId
+                         :contract (->map contract)
+                         :value (->map execution)}))
 
     (execDetailsEnd [this requestId]
       (dispatch-message {:type :execution-details-end :request-id requestId}))

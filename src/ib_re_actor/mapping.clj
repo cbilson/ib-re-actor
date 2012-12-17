@@ -115,6 +115,21 @@
   [:exchange m_exchange]
   [:side m_side :translation :order-action])
 
+(defmapping com.ib.client.Execution
+  [:account-code m_acctNumber]
+  [:average-price m_avgPrice]
+  [:client-id m_clientId]
+  [:cummulative-quantity m_cumQty]
+  [:exchange m_exchange]
+  [:execution-id m_execId]
+  [:liquidate-last m_liquidation]
+  [:order-id m_orderId]
+  [:permanent-id m_permId]
+  [:price m_price]
+  [:shares m_shares]
+  [:side m_side :translation :execution-side]
+  [:time m_time])
+
 (defmapping com.ib.client.Order
   [:order-id m_orderId]
   [:client-id m_clientId]

@@ -551,6 +551,10 @@
                    {true 1
                     false 0})
 
+(translation-table execution-side
+                   {:buy "BOT"
+                    :sell "SLD"})
+
 (defmethod translate [:to-ib :duration] [_ _ [val unit]]
   (str val " " (translate :to-ib :duration-unit unit)))
 
