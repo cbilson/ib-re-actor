@@ -640,6 +640,8 @@
                         {:value val
                          :expected-form "MM/dd/yyyy"}))))))
 
+;;; FIXME: We should turn time of day into some kind of data structure that does
+;;; no have a date component.
 (defmethod translate [:from-ib :time-of-day] [_ _ val]
   (when val
     (try
