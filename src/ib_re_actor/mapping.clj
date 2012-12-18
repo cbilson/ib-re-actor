@@ -60,12 +60,12 @@ field on the object."
           (catch ClassCastException ex#
             (throw (ex-info (str "Failed to map field " ~(str field)
                                  ~(when translation
-                                    (str " using translation " translation))
-                                 " value " ~val)
+                                    (str ", using translation " translation))
+                                 ", value \"" ~val "\"")
                             {:class (class ~this)
                              :key ~key
                              :field ~(str field)
-                             :tranlation ~translation}
+                             :translation ~translation}
                             ex#))))))))
 
 (defmacro defmapping
