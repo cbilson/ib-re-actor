@@ -1,4 +1,11 @@
 (ns ib-re-actor.mapping
+  "Functions for mapping to and from Interactive Brokers classes. It is much easier to work
+with maps in clojure, so we use these functions internally on all the data we exchange
+with the Interactive Brokers API.
+
+In addition to just converting to maps, we also use these functions to translate some
+primitives: strings with constant values into keywords, booleans in strings into booleans,
+date strings into clj-time dates, etc."
   (:use [clojure.string :only [join]]
         [ib-re-actor.translation :only [translate]]))
 
@@ -9,6 +16,8 @@
 (defmulti map-> (fn [type _] type))
 
 (defn- assoc-if-val-non-nil
+  "Chainable, conditional assoc. If v is not nil, assoc it and return the result,
+otherwise, don't and return m unchanged."
   ([m k v]
      (if (nil? v) m (assoc m k v)))
   ([m k v translation]
@@ -17,7 +26,17 @@
 (defn- assoc-nested [m k v]
   (if (nil? v) m (assoc m k (->map v))))
 
-(defn emit-map<-field [this [k field & options]]
+(defn emit-map<-field
+  "When mapping from an object to a clojure map, this creates a call to assoc in the value.
+optional parameters:
+
+   :translation <<translation key from translation.clj>>:
+      Specifying this option will add a call to (translate to-from ...) in each field
+setter or assoc when mapping to and from objects.
+
+   :nested <<type>>:
+      Specifying this will map a nested instance of another class."
+  [this [k field & options]]
   (let [{:keys [translation nested]} (apply hash-map options)
         m (gensym "m")]
     (cond
@@ -25,7 +44,10 @@
      (not (nil? nested)) `((assoc-nested ~k (. ~this ~field)))
      :otherwise `((assoc-if-val-non-nil ~k (. ~this ~field))))))
 
-(defn emit-map->field [m this [key field & options]]
+(defn emit-map->field
+  "When mapping from a clojure map to an object, this creates a call to set the associated
+field on the object."
+  [m this [key field & options]]
   (let [{:keys [translation nested]} (apply hash-map options)
         val (gensym "val")]
     `((if-let [~val (~key ~m)]
@@ -46,7 +68,11 @@
                              :tranlation ~translation}
                             ex#))))))))
 
-(defmacro defmapping [c & field-keys]
+(defmacro defmapping
+  "This is used to extend an Interactive Brokers API class with a method to convert it into
+a clojure map, and using the same information, add a method to the map-> multimethod to
+convert maps into instances of the IB class."
+  [c & field-keys]
   (let [this (gensym "this")
         map (gensym "map")
         valid-keys (gensym "valid-keys")]
@@ -61,7 +87,10 @@
            ~@(mapcat (partial emit-map->field map this) field-keys)
            ~this)))))
 
-(defmacro defmapping-readonly [c & field-keys]
+(defmacro defmapping-readonly
+  "Same as defmapping, but for classes that don't have public constructors. Since we can't
+create instances, we will only map from objects to clojure maps."
+  [c & field-keys]
   (let [this (gensym "this")]
     `(extend-type ~c
        Mappable
