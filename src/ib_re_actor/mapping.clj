@@ -29,11 +29,22 @@
   (let [{:keys [translation nested]} (apply hash-map options)
         val (gensym "val")]
     `((if-let [~val (~key ~m)]
-        (set! (. ~this ~field)
-              ~(cond
-                (not (nil? translation)) `(translate :to-ib ~translation ~val)
-                (not (nil? nested)) `(map-> ~nested ~val)
-                :otherwise `~val))))))
+        (try
+          (set! (. ~this ~field)
+                ~(cond
+                  (not (nil? translation)) `(translate :to-ib ~translation ~val)
+                  (not (nil? nested)) `(map-> ~nested ~val)
+                  :otherwise `~val))
+          (catch ClassCastException ex#
+            (throw (ex-info (str "Failed to map field " ~(str field)
+                                 ~(when translation
+                                    (str " using translation " translation))
+                                 " value " ~val)
+                            {:class (class ~this)
+                             :key ~key
+                             :field ~(str field)
+                             :tranlation ~translation}
+                            ex#))))))))
 
 (defmacro defmapping [c & field-keys]
   (let [this (gensym "this")
