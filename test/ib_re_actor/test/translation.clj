@@ -4,8 +4,8 @@
         [midje.sweet]))
 
 (tabular
- (future-fact "it can translate to IB durations"
-   (translate-to-ib-duration ?value ?unit) => ?expected)
+ (fact "it can translate to IB durations"
+       (translate :to-ib :duration [?value ?unit]) => ?expected)
  :where
  | ?value | ?unit    | ?expected |
  | 1      | :second  | "1 S"     |
@@ -18,8 +18,8 @@
  | 5      | :years   | "5 Y"     |)
 
 (tabular
- (future-fact "it can translate to IB security codes"
-   (translate-to-ib-security-type ?value) => ?expected)
+ (fact "it can translate to IB security codes"
+       (translate :to-ib :security-type ?value) => ?expected)
  :where
  | ?value            | ?expected |
  | :equity           | "STK"     |
@@ -31,8 +31,8 @@
  | :bag              | "BAG"     |)
 
 (tabular
- (future-fact "it can translate bar sizes"
-   (translate-to-ib-bar-size ?value ?unit) => ?expected)
+ (fact "it can translate bar sizes"
+       (translate :to-ib :bar-size [?value ?unit]) => ?expected)
  :where
  | ?value | ?unit    | ?expected |
  | 1      | :second  | "1 sec"   |
@@ -45,8 +45,8 @@
  | 2      | :days    | "2 days"  |)
 
 (tabular
- (future-fact "it can translate what to show strings"
-   (translate-to-ib-what-to-show ?value) => ?expected)
+ (fact "it can translate what to show strings"
+       (translate :to-ib :what-to-show ?value) => ?expected)
  :where
  | ?value                     | ?expected                   |
  | :trades                    | "TRADES"                    |
@@ -59,19 +59,19 @@
  | :option-volume             | "OPTION_VOLUME"             |
  | :option-open-interest      | "OPTION_OPEN_INTEREST"      |)
 
-(future-fact "it can translate from IB date-time values"
-  (translate-from-ib-date-time (long 1000000000)) => (date-time 2001 9 9 1 46 40)
-  (translate-from-ib-date-time "1000000000") => (date-time 2001 9 9 1 46 40))
+(fact "it can translate from IB date-time values"
+      (translate :from-ib :date-time (long 1000000000)) => (date-time 2001 9 9 1 46 40)
+      (translate :from-ib :date-time "1000000000") => (date-time 2001 9 9 1 46 40))
 
-(future-fact "it can translate date-times to IB expiry strings"
-  (translate-to-ib-expiry (date-time 2011 9 17)) => "201109")
+(fact "it can translate date-times to IB expiry strings"
+      (translate :to-ib :expiry (date-time 2011 9 17)) => "201109")
 
-(future-fact "it can translate from IB expiry strings to joda DateTimes"
-  (translate-from-ib-expiry "201109") => (date-time 2011 9))
+(fact "it can translate from IB expiry strings to joda DateTimes"
+      (translate :from-ib :expiry "201109") => (date-time 2011 9))
 
 (tabular
- (future-fact "it can translate time in force values"
-   (translate-to-ib-time-in-force ?value) => ?expected)
+ (fact "it can translate time in force values"
+       (translate :to-ib :time-in-force ?value) => ?expected)
  :where
  | ?value               | ?expected |
  | :day                 | "DAY"     |
@@ -79,15 +79,13 @@
  | :immediate-or-cancel | "IOC"     |
  | :good-till-date      | "GTD"     |)
 
-;.;. Intellectual 'work' is misnamed; it is a pleasure, a dissipation, and
-;.;.                                ; is its own highest reward. -- Twain
-(future-fact "it can translate date-times to the IB format"
-  (translate-to-ib-date-time (date-time 2011)) => "20110101 00:00:00 UTC"
-  (translate-to-ib-date-time (date-time 2001 4 1 13 30 29)) => "20010401 13:30:29 UTC")
+(fact "it can translate date-times to the IB format"
+      (translate :to-ib :date-time (date-time 2011)) => "20110101 00:00:00 UTC"
+      (translate :to-ib :date-time (date-time 2001 4 1 13 30 29)) => "20010401 13:30:29 UTC")
 
 (tabular
- (future-fact "it can translate order actions"
-   (translate-to-ib-order-action ?action) => ?expected)
+ (fact "it can translate order actions"
+       (translate :to-ib :order-action ?action) => ?expected)
  :where
  | ?action     | ?expected |
  | :buy        | "BUY"     |
@@ -95,16 +93,16 @@
  | :sell-short | "SSHORT"  |)
 
 (tabular
- (future-fact "it can translate to IB order types"
-   (translate-to-ib-order-type ?type) => ?expected)
+ (fact "it can translate to IB order types"
+       (translate :to-ib :order-type ?type) => ?expected)
  :where
  | ?type  | ?expected |
  | :limit | "LMT"     |)
 
 (tabular
- (future-fact "it can translate security id types"
-   (translate-from-ib-security-id-type ?ib-type) => ?re-actor-type
-   (translate-to-ib-security-id-type ?re-actor-type) => ?ib-type)
+ (fact "it can translate security id types"
+              (translate :from-ib :security-id-type ?ib-type) => ?re-actor-type
+              (translate :to-ib :security-id-type ?re-actor-type) => ?ib-type)
  :where
  | ?re-actor-type | ?ib-type |
  | :isin          | "ISIN"   |
@@ -113,9 +111,9 @@
  | :ric           | "RIC"    |)
 
 (tabular
- (future-fact "it can translate tick field codes"
-   (translate-from-ib-tick-field-code ?ib-code) => ?re-actor-code
-   (translate-to-ib-tick-field-code ?re-actor-code) => ?ib-code)
+ (fact "it can translate tick field codes"
+              (translate :from-ib :tick-field-code ?ib-code) => ?re-actor-code
+              (translate :to-ib :tick-field-code ?re-actor-code) => ?ib-code)
  :where
  | ?re-actor-code | ?ib-code |
  | :bid-size      | 0        |
