@@ -4,6 +4,11 @@
         [midje.sweet])
   (:import [com.ib.client Contract ContractDetails Order]))
 
+(defn invoke-private-ctor [type]
+  (let [ctor (first (.getDeclaredConstructors type))]
+    (.setAccessible ctor true)
+    (.newInstance ctor nil)))
+
 (defmacro defmappingtest
   "Checking all these fields is pretty tedious, but important and defining the mappings
 is error-prone, so I think it's important that we test them. To relieve the tedium, I
@@ -18,11 +23,16 @@ Specs are a vector of:
 You can have duplicate rows for the same field<->map key to try out different values"
   [type & specs]
   (let [obj (gensym "object")
-        map-obj (gensym "map")]
+        map-obj (gensym "map")
+        [options specs] (split-with keyword? specs)
+        options (set options)
+        ctor (if (options :private-constructor)
+               `(invoke-private-ctor ~type)
+               `(new ~type))]
     `(do
     ;;; it's kind of handy to be able to look at an example sometimes
        (def ~(symbol (str "example-" type))
-         (let [~obj (new ~type)]
+         (let [~obj ~ctor]
            ~@(for [[k field mv ov] specs]
                `(set! (. ~obj ~field) ~(or ov mv)))
            ~obj))
@@ -33,23 +43,27 @@ You can have duplicate rows for the same field<->map key to try out different va
 
        (fact ~(str "mapping " type)
              (fact "object -> map"
-                   (let [~obj (new ~type)]
+                   (let [~obj ~ctor]
                      ~@(for [[k field mv ov] specs]
                          `(set! (. ~obj ~field) ~(or ov mv)))
                      (let [~map-obj (->map ~obj)]
                        ~@(for [[k field mv _] specs]
                            `(fact ~(str field " maps to " k)
                                   (~map-obj ~k) => ~mv)))))
-             (fact "map -> object"
-                   (let [~map-obj ~(zipmap (map #(% 0) specs)
-                                           (map #(% 2) specs))
-                         ~obj (map-> ~type ~map-obj)]
-                     ~@(for [[k field mv ov] specs]
-                         `(fact ~(str k " maps to " field)
-                                (. ~obj ~field) => ~(or ov mv)))))))))
+             ~(when (not (options :private-constructor))
+                `(fact "map -> object"
+                      (let [~map-obj ~(zipmap (map #(% 0) specs)
+                                              (map #(% 2) specs))
+                            ~obj (map-> ~type ~map-obj)]
+                        ~@(for [[k field mv ov] specs]
+                            `(fact ~(str k " maps to " field)
+                                   (. ~obj ~field) => ~(or ov mv))))))))))
 
 (comment
   (clojure.pprint/pprint (macroexpand-1 '(defmappingtest Thingy [:id m_id 1 "foo"])))
+  (clojure.pprint/pprint (macroexpand-1 '(defmappingtest Thingy
+                                           :private-constructor
+                                           [:id m_id 1 "foo"])))
   )
 
 
