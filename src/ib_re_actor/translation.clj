@@ -580,7 +580,7 @@
   (condp instance? val
     java.util.Date (tc/from-date val)
     org.joda.time.DateTime (translate :to-ib :timestamp
-                                      (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
+                                      (-> (tf/formatter "yyyyMMdd-HH:mm:ss")
                                           (tf/unparse val)
                                           (str " UTC")))
     String val))
@@ -597,7 +597,7 @@
        (tf/parse val))
 
    (= (.length val) 17)
-   (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
+   (-> (tf/formatter "yyyyMMdd-HH:mm:ss")
        (tf/parse val))
 
    :otherwise val))
