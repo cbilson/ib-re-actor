@@ -73,7 +73,7 @@
                     :bag "BAG"})
 
 (translation-table bar-size-unit
-                   {:second "secs"
+                   {:second "sec"
                     :seconds "secs"
                     :minute "min"
                     :minutes "mins"
