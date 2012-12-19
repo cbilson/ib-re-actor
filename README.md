@@ -2,6 +2,8 @@
 
 A clojure friendly wrapper around the Interactive Brokers java API.
 
+[![Build Status](https://secure.travis-ci.org/cbilson/ib-re-actor.png)](http://travis-ci.org/cbilson/ib-re-actor)
+
 ## Usage
 
 I don't have permission to redistribute Interactive Broker's jars, so this is a little cludgey:
