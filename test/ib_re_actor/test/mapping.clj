@@ -2,7 +2,11 @@
   (:use [ib-re-actor.mapping]
         [clj-time.core :only [date-time]]
         [midje.sweet])
-  (:import [com.ib.client Contract ContractDetails Order]))
+  (:import [com.ib.client
+            Contract ContractDetails
+            Order OrderState
+            Execution ExecutionFilter
+            CommissionReport]))
 
 (defn invoke-private-ctor [type]
   (let [ctor (first (.getDeclaredConstructors type))]
@@ -116,6 +120,32 @@ You can have duplicate rows for the same field<->map key to try out different va
   [:trading-hours m_tradingHours "some trading hours"]
   [:liquid-hours m_liquidHours "some liquid hours"])
 
+(defmappingtest Execution
+  [:account-code m_acctNumber "some account number"]
+  [:average-price m_avgPrice 23.45]
+  [:client-id m_clientId 1]
+  [:cummulative-quantity m_cumQty 2]
+  [:exchange m_exchange "some exchange"]
+  [:execution-id m_execId "some execution id"]
+  [:liquidate-last m_liquidation 10]
+  [:order-id m_orderId 4]
+  [:permanent-id m_permId 5]
+  [:price m_price 6.78]
+  [:shares m_shares 9]
+  [:side m_side :buy "BOT"]
+  [:time m_time "some time"])
+
+(defmappingtest ExecutionFilter
+  [:client-id m_clientId 1]
+  [:account-code m_acctCode "some account code"]
+
+  ;; TODO: this should be a date-time
+  [:after-time m_time "20000102-23:59:59 UTC"]
+  [:order-symbol m_symbol "some symbol"]
+  [:security-type m_secType :equity "STK"]
+  [:exchange m_exchange "GLOBEX"]
+  [:side m_side :buy "BUY"])
+
 (defmappingtest Order
   [:order-id m_orderId 1]
   [:client-id m_clientId 2]
@@ -136,6 +166,21 @@ You can have duplicate rows for the same field<->map key to try out different va
   [:discretionary-amount m_discretionaryAmt 1.99]
   [:stop-price m_auxPrice 24.99])
 
-;;; TODO: test the other mappings
+(defmappingtest OrderState :private-constructor
+  [:status m_status :filled "Filled"]
+  [:initial-margin m_initMargin "23.45"]
+  [:maintenance-margin m_maintMargin "34.56"]
+  [:equity-with-loan m_equityWithLoan "45.67"]
+  [:commission m_commission 56.78]
+  [:minimum-commission m_minCommission 67.89]
+  [:maximum-commission m_maxCommission 78.90]
+  [:commission-currency m_commissionCurrency "ABC"]
+  [:warning-text m_warningText "some warning text"])
 
-;;; TODO: some reflection thing to test OrderState (since there is no public ctor)
+(defmappingtest CommissionReport :private-constructor
+  [:commission m_commission 23.45]
+  [:currency m_currency "some currency code"]
+  [:execution-id m_execId "some execution id"]
+  [:realized-profit-loss m_realizedPNL 34.56]
+  [:yield m_yield 4.56]
+  [:yield-redemption-date m_yieldRedemptionDate 20101031])
