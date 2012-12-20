@@ -31,7 +31,7 @@ errors you might get when using it.
 
 ### Connecting
 
-IB-React-or maintains a connection to the interactive brokers gateway
+ib-react-or maintains a connection to the interactive brokers gateway
 that you can share amongst many handler functions. To establish a connection:
 
 ```clojure
@@ -124,7 +124,24 @@ user> (request-contract-details {:symbol "AAPL" :type :equity})
 user>
 ;;; many, many results
 ...
-{:type :contract-details, :request-id 6, :value {:next-option-partial false, :time-zone-id "CTT", :underlying-contract-id 0, :price-magnifier 1, :industry "Technology", :trading-hours "20121220:0830-1500;20121221:0830-1500", :long-name "APPLE INC", :convertible? false, :subcategory "Computers", :liquid-hours "20121220:0830-1500;20121221:0830-1500", :callable? false, :order-types (:ACTIVETIM :ADJUST :ALERT :ALLOC :average-cost :basket :COND :CONDORDER :DAY :DEACT :DEACTDIS :DEACTEOD :good-after-time :good-till-canceled :good-till-date :GTT :HID :limit-if-touched :limit :market-if-touched :market :market-to-limit :NONALGO :one-cancels-all :scale :SCALERST :stop :stop-limit :trail :trailing-limit-if-touched :trailing-stop-limit :trailing-market-if-touched :what-if), :valid-exchanges ["MEXI"], :min-tick 0.01, :trading-class "AAPL", :putable? false, :summary {:include-expired? false, :type :equity, :currency "MXN", :primary-exchange "MEXI", :local-symbol "AAPL", :exchange "MEXI", :symbol "AAPL", :contract-id 38708077}, :market-name "AAPL", :coupon 0.0, :category "Computers"}}
+;;; example: APPL trading in Mexico:
+
+{:type :contract-details, :value {:next-option-partial false,
+  :time-zone-id "CTT",
+  :long-name "APPLE INC",
+  :subcategory "Computers",
+  :liquid-hours "20121220:0830-1500;20121221:0830-1500",
+  ...
+  :order-types [:ACTIVETIM :ADJUST :ALERT :ALLOC ...]
+  :valid-exchanges ["MEXI"],
+  :summary {:symbol "AAPL", :currency "MXN", :contract-id 38708077,
+            :primary-exchange "MEXI",
+            :local-symbol "AAPL",
+            :type :equity,
+            :exchange "MEXI"},
+            :market-name "AAPL",
+            :category "Computers" ...},
+ :request-id 6}
 ...
 {:type :contract-details-end, :request-id 6}
 
@@ -142,9 +159,8 @@ a broad search and then be more specific when you actually want to
 trade it.
 
 As you can see, the response contains a `:local-symbol` which is the
-same as the symbol we requested. I find this to generally be the case
-with US equities. Even when the local-symbol and symbol don't match, 
-you can use `:symbol` and just specify the exchange:
+same as the symbol we requested. Even when the local-symbol and symbol
+don't match, you can use `:symbol` and just specify the exchange:
 
 ```clojure
 user> (request-contract-details {:symbol "BP" :type :equity})
@@ -195,6 +211,11 @@ user> (request-contract-details {:local-symbol "ZN   DEC 12" :type :future})
               :type :future, :currency "USD", :local-symbol "ZN   DEC 12", 
               :exchange "ECBOT", :symbol "ZN", :contract-id 94977350}, 
               :market-name "ZN"}}
+              
+;;; alternatively, specify the :symbol and an expiry:
+user> (request-contract-details {:symbol "NQ" :expiry (date-time 2012 12) :type :future})
+
+;;; same result
 
 ```
 
@@ -217,6 +238,8 @@ user> (request-contract-details {:contract-id 98770297})
 To get historical bars, use the `request-historical-data` function:
 
 ```clojure
+;;; '1' is the request-id that will be part of all messages in
+;;; response to this request
 user> (request-historical-data 1 {:symbol "AAPL" :type :equity :exchange "ISLAND"}
  (date-time 2012 12 18 20) 1 :day 1 :hour)
  
@@ -240,14 +263,14 @@ restrictions at the time this was written were:
 
 In order to remain within these limits we must throttle requests for
 large amounts of data. One way to do this is to break up the requests
-such that you are requesting less than 2000 bars every 15
+such that you are requesting less than 2000 bars every 10
 seconds. This satisfies the second requirement above and insures that
-you will have a maximum of 40 requests in a 10 minute period,
+you will have a maximum of 60 requests in a 10 minute period,
 satisfying the last requirement.
 
 For example, let's say we want 1 second bars for an entire day for DOW
 minis. 2000 seconds is about 33 minutes. YMZ2 trades almost all day,
-but let's say we want to start 2 hours before it get's liquid until
+but let's say we want to start when it get's liquid all the way until
 the next time it stops trading:
 
 ```clojure
@@ -261,8 +284,8 @@ user> (-> (get-contract-details ymz2) first :value
  :liquid-hours "20121021:CLOSED;20121023:0830-1515"}
 ```
 
-So let's request 1 second bars from 6:30 to 15:15. That's 9:15, or a
-total of 19 requests.
+So let's request 1 second bars from 8:30 to 15:15 CST (13:30 to 20:15
+UTC). That's 9 hours and 15 minutes, or a total of 19 requests.
 
 This example breaks the requested period up into retrievable chunks.
 
@@ -286,7 +309,7 @@ user>
 ```
 
 In order to avoid pacing violations, we will make each request, then
-sleep for 15 seconds:
+sleep for 10 seconds:
 
 ```clojure
 user> (def my-request-id (get-request-id))
@@ -297,7 +320,7 @@ user> (doseq [t end-times]
         (request-historical-data my-request-id 
                                  {:type :equity :symbol "AAPL" :exchange "ISLAND"}
                                  t 2000 :seconds 1 :seconds)
-        (Thread/sleep 15000))
+        (Thread/sleep 10000))
 ```
 
 ## License
