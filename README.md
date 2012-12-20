@@ -268,9 +268,37 @@ This example breaks the requested period up into retrievable chunks.
 
 ```clojure
 user> (def prices (atom []))
+#'user/prices
 
+;; we can subscribe this function with request-id curried in
+user> (defn store-price [request-id msg]
+        (when (and (= request-id (:request-id msg))
+                   (= :price-bar (:type msg)))
+          (swap! prices conj msg)))
+#'user/store-price
+user> (def end-times (->> (iterate #(plus % (secs 2000)) (date-time 2012 12 18 11 30))
+                     (take 19)))
+#'user/end-times
+user> (prn (first end-times) (last end-times))
+#<DateTime 2012-12-18T11:30:00.000Z> #<DateTime 2012-12-18T21:30:00.000Z>
+nil
+user> 
 ```
 
+In order to avoid pacing violations, we will make each request, then
+sleep for 15 seconds:
+
+```clojure
+user> (def my-request-id (get-request-id))
+#'user/my-request-id
+user> (subscribe (partial store-price my-request-id))
+#<Agent@76115ae0: ()>
+user> (doseq [t end-times]
+        (request-historical-data my-request-id 
+                                 {:type :equity :symbol "AAPL" :exchange "ISLAND"}
+                                 t 2000 :seconds 1 :seconds)
+        (Thread/sleep 15000))
+```
 
 ## License
 
