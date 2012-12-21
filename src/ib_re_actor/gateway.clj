@@ -117,10 +117,12 @@ requests to it."
 
     ;;; Connection and Server
     (currentTime [this time]
-      (dispatch-message {:type :current-time :value (translate :from-ib :date-time time)}))
+      (dispatch-message {:type :current-time
+                         :value (translate :from-ib :date-time time)}))
 
     (log/error [this requestId errorCode message]
-      (dispatch-message {:type :error :request-id requestId :code errorCode :message message}))
+      (dispatch-message {:type :error :request-id requestId :code errorCode
+                         :message message}))
 
     (^void error [this ^String message]
       (dispatch-message {:type :error :message message}))
@@ -140,17 +142,20 @@ requests to it."
 
     ;;; Market Data
     (tickPrice [this tickerId field price canAutoExecute]
-      (dispatch-message {:type :tick :field (translate :from-ib :tick-field-code field)
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code field)
                          :contract (lookup-contract tickerId)
                          :value price
                          :can-auto-execute? (= 1 canAutoExecute)}))
 
     (tickSize [this tickerId field size]
-      (dispatch-message {:type :tick :field (translate :from-ib :tick-field-code field)
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code field)
                          :contract (lookup-contract tickerId)
                          :value size}))
 
-    (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice]
+    (tickOptionComputation [this tickerId field impliedVol delta optPrice
+                            pvDividend gamma vega theta undPrice]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code field)
                          :contract (lookup-contract tickerId)
@@ -178,13 +183,17 @@ requests to it."
                             :contract (lookup-contract tickerId)
                             :value val}))))
 
-    (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
+    (tickEFP [this tickerId tickType basisPoints formattedBasisPoints
+              impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code tickType)
                          :contract (lookup-contract tickerId)
-                         :basis-points basisPoints :formatted-basis-points formattedBasisPoints
-                         :implied-future impliedFuture :hold-days holdDays :future-expiry futureExpiry
-                         :dividend-impact dividendImpact :dividends-to-expiry dividendsToExpiry}))
+                         :basis-points basisPoints
+                         :formatted-basis-points formattedBasisPoints
+                         :implied-future impliedFuture :hold-days holdDays
+                         :future-expiry futureExpiry
+                         :dividend-impact dividendImpact
+                         :dividends-to-expiry dividendsToExpiry}))
 
     (tickSnapshotEnd [this reqId]
       (dispatch-message {:type :tick-snapshot-end :request-id reqId}))
@@ -273,7 +282,8 @@ requests to it."
       (dispatch-message {:type :update-market-depth
                          :contract (lookup-contract tickerId)
                          :position position
-                         :operation (translate :from-ib :market-depth-row-operation operation)
+                         :operation (translate :from-ib :market-depth-row-operation
+                                               operation)
                          :side (translate :from-ib :market-depth-side side)
                          :price price :size size}))
 
@@ -281,7 +291,8 @@ requests to it."
       (dispatch-message {:type :update-market-depth-level-2
                          :contract (lookup-contract tickerId) :position position
                          :market-maker marketMaker
-                         :operation (translate :from-ib :market-depth-row-operation operation)
+                         :operation (translate :from-ib :market-depth-row-operation
+                                               operation)
                          :side (translate :from-ib :market-depth-side side)
                          :price price :size size}))
 
@@ -319,11 +330,12 @@ requests to it."
     (scannerParameters [this xml]
       (dispatch-message {:type :scan-parameters :value xml}))
 
-    (scannerData [this requestId rank contractDetails distance benchmark projection legsStr]
+    (scannerData [this requestId rank contractDetails distance benchmark
+                  projection legsStr]
       (dispatch-message {:type :scan-result :request-id requestId :rank rank
-                         :contract-details (->map contractDetails) :distance distance
-                         :benchmark benchmark :projection projection
-                         :legs legsStr}))
+                         :contract-details (->map contractDetails)
+                         :distance distance :benchmark benchmark
+                         :projection projection :legs legsStr}))
 
     (scannerDataEnd [this requestId]
       (dispatch-message {:type :scan-end :request-id requestId}))
@@ -337,8 +349,10 @@ requests to it."
 
     ;;; Fundamental Data
     (fundamentalData [this requestId xml]
-      (dispatch-message {:type :fundamental-data :request-id requestId
-                         :report (xml/parse (java.io.ByteArrayInputStream. (.getBytes xml)))}))))
+      (let [report-xml (-> (java.io.ByteArrayInputStream (.getBytes xml))
+                           xml/parse)]
+        (dispatch-message {:type :fundamental-data :request-id requestId
+                           :report report-xml})))))
 
 (defn subscribe [f]
   (send-off listeners conj f))
@@ -407,22 +421,28 @@ requests to it."
 
    bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
 
-   what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :historical-volatility,
-   :option-implied-volatility, :option-volume, or :option-open-interest."
-  ([id contract end duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
-     (let [[acceptable-duration acceptable-duration-unit] (translate :to-ib :acceptable-duration [duration duration-unit])]
+   what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask,
+   :historical-volatility, :option-implied-volatility, :option-volume,
+   or :option-open-interest."
+  ([id contract end duration duration-unit bar-size bar-size-unit
+    what-to-show use-regular-trading-hours?]
+     (let [[acceptable-duration acceptable-duration-unit]
+           (translate :to-ib :acceptable-duration [duration duration-unit])]
        (send-connection .reqHistoricalData id
                         (map-> com.ib.client.Contract contract)
                         (translate :to-ib :date-time end)
-                        (translate :to-ib :duration [acceptable-duration acceptable-duration-unit])
+                        (translate :to-ib :duration [acceptable-duration
+                                                     acceptable-duration-unit])
                         (translate :to-ib :bar-size [bar-size bar-size-unit])
                         (translate :to-ib :what-to-show what-to-show)
                         (if use-regular-trading-hours? 1 0)
                         2)))
   ([id contract end duration duration-unit bar-size bar-size-unit what-to-show]
-     (request-historical-data id contract end duration duration-unit bar-size bar-size-unit what-to-show true))
+     (request-historical-data id contract end duration duration-unit
+                              bar-size bar-size-unit what-to-show true))
   ([id contract end duration duration-unit bar-size bar-size-unit]
-     (request-historical-data id contract end duration duration-unit bar-size bar-size-unit :trades true)))
+     (request-historical-data id contract end duration duration-unit
+                              bar-size bar-size-unit :trades true)))
 
 (defn request-real-time-bars
   "Start receiving real time bar results."
@@ -460,7 +480,8 @@ requests to it."
   ([contract report-type]
      (request-fundamental-data (get-request-id) contract report-type))
   ([request-id contract report-type]
-     (send-connection .reqFundamentalData request-id (map-> com.ib.client.Contract contract)
+     (send-connection .reqFundamentalData request-id
+                      (map-> com.ib.client.Contract contract)
                       (translate :to-ib :report-type report-type))))
 
 (defn cancel-fundamental-data
@@ -476,7 +497,8 @@ message"
      (request-contract-details (get-request-id) contract))
   ([request-id contract]
      (log/debug "Requesting contract details #" request-id " for " (pr-str contract))
-     (send-connection .reqContractDetails request-id (map-> com.ib.client.Contract contract))
+     (send-connection .reqContractDetails request-id
+                      (map-> com.ib.client.Contract contract))
      request-id))
 
 (defn place-order
