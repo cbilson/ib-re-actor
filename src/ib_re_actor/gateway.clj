@@ -582,7 +582,10 @@ message"
   "Call this function to terminate the connections with TWS.
    Calling this function does not cancel orders that have already been sent."
   []
-  (send-off connection (fn [c] (.eDisconnect c) c)))
+  (send-off connection (fn [c] (.eDisconnect c) nil)))
+
+(defn connected? []
+  (not (nil? @connection)))
 
 (defn request-current-time []
   (send-connection .reqCurrentTime))
