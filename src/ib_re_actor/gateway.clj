@@ -107,6 +107,24 @@ requests to it."
    (and (= :error type) (error? msg)) true
    :otherwise false))
 
+;;; message types that indicate the end of a stream of messages
+(def end-message-types #{:scan-end :price-bar-complete
+                         :execution-details-end :contract-details-end
+                         :tick-snapshot-end :open-order-end
+                         :account-download-end})
+(defn is-end-for?
+  "Decide if a message represents the end of a stream of messages for a specific request."
+  [req-id {:keys [type code request-id]}]
+  (let [error? (= :error type)
+        serious? (or (nil? code) (< code 2100))
+        for-everyone? (nil? request-id)
+        for-this-request? (= request-id req-id)
+        end-message? (not (nil? (end-message-types type)))]
+    (or
+     (and error? serious? for-everyone?)
+     (and error? serious? for-this-request?)
+     (and for-this-request? end-message?))))
+
 (defn- create-wrapper
   "Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
    calling a single function with maps that all have a :type to indicate what type

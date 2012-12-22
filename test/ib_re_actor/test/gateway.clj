@@ -275,3 +275,17 @@ wrapper, collecting and returning any messages the wrapper dispatched."
 (fact "when a scan is done"
       (wrapper->message (scannerDataEnd 1))
       => {:type :scan-end :request-id 1})
+
+(fact "finding the end of a stream of messages"
+      (fact "when not at the end"
+            (is-end-for? 1 {:not :end}) => false)
+      (fact "when it's a serious error for everyone"
+            (is-end-for? 1 {:type :error :code 1}) => true)
+      (fact "when it's a non-serious error for everyone"
+            (is-end-for? 1 {:type :error :code 2100}) => false)
+      (fact "when it's a serious error for another request"
+            (is-end-for? 1 {:type :error :code 1 :request-id 2})  => false)
+      (fact "when it's a serious error for this request"
+            (is-end-for? 1 {:type :error :code 1 :request-id 1}) => true)
+      (fact "when it's a non-serious error for this request"
+            (is-end-for? 1 {:type :error :code 2100 :request-id 1}) => false))
