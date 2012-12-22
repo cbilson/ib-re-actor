@@ -284,7 +284,7 @@ user> (-> (get-contract-details ymz2) first :value
  :liquid-hours "20121021:CLOSED;20121023:0830-1515"}
 ```
 
-So let's request 1 second bars from 8:30 to 15:15 CST (13:30 to 20:15
+So let's request 1 second bars from 8:30 to 15:15 EST (13:30 to 20:15
 UTC). That's 9 hours and 15 minutes, or a total of 19 requests.
 
 This example breaks the requested period up into retrievable chunks.
@@ -312,14 +312,13 @@ In order to avoid pacing violations, we will make each request, then
 sleep for 10 seconds:
 
 ```clojure
+;;; Get a unique request id
 user> (def my-request-id (get-request-id))
 #'user/my-request-id
 user> (subscribe (partial store-price my-request-id))
 #<Agent@76115ae0: ()>
 user> (doseq [t end-times]
-        (request-historical-data my-request-id 
-                                 {:type :equity :symbol "AAPL" :exchange "ISLAND"}
-                                 t 2000 :seconds 1 :seconds)
+        (request-historical-data my-request-id ymz2 t 2000 :seconds 1 :seconds)
         (Thread/sleep 10000))
 ```
 
