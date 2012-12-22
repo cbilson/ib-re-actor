@@ -233,7 +233,7 @@ user> (request-contract-details {:contract-id 98770297})
 
 ```
 
-## Requesting Historical Data
+### Requesting Historical Data
 
 To get historical bars, use the `request-historical-data` function:
 
@@ -322,6 +322,76 @@ user> (doseq [t end-times]
                                  t 2000 :seconds 1 :seconds)
         (Thread/sleep 10000))
 ```
+
+### Requesting Real Time Data
+
+FIXME: write this
+
+### Market Scanners
+
+FIXME: write this
+
+### Orders
+
+To see all the active orders on a connection, use the
+`request-account-updates` function. If `subscribe?` is true, a message
+will be sent each time any attribute of the account changes. An
+`:account-download-end` message will be sent when all the changes are
+made.
+
+```clojure
+
+```
+
+### Account Management
+
+FIXME: write this
+
+### Synchronous Wrappers
+
+There are several wrapper functions in the `ib-re-actor.synchronous`
+namespace that make the process of interacting with the gateway
+synchronous and more interactive. This is useful when doing
+exploratory coding in the REPL, where you don't want the hassle of
+creating functions and managing their subscriptions for simple requests.
+
+```clojure
+;;; wrap request-historical-data
+user> (get-historical-data {:symbol "AAPL" :type :equity :exchange "ISLAND"} 
+                           (date-time 2012 12 20 20) 1 :day 1 :hour :trades true)
+({:has-gaps? false, :volume 3507, :trade-count 2687, :close 524.77,
+:low 521.14, :high 525.41, :open 522.58, :time #<DateTime
+2012-12-20T19:00:00.000Z>} {:has-gaps? false, :volume 4545
+...
+
+;;; wrap request-current-time
+user> (get-time)
+({:type :current-time, :value #<DateTime 2012-12-21T01:42:58.000Z>})
+
+;;; wrap request-contract-details
+user> (get-contract-details {:symbol "AAPL" :type :equity :exchange "ISLAND"})
+({:type :contract-details, :request-id 38, :value {:next-option-partial false, 
+:time-zone-id "EST", :underlying-contract-id 0, :price-magnifier 1, 
+:industry "Technology", :trading-hours "20121220:0700-2000;20121221:0700-2000", 
+:long-name "APPLE INC", :convertible? false, ...
+
+;;; wrap getting the current price for a security (request-market-data)
+user> (get-current-price {:symbol "AAPL" :type :equity :exchange "ISLAND"})
+{:open-tick 530.15, :bid-price -1.0, :close-price 526.31, :last-size 3, :low 518.88, :ask-size 0, :bid-size 0, :last-timestamp #<DateTime 2012-12-21T00:59:54.000Z>, :last-price 520.17, :ask-price -1.0, :high 530.2, :volume 170569}
+
+;;; wrap executing an order and blocking until it's filled
+user> (execute-order {:symbol "AAPL" :type :equity :exchange "ISLAND"}
+                     {:transmit? true :action :buy :type :market :quantity 100
+                      :outside-regular-traiding-hours? true})
+
+; FIXME: make an example while the market is open
+
+;;; wrap getting all open orders (request-open-orders)
+user> (get-open-orders)
+({:order-state {:maximum-commission 1.7976931348623157E308, :minimum-commission 1.7976931348623157E308, :commission 1.7976931348623157E308, :equity-with-loan "1.7976931348623157E308", :maintenance-margin "1.7976931348623157E308", :initial-margin "1.7976931348623157E308", :status :pre-submitted}, :order {:time-in-force :day, :order-id 3, :client-id 101, :discretionary-amount 0.0, :action :buy, :quantity 100, :sweep-to-fill? false, :limit-price 0.0, :outside-regular-trading-hours? false, :transmit? true, :stop-price 0.0, :hidden? false, :type :market, :all-or-none? false, :block-order? false, :permanent-id 1644329200}, :contract {:put-call-right :unknown, :include-expired? false, :type :equity, :currency "USD", :local-symbol "AAPL", :exchange "ISLAND", :symbol "AAPL", :contract-id 265598}, :order-id 3})
+```
+
+### Other Things
 
 ## License
 
