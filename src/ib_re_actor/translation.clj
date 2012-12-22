@@ -115,6 +115,7 @@
                     :AUC "AUC"
                     :average-cost "AVGCOST"
                     :basket "BASKET"
+                    :BOARDLOT "BOARDLOT"
                     :box-top "BOXTOP"
                     :COND "COND"
                     :CONDORDER "CONDORDER"
