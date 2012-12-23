@@ -112,9 +112,10 @@ requests to it."
                          :execution-details-end :contract-details-end
                          :tick-snapshot-end :open-order-end
                          :account-download-end})
+
 (defn is-end-for?
   "Decide if a message represents the end of a stream of messages for a specific request."
-  [req-id {:keys [type code request-id]}]
+  [req-id {:keys [type code request-id] :as msg}]
   (let [error? (= :error type)
         serious? (or (nil? code) (< code 2100))
         for-everyone? (nil? request-id)

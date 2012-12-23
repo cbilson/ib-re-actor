@@ -9,65 +9,81 @@
             [clojure.tools.logging :as log]
             [clj-time.core :as t]))
 
-(defn- reduce-responses [accept? reduce-fn done? completion-fn subscribe-fn & args]
-  "Given some functions, subscribes to the message stream, reducing each message into
+(defn- should-accept?
+  "If a message is one of the ones we want for this request, an end of request message, or
+an error of some kind, we need to add it to the accumulator."
+  [req-id accept? msg]
+  (or (if (fn? accept?) (accept? msg) true)
+      (g/is-end-for? req-id msg)))
+
+(defn- is-done?
+  "As soon as we've gotten whatever data needed to satisfy the request, an end of request
+message, or an error of some kind, we can stop waiting."
+  [req-id done? msgs]
+  (let [last-msg (first msgs)]
+    (or (g/is-end-for? req-id last-msg)
+        (and (fn? done?) (done? msgs)))))
+
+(defn- accumulate-responses
+  "Given some functions, subscribes to the message stream, adding each message to
    an accumulator, then cleans up when done."
+  [req-id accept? done? completion-fn subscribe-fn & args]
   (let [responses (atom nil)
         result (promise)
         handler (fn [msg]
-                  (when (if (fn? accept?)
-                          (accept? msg)
-                          true)
-                    (if (g/is-end? msg)
-                      (deliver result msg)
-                      (swap! responses reduce-fn msg))))
+                  (when (should-accept? req-id accept? msg)
+                    (swap! responses conj msg)))
         response-watch (fn [_ k _ v]
-                         (when (done? v)
+                         (when (is-done? req-id done? v)
                            (remove-watch responses k)
                            (deliver result v)))]
-    (add-watch responses :result-watch response-watch)
-    (g/subscribe handler)
-    (try
-      (apply subscribe-fn args)
-      @result
-      (finally
-        (log/debug "unsubscribing")
-        (g/unsubscribe handler)
-        (log/debug "completing")
-        (if (fn? completion-fn)
-          (completion-fn))
-        (log/debug "completed")))))
+    (if (not (g/connected?))
+      "Not connected."
+      (do
+        (add-watch responses :result-watch response-watch)
+        (g/subscribe handler)
+        (try
+          (apply subscribe-fn args)
+          @result
+          (finally
+            (log/debug "unsubscribing")
+            (g/unsubscribe handler)
+            (log/debug "completing")
+            (if (fn? completion-fn)
+              (completion-fn))
+            (log/debug "completed")))))))
 
 (defn get-time
   "Returns the server time"
   []
-  (reduce-responses #(= :current-time (:type %))
-                    conj (comp not empty?) nil
+  (accumulate-responses nil #(= :current-time (:type %))
+                    (comp not empty?) nil
                     g/request-current-time))
 
 (defn get-contract-details
   "Gets details for the specified contract."
   [contract]
   (let [req-id (g/get-request-id)]
-    (reduce-responses #(= req-id (:request-id %))
-                      conj (comp not empty?) nil
+    (accumulate-responses req-id #(= req-id (:request-id %))
+                      nil nil
                       g/request-contract-details
                       req-id contract)))
 
 (defn get-current-price
   "Gets the current price for the specified contract."
   [con]
-  (let [fields [:open-tick :bid-price :close-price :last-size :low
-                :ask-size :bid-size :last-price :ask-price :high :volume]
+  (let [trading-fields [:open-tick :bid-price :close-price :last-size :low
+                        :ask-size :bid-size :last-price :ask-price :high :volume]
+        closed-fields [:close-price :bid-price :bid-size :ask-price :ask-size]
+        looks-closed? (fn [accum] (= (:bid-price accum) -1.0))
         accept? (fn [{:keys [type contract]}]
                   (and (= type :tick) (= contract con)))
-        reduce-fn (fn [accum {:keys [field value]}]
-                    (assoc accum field value))
         done? (fn [accum]
                 (let [received-fields (-> accum keys set)]
-                  (every? received-fields fields)))
+                  (every? received-fields
+                          (if (looks-closed? accum) closed-fields trading-fields))))
         complete (partial g/cancel-market-data con)]
-    (reduce-responses accept? reduce-fn done? complete
+    (accumulate-responses nil accept? done? complete
                       g/request-market-data con)))
 
 (defn execute-order
@@ -75,12 +91,11 @@
   [contract order]
   (let [order-id (g/get-order-id)
         accept? #(= order-id (:order-id %))
-        reduce-fn (fn [coll x] (log/debug x) (conj coll x))
         done? (partial some (fn [{:keys [type status]}]
                               (and (= :order-status type)
                                    (= :filled status))))]
     (log/debug "Order-Id: " order-id)
-    (reduce-responses accept? reduce-fn done? nil g/place-order
+    (accumulate-responses nil accept? done? nil g/place-order
                       order-id contract order)))
 
 (defn get-historical-data [contract end-time duration duration-unit bar-size
@@ -89,10 +104,9 @@
   "Gets historical price bars for a contract."
   (let [request-id (g/get-request-id)
         accept? #(= request-id (:request-id %))
-        reduce-fn conj
         done? (partial some #(= :price-bar-complete (:type %)))
         complete (fn [])
-        responses (reduce-responses accept? reduce-fn done? complete
+        responses (accumulate-responses nil accept? done? complete
                                     g/request-historical-data request-id
                                     contract end-time duration duration-unit
                                     bar-size bar-size-unit what-to-show
@@ -109,10 +123,9 @@
   "Gets all open orders for the current connection."
   []
   (let [accept? #(#{:open-order :open-order-end :error} (:type %))
-        reduce-fn conj
         done? (partial some #(= :open-order-end (:type %)))
         complete (fn [])
-        responses (reduce-responses accept? reduce-fn done? complete
+        responses (accumulate-responses nil accept? done? complete
                                     g/request-open-orders)
         errors (filter #(= :error (:type %)) responses)]
     (if (empty? errors)
