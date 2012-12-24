@@ -19,7 +19,7 @@ requests to it."
      (log/error msg ": " (.getMessage ex))
      (log/error "Stack Trace: " (get-stack-trace ex)))
   ([ex]
-     (log-exception "Error" ex)))
+     (log-exception ex "Error")))
 
 (defonce client-id (atom 100))
 (defonce next-order-id (atom 0))
