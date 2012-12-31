@@ -3,6 +3,18 @@
         [clj-time.core :only [date-time]]
         [midje.sweet]))
 
+(fact "unknown string codes just translate into themselves"
+      (fact "coming from IB"
+	    (translate :from-ib :security-type "some weird value")
+	    => "some weird value")
+      (fact "going out to IB"
+	    (translate :to-ib :security-type "some weird value")
+	    => "some weird value"))
+
+(fact "unknown keyword codes throw"
+      (translate :to-ib :security-type :I-misspelled-something)
+      => (throws #"^Can't translate to IB"))
+
 (tabular
  (fact "it can translate to IB durations"
        (translate :to-ib :duration [?value ?unit]) => ?expected)
