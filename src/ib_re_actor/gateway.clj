@@ -16,8 +16,11 @@ requests to it."
 
 (defn- log-exception
   ([ex msg]
-     (log/error msg ": " (.getMessage ex))
-     (log/error "Stack Trace: " (get-stack-trace ex)))
+     (if (log/enabled? :error)
+       (do
+         (log/error msg ": " (.getMessage ex))
+         (log/error "Stack Trace: " (get-stack-trace ex)))
+       (println msg ex)))
   ([ex]
      (log-exception ex "Error")))
 
@@ -29,6 +32,29 @@ requests to it."
 (defonce id->contract (atom {}))
 (defonce last-ticker-id (atom 1))
 
+(defn get-order-id []
+  (swap! next-order-id inc))
+
+(defn get-request-id []
+  (swap! next-request-id inc))
+
+(defn is-same-security? [a b]
+  (let [both-have? (fn [& flds]
+                     (apply and (map #(and (contains? a %) (contains? b %)) flds)))
+        both-eq? (fn [& flds]
+                   (apply and (map #(= (% a) (% b)) flds)))]
+    (cond
+     (not (= (:type a) (:type b)))
+     false
+
+     (both-have? :symbol :exchange :currency)
+     (both-eq? :symbol :exchange :currency)
+
+     (both-have? :local-symbol :exchange)
+     (both-eq? :local-symbol :exchange)
+
+     false)))
+
 (defn register-contract [contract]
   (let [existing (get @contract->id contract)]
     (or existing
@@ -36,6 +62,10 @@ requests to it."
           (log/debug "registering id " id " for " contract)
           (swap! contract->id assoc contract id)
           (swap! id->contract assoc id contract)
+
+          ;; make a request to get full details for this contract
+          (let [req-id (get-request-id)
+                ])
           id))))
 
 (defn lookup-contract [id]
@@ -379,12 +409,6 @@ requests to it."
 (defn unsubscribe [f]
   (send-off listeners
             (fn [fns] (filter (partial not= f) fns))))
-
-(defn get-order-id []
-  (swap! next-order-id inc))
-
-(defn get-request-id []
-  (swap! next-request-id inc))
 
 (defn request-market-data
   "Call this function to request market data. The market data will be returned in

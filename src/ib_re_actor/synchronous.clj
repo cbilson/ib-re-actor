@@ -57,17 +57,18 @@ message, or an error of some kind, we can stop waiting."
   "Returns the server time"
   []
   (accumulate-responses nil #(= :current-time (:type %))
-                    (comp not empty?) nil
-                    g/request-current-time))
+                        (comp not empty?) nil
+                        g/request-current-time))
 
 (defn get-contract-details
   "Gets details for the specified contract."
   [contract]
   (let [req-id (g/get-request-id)]
-    (accumulate-responses req-id #(= req-id (:request-id %))
-                      nil nil
-                      g/request-contract-details
-                      req-id contract)))
+    (->> (accumulate-responses req-id #(= req-id (:request-id %))
+                               nil nil
+                               g/request-contract-details
+                               req-id contract)
+         (filter #(#{:contract-details :error} (:type %))))))
 
 (defn get-current-price
   "Gets the current price for the specified contract."
@@ -84,7 +85,7 @@ message, or an error of some kind, we can stop waiting."
                           (if (looks-closed? accum) closed-fields trading-fields))))
         complete (partial g/cancel-market-data con)]
     (accumulate-responses nil accept? done? complete
-                      g/request-market-data con)))
+                          g/request-market-data con)))
 
 (defn execute-order
   "Executes an order, returning only when the order is filled."
@@ -96,7 +97,7 @@ message, or an error of some kind, we can stop waiting."
                                    (= :filled status))))]
     (log/debug "Order-Id: " order-id)
     (accumulate-responses nil accept? done? nil g/place-order
-                      order-id contract order)))
+                          order-id contract order)))
 
 (defn get-historical-data [contract end-time duration duration-unit bar-size
                            bar-size-unit what-to-show
@@ -107,10 +108,10 @@ message, or an error of some kind, we can stop waiting."
         done? (partial some #(= :price-bar-complete (:type %)))
         complete (fn [])
         responses (accumulate-responses nil accept? done? complete
-                                    g/request-historical-data request-id
-                                    contract end-time duration duration-unit
-                                    bar-size bar-size-unit what-to-show
-                                    use-regular-trading-hours?)
+                                        g/request-historical-data request-id
+                                        contract end-time duration duration-unit
+                                        bar-size bar-size-unit what-to-show
+                                        use-regular-trading-hours?)
         errors (filter #(= :error (:type %)) responses)]
     (if (not (empty? errors))
       errors
@@ -126,7 +127,7 @@ message, or an error of some kind, we can stop waiting."
         done? (partial some #(= :open-order-end (:type %)))
         complete (fn [])
         responses (accumulate-responses nil accept? done? complete
-                                    g/request-open-orders)
+                                        g/request-open-orders)
         errors (filter #(= :error (:type %)) responses)]
     (if (empty? errors)
       (->> responses
