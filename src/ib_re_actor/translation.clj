@@ -39,25 +39,37 @@ to check if if a given value is valid (known)."
          (contains? to-table# val#))
 
        (defmethod translate [:to-ib ~table-name] [_# _# val#]
-         (when val#
-           (if (valid? :to-ib ~table-name val#)
-             (to-table# val#)
-             (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
-                             {:value val#
-                              :table ~table-name
-                              :valid-values (keys to-table#)})))))
+	 (when val#
+	   (cond
+	    (valid? :to-ib ~table-name val#)
+	    (to-table# val#)
+
+	    (string? val#)
+	    val#
+
+	    :otherwise
+	    (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
+			    {:value val#
+			     :table ~table-name
+			     :valid-values (keys to-table#)})))))
 
        (defmethod valid? [:from-ib ~table-name] [_# _# val#]
          (contains? from-table# val#))
 
        (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
-         (when val#
-           (if (valid? :from-ib ~table-name val#)
-             (from-table# val#)
-             (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
-                             {:value val#
-                              :table ~table-name
-                              :valid-values (vals to-table#)}))))))))
+	 (when val#
+	   (cond
+	    (valid? :from-ib ~table-name val#)
+	    (from-table# val#)
+
+	    (string? val#)
+	    val#
+
+	    :otherwise
+	    (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
+			    {:value val#
+			     :table ~table-name
+			     :valid-values (vals to-table#)}))))))))
 
 (translation-table duration-unit
                    {:second "S"
