@@ -4,10 +4,31 @@
             [clj-time.coerce :as tc]
             [clojure.string :as str]))
 
-(defmulti ^:dynamic translate (fn [direction table-name _] [direction table-name]))
-(defmulti ^:dynamic valid? (fn [direction table-name _] [direction table-name]))
+(defmulti ^:dynamic translate
+  "Translate to or from a value from the Interactive Brokers API.
 
-(defmacro translation-table [name vals]
+Examples:
+user> (translate :to-ib :duration-unit :seconds)
+\"S\"
+user> (translate :from-ib :duration-unit \"S\")
+:second"
+  (fn [direction table-name _] [direction table-name]))
+
+(defmulti ^:dynamic valid?
+  "Check to see if a given value is an entry in the translation table.
+
+Examples:
+user> (valid? :to-ib :duration-unit :s)
+false
+user> (valid? :to-ib :duration-unit :seconds)
+true"
+  (fn [direction table-name _] [direction table-name]))
+
+(defmacro translation-table
+  "Creates a table for translating to and from string values from the Interactive
+Brokers API, as well as translate methods to and from the IB value and a method
+to check if if a given value is valid (known)."
+  [name vals]
   (let [table-name (keyword name)]
     `(let [to-table# ~vals
            from-table# (zipmap (vals to-table#) (keys to-table#))]
