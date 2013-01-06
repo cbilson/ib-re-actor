@@ -34,7 +34,7 @@
   height: auto !important;
   left: auto !important;
   line-height: 1.1em !important;
-  margin: 0 !important;
+/*  margin: 0 !important; */
   outline: 0 !important;
   overflow: visible !important;
   padding: 0 !important;
@@ -226,10 +226,6 @@
   color: black !important;
 }
 </style><style type="text/css">.syntaxhighlighter{overflow:hidden !important;}</style><style type="text/css">/**
- * SyntaxHighlighter
- * http://alexgorbatchev.com/SyntaxHighlighter
- *
- * SyntaxHighlighter is donationware. If you are using it, please donate.
  * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
  *
  * @version
@@ -339,9 +335,6 @@
   color: red !important;
 }
 
-.syntaxhighlighter .keyword {
-  font-weight: bold !important;
-}
 .syntaxhighlighter .xml .keyword {
   color: #3f7f7f !important;
   font-weight: normal !important;
@@ -353,7 +346,43 @@
   font-style: italic !important;
   color: #2a00ff !important;
 }
-</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-top:0;display:inline;margin-left:10px;}.toc-link{font-size:12px;margin-left:10px;color:#252519;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{border-bottom:dotted #aaa 1px;padding-bottom:10px;margin-bottom:25px;}.toc h1{font-size:24px;}.toc{border-bottom:solid #bbb 1px;margin-bottom:40px;}.toc ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;width:99.99%;border:none;margin-left:20px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;top:10px;right:20px;height:20px;overflow:hidden;text-align:right;}#floating-toc li{list-style-type:none;margin:0;padding:0;}</style><style type="text/css">body{margin:0;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;font-size:16px;color:#252519;}h1{font-size:20px;margin-top:0;}a.anchor{text-decoration:none;color:#252519;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;border-bottom:solid #ddd 1px;;margin-bottom:10px;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{width:410px;max-width:410px;vertical-align:top;margin:0px;padding-left:55px;padding-right:20px;border:none;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{background-color:ghostWhite;border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><script type="text/javascript">/*!
+
+.clojure.syntaxhighlighter .invalid { 
+   background-color: #FAA !important;
+}
+
+.clojure.syntaxhighlighter .quoted {      
+    font-style: italic !important;
+}
+
+.syntaxhighlighter .clojure.variable,
+.syntaxhighlighter .clojure.symbol,
+.syntaxhighlighter .clojure.value
+{
+    color: #006060 !important;
+}
+
+.syntaxhighlighter .clojure.string {
+    color: #55B !important;
+}
+
+.syntaxhighlighter .clojure.functions {
+    color: black !important;
+}
+
+.syntaxhighlighter .clojure.color1 {
+    color: #666 !important;
+}
+
+.syntaxhighlighter .clojure.color3 {
+    color: #900 !important;
+}
+
+.syntaxhighlighter .clojure.constants {
+    color: #1A734D !important;
+}
+
+</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{display:inline;font-size:34px;}h2.project-version{display:inline;margin-left:10px;margin-top:0;font-size:18px;}.toc-link{margin-left:10px;color:#252519;font-size:12px;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{margin:0;font-size:34px;}.docs-header{margin-bottom:25px;padding-bottom:10px;border-bottom:dotted #aaa 1px;}.toc h1{font-size:24px;}.toc{margin-bottom:40px;border-bottom:solid #bbb 1px;}.toc ul{padding-left:0px;margin-left:20px;margin-top:0;padding-top:0;}.toc li{padding-left:0;list-style-type:none;}.dependencies{}.dependencies table{border:none;width:99.99%;margin-left:20px;font-size:16px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{padding-left:0px;margin-left:20px;margin-top:0;padding-top:0;}.plugins li{padding-left:0;list-style-type:none;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;text-align:right;overflow:hidden;top:10px;right:20px;height:20px;}#floating-toc li{margin:0;padding:0;list-style-type:none;}</style><style type="text/css">body{margin:0;padding:0;color:#252519;font-size:16px;background-color:#F5F5FF;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;}h1{margin-top:0;font-size:20px;}a.anchor{color:#252519;text-decoration:none;}a.anchor:hover{color:#5050A6;}table{margin-bottom:10px;border-bottom:solid #ddd 1px;;border-spacing:0;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{border:none;margin:0px;padding-left:55px;width:410px;padding-right:20px;vertical-align:top;max-width:410px;background-color:#FFF;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;background-color:ghostWhite;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><script type="text/javascript">/*!
  * jQuery JavaScript Library v1.4.4
  * http://jquery.com/
  *
@@ -2242,641 +2271,1688 @@ return sh;
 
 // CommonJS
 typeof(exports) != 'undefined' ? exports['SyntaxHighlighter'] = SyntaxHighlighter : null;
-</script><script type="text/javascript">/*!
- * Copyright ¬© 2010 Sattvik Software & Technology Resources, Ltd. Co.
- * All rights reserved.
- *
- * sh-clojure may be used under the terms of either the GNU Lesser General Public
- * License (LGPL) or the Eclipse Public License (EPL).  As a recipient of
- * sh-clojure, you may choose which license to receive the code under.  See the
- * LICENSE file distributed with sh-clojure for details.
- *
- * Written by Daniel Solano G√≥mez
- *
- * Version 0.9.1 - 10 Apr 2010
- */
+</script><script type="text/javascript">// (inc clojure-brush) ;; an improved SyntaxHighlighter brush for clojure
+//
+// Copyright (C) 2011 Andrew Brehaut
+//
+// Distributed under the Eclipse Public License, the same as Clojure.
+//
+// https://github.com/brehaut/inc-clojure-brush
+//
+// Written by Andrew Brehaut
+// V0.9.1, November 2011
 
-function ClojureRegExp(pattern) {
-	pattern = pattern + '(?=[[\\]{}(),\\s])';
-	this.regex = new RegExp(pattern, 'g');
-	this.lookBehind = /[\[\]{}(),\s]$/;
-}
+if (typeof net == "undefined") net = {};
+if (!(net.brehaut)) net.brehaut = {};
 
-ClojureRegExp.prototype.exec = function (str) {
-	var match, leftContext;
-	while (match=this.regex.exec(str)) {
-		leftContext = str.substring(0, match.index);
-		if (this.lookBehind.test(leftContext)) {
-			return match;
-		}
-		else {
-			this.regex.lastIndex = match.index + 1;
-		}
-	}
-	return null;
-};
+net.brehaut.ClojureTools = (function (SH) {
+  "use strict";
+  // utiliies
+  if (!Object.create) Object.create = function object(o) {
+    function F() {};
+    F.prototype = o;  
+    return new F();
+  };
+        
+  // data
+  
+  function Token(value, index, tag, length) {
+    this.value = value;
+    this.index = index;
+    this.length = length || value.length;
+    this.tag = tag;
+    this.secondary_tags = {};
+  }
+  
+  // null_token exists so that LispNodes that have not had a closing tag attached
+  // can have a dummy token to simplify annotation
+  var null_token = new Token("", -1, "null", -1);
+  
+  /* LispNodes are aggregate nodes for sexpressions. 
+   *
+   */
+  function LispNode(tag, children, opening) {
+    this.tag = tag;            // current metadata for syntax inference
+    this.parent = null;        // the parent expression
+    this.list = children;      // all the child forms in order
+    this.opening = opening;    // the token that opens this form.
+    this.closing = null_token; // the token that closes this form.
+    this.meta = null;          // metadata nodes will be attached here if they are found
+  }
 
-SyntaxHighlighter.brushes.Clojure = function () {
-	var special_forms =
-			'. def do fn if let loop monitor-enter monitor-exit new quote recur set! ' +
-			'throw try var',
-	    clojure_core =
-			'* *1 *2 *3 *agent* *allow-unresolved-vars* *assert* *clojure-version* ' +
-			'*command-line-args* *compile-files* *compile-path* *e *err* *file* ' +
-			'*flush-on-newline* *in* *macro-meta* *math-context* *ns* *out* ' +
-			'*print-dup* *print-length* *print-level* *print-meta* *print-readably* ' +
-			'*read-eval* *source-path* *use-context-classloader* ' +
-			'*warn-on-reflection* + - -> -&gt; ->> -&gt;&gt; .. / < &lt; <= &lt;= = ' +
-			'== > &gt; >= &gt;= accessor aclone ' +
-			'add-classpath add-watch agent agent-errors aget alength alias all-ns ' +
-			'alter alter-meta! alter-var-root amap ancestors and apply areduce ' +
-			'array-map aset aset-boolean aset-byte aset-char aset-double aset-float ' +
-			'aset-int aset-long aset-short assert assoc assoc! assoc-in associative? ' +
-			'atom await await-for await1 bases bean bigdec bigint binding bit-and ' +
-			'bit-and-not bit-clear bit-flip bit-not bit-or bit-set bit-shift-left ' +
-			'bit-shift-right bit-test bit-xor boolean boolean-array booleans ' +
-			'bound-fn bound-fn* butlast byte byte-array bytes cast char char-array ' +
-			'char-escape-string char-name-string char? chars chunk chunk-append ' +
-			'chunk-buffer chunk-cons chunk-first chunk-next chunk-rest chunked-seq? ' +
-			'class class? clear-agent-errors clojure-version coll? comment commute ' +
-			'comp comparator compare compare-and-set! compile complement concat cond ' +
-			'condp conj conj! cons constantly construct-proxy contains? count ' +
-			'counted? create-ns create-struct cycle dec decimal? declare definline ' +
-			'defmacro defmethod defmulti defn defn- defonce defstruct delay delay? ' +
-			'deliver deref derive descendants destructure disj disj! dissoc dissoc! ' +
-			'distinct distinct? doall doc dorun doseq dosync dotimes doto double ' +
-			'double-array doubles drop drop-last drop-while empty empty? ensure ' +
-			'enumeration-seq eval even? every? false? ffirst file-seq filter find ' +
-			'find-doc find-ns find-var first float float-array float? floats flush ' +
-			'fn fn? fnext for force format future future-call future-cancel ' +
-			'future-cancelled? future-done? future? gen-class gen-interface gensym ' +
-			'get get-in get-method get-proxy-class get-thread-bindings get-validator ' +
-			'hash hash-map hash-set identical? identity if-let if-not ifn? import ' +
-			'in-ns inc init-proxy instance? int int-array integer? interleave intern ' +
-			'interpose into into-array ints io! isa? iterate iterator-seq juxt key ' +
-			'keys keyword keyword? last lazy-cat lazy-seq let letfn line-seq list ' +
-			'list* list? load load-file load-reader load-string loaded-libs locking ' +
-			'long long-array longs loop macroexpand macroexpand-1 make-array ' +
-			'make-hierarchy map map? mapcat max max-key memfn memoize merge ' +
-			'merge-with meta method-sig methods min min-key mod name namespace neg? ' +
-			'newline next nfirst nil? nnext not not-any? not-empty not-every? not= ' +
-			'	ns ns-aliases ns-imports ns-interns ns-map ns-name ns-publics ' +
-			'ns-refers ns-resolve ns-unalias ns-unmap nth nthnext num number? odd? ' +
-			'or parents partial partition pcalls peek persistent! pmap pop pop! ' +
-			'pop-thread-bindings pos? pr pr-str prefer-method prefers ' +
-			'primitives-classnames print print-ctor print-doc print-dup print-method ' +
-			'print-namespace-doc print-simple print-special-doc print-str printf ' +
-			'println println-str prn prn-str promise proxy proxy-call-with-super ' +
-			'proxy-mappings proxy-name proxy-super push-thread-bindings pvalues quot ' +
-			'rand rand-int range ratio? rational? rationalize re-find re-groups ' +
-			're-matcher re-matches re-pattern re-seq read read-line read-string ' +
-			'reduce ref ref-history-count ref-max-history ref-min-history ref-set ' +
-			'refer refer-clojure release-pending-sends rem remove remove-method ' +
-			'remove-ns remove-watch repeat repeatedly replace replicate require ' +
-			'reset! reset-meta! resolve rest resultset-seq reverse reversible? rseq ' +
-			'rsubseq second select-keys send send-off seq seq? seque sequence ' +
-			'sequential? set set-validator! set? short short-array shorts ' +
-			'shutdown-agents slurp some sort sort-by sorted-map sorted-map-by ' +
-			'sorted-set sorted-set-by sorted? special-form-anchor special-symbol? ' +
-			'split-at split-with str stream? string? struct struct-map subs subseq ' +
-			'subvec supers swap! symbol symbol? sync syntax-symbol-anchor take ' +
-			'take-last take-nth take-while test the-ns time to-array to-array-2d ' +
-			'trampoline transient tree-seq true? type unchecked-add unchecked-dec ' +
-			'unchecked-divide unchecked-inc unchecked-multiply unchecked-negate ' +
-			'unchecked-remainder unchecked-subtract underive unquote ' +
-			'unquote-splicing update-in update-proxy use val vals var-get var-set ' +
-			'var? vary-meta vec vector vector? when when-first when-let when-not ' +
-			'while with-bindings with-bindings* with-in-str with-loading-context ' +
-			'with-local-vars with-meta with-open with-out-str with-precision xml-seq ' +
-			'zero? zipmap ';
+  var null_lispnode = new LispNode("null", [], null_token);
 
-	this.getKeywords = function (keywordStr) {
-		// quote special characters
-		keywordStr = keywordStr.replace(/[\-\[\]{}()*+?.\\\^$|,#]/g, "\\$&");
-		// trim whitespace and convert to alternatives
-		keywordStr = keywordStr.replace(/^\s+|\s+$/g, '').replace(/\s+/g, '|');
-		// create pattern
-		return '(?:' + keywordStr + ')';
-	};
+  
+  function PrefixNode(tag, token, attached_node) {
+    this.tag = tag;
+    this.token = token;
+    this.attached_node = attached_node;
+    this.parent = null;
+  }
 
-	this.regexList = [
-		// comments
-		{ regex: new RegExp(';.*$', 'gm'),
-			css: 'comments' },
-		// strings
-		{ regex: SyntaxHighlighter.regexLib.multiLineDoubleQuotedString,
-			css: 'string' },
-		// regular expressions
-		{ regex: /#"(?:\.|(\\\")|[^\""\n])*"/g,
-			css: 'string' },
-		// vectors
-		{ regex: /\[|\]/g,
-			css: 'keyword' },
-		// amperstands
-		{ regex: /&(amp;)?/g,
-			css: 'keyword' },
-		// sets and maps
-		{ regex: /#?\{|\}/g,
-			css: 'keyword' },
-		// metadata
-		{ regex: /#\^\{/g,
-			css: 'keyword' },
-		// anonymous fn syntactic sugar
-		{ regex: /#\(|%/g,
-			css: 'keyword' },
-		// deref reader macro
-		{ regex: /@/g,
-			css: 'keyword' },
-		// (un)quoted sexprs
-		{ regex: /(['`]|~@?)[\[({]/g,
-			css: 'keyword' },
-		// lists
-		{ regex: /\(|\)/g,
-			css: 'keyword' },
-		// character literals
-		{ regex: /\\.\b/g,
-			css: 'value' },
-		// hexadecimal literals
-		{ regex: /[+\-]?\b0x[0-9A-F]+\b/gi,
-			css: 'value' },
-		// integer/octal/float/bigdecimal literals
-		{ regex: new ClojureRegExp("[+-]?\\b\\d+(\\.\\d*)?([eE][+-]?\\d+|M)?\\b"),
-			css: 'value' },
-		{ regex: /^[+\-]?\b\d+(\.\d*)?([eE][+\-]?\d+|M)?\b/g,
-			css: 'value' },
-		// booleans+nil
-		{ regex: /\b(true|false|nil)\b/g,
-			css: 'value' },
-		// (un)quoted symbols
-		{ regex: /(`|#?'|~@?)[\w-.A-Za-z0-9_&lt;&gt;\-]+/g,
-			css: 'color1' },
-		// keywords
-		{ regex: /:[A-Za-z0-9_\-]+/g,
-			css: 'constants' },
-		// special forms
-		{ regex: new ClojureRegExp(this.getKeywords(special_forms)),
-			css: 'preprocessor' },
-		// type hints
-		{ regex: /\#\^[A-Za-z]\w*/g,
-			css: 'preprocessor' },
-		// clojure.core
-		{ regex: new ClojureRegExp(this.getKeywords(clojure_core)),
-			css: 'functions' },
-                { regex: /[A-Za-z0-9_&lt;&gt;\-]+/g,  css: 'plain'}
-	];
+  
+  
+  // tokenize
 
-	this.forHtmlScript(SyntaxHighlighter.regexLib.scriptScriptTags);
-};
-
-SyntaxHighlighter.brushes.Clojure.prototype = new SyntaxHighlighter.Highlighter();
-SyntaxHighlighter.brushes.Clojure.aliases   = ['clojure', 'Clojure', 'clj'];
-
-// vim: ts=2 sw=2 noet
-</script><script type="text/javascript">
-// hackity-hack
-
-$(document).ready(function() {
-    var ft = $("#floating-toc")
-    var ul = ft.find('ul')
-    var lis = ft.find('li')
-
-    ul.css('maring', '0px')
-
-    var liHeight = $(lis.get(0)).height()
-
-    ft.css('height', (liHeight) + 'px')
-
-
-    showNs = function(ns) {
-        //this is killing performance, lookup table.
-        //var el = $("[id='floating-toc_" + ns + "']")
-        //var index = lis.index(el)
-
-        var index = 0
-
-        for(i in nsPositions.nss) {
-            if(ns == nsPositions.nss[i]) index = i
-        }
-
-        console.log(index)
-
-        if(index == lastNsIndex) return;
-
-        lastNsIndex = index
-
-
-        ul.animate({marginTop: (-1 * liHeight * index) + 'px'},
-               300)
-        //        ul.css('margin-top', (-1 * liHeight * index) + 'px')
-
-    }
-
-    var calcNsPositions = function() {
-        var nss = []
-        var anchors = []
-        var positions = []
-        $.each(lis, function(i, el) {
-            var ns = $(el).attr('id').split('_')[1]
-            nss.push(ns)
-            var a = $("a[name='"+ns+"']")
-            anchors.push(a)
-            positions.push(a.offset().top)
-            console.log(a.offset().top)
-        });
-
-        return {nss: nss, positions: positions}
-    }
-
-    var nsPositions = calcNsPositions()
-
-    console.log(nsPositions)
-
-    var lastNsIndex = -1
-
-    var $window = $(window)
-
-    var currentSection = function(nsp) {
-
-        var ps = nsp.positions
-        var nss = nsp.nss
-        var scroll = $window.scrollTop() + 300
-        var nsIndex = -1
-        for(var i in ps) {
-            var p = ps[i]
-            if(p >= scroll) {
-                nsIndex = i-1
-                break;
-            }
+  function tokenize(code) {
+    var tokens = [];
+    var tn = 0;
+    
+    var zero = "0".charCodeAt(0);
+    var nine = "9".charCodeAt(0); 
+    var lower_a = "a".charCodeAt(0);
+    var lower_f = "f".charCodeAt(0);    
+    var upper_a = "A".charCodeAt(0);
+    var upper_f = "F".charCodeAt(0);
+    
+    var dispatch = false; // have we just seen a # character?
+    
+    // i tracks the start of the current window
+    // extent is the window for slicing
+    
+    for (var i = 0, 
+             extent = i, 
+             j = code.length; 
+             i < j && extent <= j;) {          
                 
+      var c = code[i];
+      
+      // we care about capturing the whole token when dispatch is used, so back up the
+      // starting index by 1
+      if (dispatch) i--; 
+      
+      switch (c) {
+        // dispatch alters the value of the next thing read
+        case "#":
+          dispatch = true;
+          i++;
+          extent++;
+          continue;
+          
+        case " ":    // ignore whitespace
+        case "\t":
+        case "\n":
+        case "\r":
+        case ",":   
+          extent++
+          break; 
+          
+        // simple terms
+        case "^":
+        case "`":
+        case ")":
+        case "[":
+        case "]":
+        case "}":
+        case "@":
+          tokens[tn++] = new Token(c, i, c, ++extent - i);
+          break;
+        
+        case "'":
+          tokens[tn++] = new Token(code.slice(i, ++extent), i, dispatch ? "#'" : "'", extent - i);
+          break
+        
+        case "(":
+          tokens[tn++] = new Token(code.slice(i, ++extent), i, "(", extent - i);
+          break;          
+          
+        case "{":
+          tokens[tn++] = new Token(code.slice(i, ++extent), i, dispatch ? "#{" : "{", extent - i);
+          break;  
+        
+        case "\\":
+          if (code.slice(i + 1, i + 8) === "newline") {
+            tokens[tn++] = new Token("\\newline", i, "value", 8);
+            extent = i + 9; 
+          }
+          else if (code.slice(i + 1, i + 6) === "space") {
+            tokens[tn++] = new Token("\\space", i, "value", 6);
+            extent = i + 6;
+          }
+          else if (code.slice(i + 1, i + 4) === "tab") {
+            tokens[tn++] = new Token("\\tab", i, "value", 4);
+            extent = i + 5;
+          } // work around fun bug with &,>,< in character literals
+          else if (code.slice(i + 1, i + 6) === "&amp;") {
+            tokens[tn++] = new Token("\\&amp;", i, "value", 6);
+            extent = i + 6; 
+          }
+          else if (code.slice(i + 1, i + 5) === "&lt;") {
+            tokens[tn++] = new Token("\\&lt;", i, "value", 5);
+            extent = i + 5;
+          }
+          else if (code.slice(i + 1, i + 5) === "&gt;") {
+            tokens[tn++] = new Token("\\&gt;", i, "value", 5);
+            extent = i + 5;
+          }
+          
+          else {
+            extent += 2;
+            tokens[tn++] = new Token(code.slice(i, extent), i, "value", 2);
+          }
+          break;
+        
+        case "~": // slice
+          if (code[i + 1] === "@") {
+            extent += 2;
+            tokens[tn++] = new Token(code.slice(i, extent), i, "splice", 2);
+          }
+          else {
+            tokens[tn++] = new Token(code.slice(i, ++extent), i, "unquote", 2);
+          }
+          break;
+        
+        // complicated terms
+        case "\"": // strings and regexps
+          for (extent++; extent <= j; extent++) {
+            if (code[extent] === "\\") extent++;
+            else if (code[extent] === "\"") break;
+          }
+          tokens[tn++] = new Token(code.slice(i, ++extent), i, dispatch ? "regexp" : "string", extent - i);       
+          break;
+          
+        case ";":
+          for (; extent <= j && code[extent] !== "\n" && code[extent] !== "\r"; extent++);
+          tokens[tn++] = new Token(code.slice(i, ++extent), i, "comments", extent - i);   
+          break;
+        
+        case "+": // numbers; fall through to symbol for + and - not prefixing a number
+        case "-":
+        case "0":
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
+        // todo: exponents, hex
+        // http://my.safaribooksonline.com/9781449310387/14?reader=pf&readerfullscreen=&readerleftmenu=1
+          var c2 = code.charCodeAt(i + 1);
+          if (((c === "+" || c === "-") && (c2 >= zero && c2 <= nine)) // prefixes
+              || (c !== "+" && c !== "-")) {
+            if (c === "+" || c === "-") extent++; 
+            for (; extent <= j; extent++) {
+              var charCode = code.charCodeAt(extent);
+              if (charCode < zero || charCode > nine) break;
+            }
+            
+            c = code[extent];
+            c2 = code.charCodeAt(extent + 1);
+            if ((c === "r" || c === "R" || c === "/" || c === ".") // interstitial characters
+                && (c2 >= zero && c2 <= nine)) {
+              for (extent++; extent <= j; extent++) {
+                var charCode = code.charCodeAt(extent);
+                if (charCode < zero || charCode > nine) break;
+              }
+            }
+            
+            c = code[extent];
+            c2 = code.charCodeAt(extent + 1);
+            if ((c === "x" || c === "X") && 
+                ((c2 >= zero && c2 <= nine) 
+                 || (c2 >= lower_a && c2 <= lower_f)
+                 || (c2 >= upper_a && c2 <= upper_f))) {
+              for (extent++; extent <= j; extent++) {
+                var charCode = code.charCodeAt(extent);
+                if (((charCode >= zero && charCode <= nine) 
+                    || (charCode >= lower_a && charCode <= lower_f)
+                    || (charCode >= upper_a && charCode <= upper_f))) continue;
+                break;
+              }
+            }
+            
+            c = code[extent];
+            c2 = code.charCodeAt(extent + 1);
+            if ((c === "e" || c === "E") 
+                && (c2 >= zero && c2 <= nine)) {
+              for (extent++; extent <= j; extent++) {
+                var charCode = code.charCodeAt(extent);
+                if (charCode < zero || charCode > nine) break;
+              }
+            }
+            
+            c = code[extent];
+            if (c === "N" || c === "M") extent++;
+
+            tokens[tn++] = new Token(code.slice(i, extent), i, "value", extent - i);
+            break;
+          }
+
+        case "_":
+          if (dispatch && c === "_") {
+            tokens[tn++] = new Token(code.slice(i, ++extent), i, "skip", extent - i);
+            break;
+          } // if not a skip, fall through to symbols
+        
+        // Allow just about any other symbol as a symbol. This is far more permissive than 
+        // clojure actually allows, but should catch any weirdo crap that accidentally gets
+        // into the code.
+        default: 
+          for (extent++; extent <= j; extent++) {
+            switch (code[extent]) {
+              case " ":
+              case "\t":
+              case "\n":
+              case "\r":
+              case "\\":
+              case ",":
+              case "{":
+              case "}":
+              case "(":
+              case ")":
+              case "[":
+              case "]":
+              case "^":
+              case "`":
+              case "@":   
+                break;
+              case ";":   
+                // theres a weird bug via syntax highligher that gives us escaped entities.
+                // need to watch out for these
+                if (code.slice(extent-3, extent+1) === "&lt;"
+                    ||code.slice(extent-3, extent+1) === "&gt;"
+                    ||code.slice(extent-4, extent+1) === "&amp;") {
+                  continue;
+                }
+                break;
+              default:
+                continue;
+            }
+            break;
+          }
+          
+          var value = code.slice(i, extent);
+          var tag = "symbol";
+          if (value[0] == ":") {
+            tag = "keyword";
+          }
+          else if (value === "true" || value === "false" || value === "nil") {
+            tag = "value";
+          }
+          tokens[tn++] = new Token(value, i, tag, extent - i);
+      }
+      
+      dispatch = false;
+      i = extent;
+    } 
+
+    return tokens;
+  }
+
+
+  function build_tree(tokens) {
+    var toplevel = {
+      list: [], 
+      tag: "toplevel", 
+      parent: null, 
+      opening: null,
+      closing: null,
+      depth: -1
+    };
+    
+    // loop variables hoisted out as semi globals to track position in token stream
+    var i = -1;
+    var j = tokens.length;
+    
+    function parse_one(t) {
+      // ignore special tokens and forms that dont belong in the tree
+      for (; t && (t.tag === "comments" || t.tag === "invalid" || t.tag == "skip") && i < j; ) {
+        if (t.tag === "skip") {
+          t.tag = "preprocessor";
+          annotate_comment(parse_one(tokens[++i]));
         }
-
-        if(nsIndex == -1 && scroll >= ps[0]) {
-            nsIndex = ps.length-1
-        }
-
-        if(nsIndex == -1) nsIndex = 0
-
-        return nss[nsIndex]
+        t = tokens[++i];
+      }
+      
+      if (!t) return {}; // hackity hack
+      
+      switch (t.tag) {
+        case "{":
+          return build_aggregate(new LispNode("map", [], t), "}");
+        case "(":
+          return build_aggregate(new LispNode("list", [], t), ")");
+        case "#{":
+          return build_aggregate(new LispNode("set", [], t), "}");
+        case "[":
+          return build_aggregate(new LispNode("vector", [], t), "]");
+        case "'":
+          return new PrefixNode("quote", t, parse_one(tokens[++i]));
+        case "#'":
+          return new PrefixNode("varquote", t, parse_one(tokens[++i]));  
+        case "@":
+          return new PrefixNode("deref", t, parse_one(tokens[++i]));  
+        case "`":
+          return new PrefixNode("quasiquote", t, parse_one(tokens[++i]));  
+        case "unquote":
+          return new PrefixNode("unquote", t, parse_one(tokens[++i]));
+        case "splice":
+          return new PrefixNode("splice", t, parse_one(tokens[++i]));  
+        case "^":
+          t.tag = "meta";
+          var meta = parse_one(tokens[++i]);
+          var next = parse_one(tokens[++i]);
+          next.meta = meta;
+          return next;
+      }
+      
+      return t;
     }
+    
+    // build_aggregate collects to ether sub forms for one aggregate for. 
+    function build_aggregate(current, expected_closing) {
+      for (i++; i < j; i++) {
+        var t = tokens[i];
 
-    $(window).scroll(function(e) {
-        showNs(currentSection(nsPositions))
-    })
+        if (t.tag === "}" || t.tag === ")" || t.tag === "]") {
+          if (t.tag !== expected_closing) t.tag = "invalid";
+          current.closing = t;
+          if (expected_closing) return current;
+        }
+        var node = parse_one(t);
 
-    ul.css('margin-top', '0px')
+        node.parent = current;
+        current.list[current.list.length] = node;
+      }
+      
+      return current;
+    }
+    
+    build_aggregate(toplevel, null);
+    
+    return toplevel;
+  }
 
-})
-</script><title>ib-re-actor -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">ib-re-actor</h1><h2 class="project-version">0.0.1-SNAPSHOT</h2><br /><p>Clojure friendly wrapper for InteractiveBrokers java API</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.3.0</td></tr><tr><td class="dep-name">clj-time</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0</td></tr><tr><td class="dep-name">jtsclient</td><td class="dotted"><hr /></td><td class="dep-version">9.6.5</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">midje</td><td class="dotted"><hr /></td><td class="dep-version">1.3-alpha4</td></tr><tr><td class="dep-name">lein-exec</td><td class="dotted"><hr /></td><td class="dep-version">0.1</td></tr><tr><td class="dep-name">lein-marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.6.1</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#ib-re-actor.connection">ib-re-actor.connection</a></li><li><a href="#ib-re-actor.contracts">ib-re-actor.contracts</a></li><li><a href="#ib-re-actor.conversions">ib-re-actor.conversions</a></li><li><a href="#ib-re-actor.core">ib-re-actor.core</a></li><li><a href="#ib-re-actor.historic-data">ib-re-actor.historic-data</a></li><li><a href="#ib-re-actor.orders">ib-re-actor.orders</a></li><li><a href="#ib-re-actor.util">ib-re-actor.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.connection" name="ib-re-actor.connection"><h1 class="project-name">ib-re-actor.connection</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for connecting to Interactive Brokers TWS and sending requests to it.</p>
-</td><td class="codes" /><pre class="brush: clojure">(ns ib-re-actor.connection
-  (:use [ib-re-actor.conversions]
-        [clojure.xml :only [parse]])
-  (:import [com.ib.client EClientSocket EWrapper]))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(def ^{:doc &quot;test2&quot;} x &quot;test&quot; [] nil)</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn- is-finish? [date-string]
-  (.startsWith date-string &quot;finished&quot;))</pre></tr><tr><td class="docs"><p>I found having to implement the entire <code>EWrapper</code> interface to be
-kind of a pain, so I decided to try flattening it into something
-that would be easy to use either via multi-methods or that you
-could build some other protocol on top of.</p>
-</td><td class="codes" /></tr><tr><td class="docs"><p>Another consideration is that this would be a great point to build
-a layer that talks directly to TWS, not using the jtsclient stuff,
-like what was done for the .NET TWS API. I think you could take
-advantage of clojure's transactional memory better if you did that.</p>
-</td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn- create-wrapper
-  &quot;Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
+  // annotation rules to apply to a form based on its head
+
+  var show_locals = true;  // HACK. would rather not use a (semi)-global.
+
+  /* annotate_comment is a special case annotation. 
+   * in addition to its role in styling specific forms, it is called by parse_one to
+   * ignore any forms skipped with #_
+   */ 
+  function annotate_comment(exp) {
+    exp.tag = "comments";
+
+    if (exp.list) {
+      exp.opening.tag = "comments";
+      exp.closing.tag = "comments";
+    
+      for (var i = 0; i < exp.list.length; i++) {
+        var child = exp.list[i];
+        if (child.list) {
+          annotate_comment(child);
+        }
+        if (child.attached_node) {
+          annotate_comment(child.attached_node);
+        }
+        else {
+          child.tag = "comments";
+        }
+      }
+    }
+  }
+
+  /* custom annotation rules are stored here */
+  var annotation_rules = {};
+  
+  // this function is exposed to allow ad hoc extension of the customisation rules
+  function register_annotation_rule(names, rule) {
+    for (var i = 0; i < names.length; i++) {
+      annotation_rules[names[i]] = rule;
+    }
+  }
+
+
+  function annotate_destructuring (exp, scope) {
+    if (exp.list) {
+      if (exp.tag === "vector") {
+        for (var i = 0; i < exp.list.length; i++) {
+          annotate_destructuring(exp.list[i], scope);
+        }
+      } 
+      else if (exp.tag === "map") {
+        for (var i = 0; i < exp.list.length; i += 2) {
+          var key = exp.list[i];
+          var val = exp.list[i + 1];
+          
+          if (key.tag === "keyword" && val.tag === "vector") {
+            for (var ii = 0, jj = val.list.length; ii < jj; ii++) {
+              if (val.list[ii].tag !== "symbol") continue;
+              val.list[ii].tag = "variable";
+              scope[val.list[ii].value] = true;
+            }
+          }
+          else {
+            annotate_destructuring(key, scope);
+            annotate_expressions(val, scope);
+          }
+        } 
+      }
+    } 
+    else if (exp.tag === "symbol" && (exp.value !== "&" && exp.value !== "&amp;")){
+      exp.tag = "variable";
+      scope[exp.value] = true;
+    }
+  }
+
+  function _annotate_binding_vector (exp, scope) {
+    if (exp.tag !== "vector") return;
+  
+    var bindings = exp.list;
+
+    if (bindings.length % 2 === 1) return;
+    
+    for (var i = 0; i < bindings.length; i += 2) {
+      annotate_destructuring(bindings[i], scope);
+      annotate_expressions(bindings[i + 1], scope);
+    }    
+  }
+
+  function annotate_binding (exp, scope) {
+    var bindings = exp.list[1];
+    if (!show_locals) return; // HACK
+
+    if (bindings) {
+      scope = Object.create(scope);
+      _annotate_binding_vector(bindings, scope);
+    }
+    for (var i = 2; i < exp.list.length; i++) {
+      annotate_expressions(exp.list[i], scope);
+    }
+  }
+  
+  function _annotate_function_body (exp, scope, start_idx) {
+    var argvec = exp.list[start_idx];
+    if (argvec.tag !== "vector") return;
+
+    scope = Object.create(scope);
+
+    for (var i = 0, j = argvec.list.length; i < j; i++) {
+      annotate_destructuring(argvec.list[i], scope);
+    }
+    
+    for (var i = start_idx, j = exp.list.length; i < j; i++) {
+      annotate_expressions(exp.list[i], scope);
+    }
+  }
+  
+  function annotate_function (exp, scope) {
+    for (var i = 1, j = exp.list.length; i < j; i++) {
+      var child = exp.list[i];
+      
+      if (child.tag === "vector") {
+        _annotate_function_body (exp, scope, i);
+        return;
+      }
+      else if (child.tag === "list") {
+        _annotate_function_body(child, scope, 0)
+      }
+    }
+  }
+  
+  function annotate_letfn (exp, scope) {
+    scope = Object.create(scope);
+    var bindings = exp.list[1];
+    
+    var fn;
+    for (var i = 0, j = bindings.list.length; i < j; i++) {
+      fn = bindings.list[i];
+      if (!fn.list[0]) continue;
+      fn.list[0].tag = "variable";
+      scope[fn.list[0].value] = true;
+    }
+    
+    for (i = 0, j = bindings.list.length; i < j; i++) {
+      var fn = bindings.list[i];
+      annotate_function(fn, scope);
+    }
+    
+    for (i = 2, j = exp.list.length; i < j; i++) {
+      annotate_expressions(exp.list[i], scope);
+    }
+  }
+
+  register_annotation_rule(
+    ["comment"],
+    annotate_comment
+  );
+  
+  register_annotation_rule(
+    ["let", "when-let", "if-let", "binding", "doseq", "for", "dotimes", "let*"],
+    annotate_binding
+  );
+  
+  register_annotation_rule(
+    ["defn", "defn-", "fn", "bound-fn", "defmacro", "fn*", "defmethod"],
+    annotate_function
+  );
+  
+  register_annotation_rule(
+    ["letfn"],
+    annotate_letfn
+  );
+
+  // standard annotations
+
+  function _annotate_metadata_recursive(meta, scope) {
+    if (!meta) return;
+
+    if (meta.list !== undefined && meta.list !== null) {
+      for (var i = 0, j = meta.list.length; i < j; i++) {
+        meta.opening.secondary_tags.meta = true
+        meta.closing.secondary_tags.meta = true
+        _annotate_metadata_recursive(meta.list[i], scope);
+      }
+    }
+    else if (meta.attached_node) {
+      meta.token.secondary_tags.meta = true;
+      _annotate_metadata_recursive(meta.attached_node, scope);
+    }
+    else {
+      meta.secondary_tags.meta = true;
+    }
+  }
+  
+  function annotate_metadata(exp) {
+    if (!(exp && exp.meta)) return;
+    var meta = exp.meta;
+    
+     annotate_expressions(meta, {});    
+    _annotate_metadata_recursive(meta, {});
+  }
+
+
+  function annotate_quoted(exp, scope) {
+    if (!exp) return;
+
+    if (exp.list !== undefined && exp.list !== null) {
+      for (var i = 0, j = exp.list.length; i < j; i++) {
+        exp.opening.secondary_tags.quoted = true
+        exp.closing.secondary_tags.quoted = true
+        annotate_quoted(exp.list[i], scope);
+      }
+    }
+    else if (exp.attached_node) {
+      if (exp.tag === "unquote" || exp.tag === "splice") return;
+      exp.token.secondary_tags.quoted = true;
+      annotate_quoted(exp.attached_node, scope);
+    }
+    else {
+      exp.secondary_tags.quoted = true;
+    }
+  }
+
+
+  function annotate_expressions(exp, scope) {
+    annotate_metadata(exp);
+    
+    switch (exp.tag) {
+      case "toplevel": 
+        for (var i = 0; i < exp.list.length; i++) {
+          annotate_expressions(exp.list[i], scope);
+        }
+        break;
+      
+      case "list": // functions, macros, special forms, comments
+        var head = exp.list[0];
+      
+        if (head) {
+          if (head.tag === "list" || head.tag === "vector" 
+           || head.tag === "map" || head.tag === "set") {
+            annotate_expressions(head, scope);
+          }
+          else if (head.attached_node) {
+            annotate_expressions(head.attached_node, scope);
+          }
+          else {
+            head.tag = (head.value.match(/(^\.)|(\.$)|[A-Z].*\//)
+                        ? "method"
+                        : "function");
+          }
+
+          // apply specific rules
+          if (annotation_rules.hasOwnProperty(head.value)) {
+            annotation_rules[head.value](exp, scope);
+          } 
+          else {
+            for (var i = 1; i < exp.list.length; i++) {
+              annotate_expressions(exp.list[i], scope);
+            }
+          } 
+        }
+        else { // empty list
+          exp.opening.tag = "value";
+          exp.closing.tag = "value";
+        }
+      
+        break;
+      
+      case "vector": // data
+      case "map":
+      case "set":
+        for (var i = 0; i < exp.list.length; i++) {
+          annotate_expressions(exp.list[i], scope);
+        }
+        break;
+      
+      case "symbol":
+        if (exp.value.match(/[A-Z].*\/[A-Z_]+/)) {
+          exp.tag = "constant";
+        }
+        else if (show_locals && scope[exp.value]) {
+          exp.tag = "variable";
+        }
+        else if (exp.tag === "symbol" && exp.value.match(/([A-Z].*\/)?[A-Z_]+/)) {
+          exp.tag = "type";
+        }
+        break;
+      
+      case "quote":
+      case "quasiquote":
+        annotate_quoted(exp.attached_node, scope);
+        
+      default:
+        if (exp.attached_node) annotate_expressions(exp.attached_node, scope);
+    }
+  }
+
+  // translation of tag to css:
+  var css_translation = {
+    "constant":     "constants",
+    "keyword":      "constants",
+    "method":       "color1",
+    "type":         "color3", 
+    "function":     "functions",
+    "string":       "string",
+    "regexp":       "string",
+    "value":        "value",
+    "comments":     "comments",
+    "symbol":       "symbol",
+    "variable":     "variable",
+    "splice":       "preprocessor", 
+    "unquote":      "preprocessor",     
+    "preprocessor": "preprocessor",
+    "meta":         "preprocessor", 
+    "'":            "preprocessor", 
+    "#'":           "preprocessor",    
+    "(":            "plain",
+    ")":            "plain",
+    "{":            "keyword",
+    "}":            "keyword",
+    "#{":           "keyword",   
+    "[":            "keyword",
+    "]":            "keyword",
+    "invalid":      "invalid",
+    "@":            "plain" 
+  };
+  
+  function translate_tags_to_css(tokens) {
+    for (var i = 0, j = tokens.length; i < j; i++) {
+      var token = tokens[i];
+      token.css = css_translation[token.tag];
+      for (var k in token.secondary_tags) if (token.secondary_tags.hasOwnProperty(k))
+        token.css += " " + k ;
+    };
+  }
+  
+  
+  // create the new brush
+
+  SH.brushes.Clojure = function () {};
+  SH.brushes.Clojure.prototype = new SyntaxHighlighter.Highlighter();
+  
+  SH.brushes.Clojure.prototype.findMatches = function find_matches (regexpList, code) {
+    // this is a nasty global hack. need to resolve this
+    if (this.params && this.params.locals) {
+      show_locals = this.params.locals === true || this.params.locals === "true"; 
+    }
+    else {
+      show_locals = true;
+    }
+    
+    var tokens = tokenize(code);
+    annotate_expressions(build_tree(tokens), {});
+    translate_tags_to_css(tokens);
+
+    return tokens;
+  };
+  
+  SH.brushes.Clojure.aliases = ['clojure', 'Clojure', 'clj'];
+  SH.brushes.Clojure.register_annotation_rule = register_annotation_rule;
+
+  return {
+    tokenize: tokenize,
+    build_tree: build_tree
+  };
+})(SyntaxHighlighter);
+</script><title>ib-re-actor -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">ib-re-actor</h1><h2 class="project-version">0.1.0</h2><br /><p>Clojure friendly wrapper for InteractiveBrokers java API</p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.4.0</td></tr><tr><td class="dep-name">clj-time</td><td class="dotted"><hr /></td><td class="dep-version">0.4.4</td></tr><tr><td class="dep-name">com.ib/jtsclient</td><td class="dotted"><hr /></td><td class="dep-version">9.68</td></tr><tr><td class="dep-name">org.clojure/tools.logging</td><td class="dotted"><hr /></td><td class="dep-version">0.2.3</td></tr><tr><td class="dep-name">clj-logging-config</td><td class="dotted"><hr /></td><td class="dep-version">1.9.10</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#ib-re-actor.account">ib-re-actor.account</a></li><li><a href="#ib-re-actor.gateway">ib-re-actor.gateway</a></li><li><a href="#ib-re-actor.mapping">ib-re-actor.mapping</a></li><li><a href="#ib-re-actor.positions">ib-re-actor.positions</a></li><li><a href="#ib-re-actor.synchronous">ib-re-actor.synchronous</a></li><li><a href="#ib-re-actor.translation">ib-re-actor.translation</a></li><li><a href="#ib-re-actor.util">ib-re-actor.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.account" name="ib-re-actor.account"><h1 class="project-name">ib-re-actor.account</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Account details</h1>
+
+<p>This namespace deals monitoring and updating account details.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.account
+  (:require [ib-re-actor.gateway :as g]))</pre></td></tr><tr><td class="docs"><p>This atom contains the account details at all times</p>
+</td><td class="codes"><pre class="brush: clojure">(defonce account-details (atom nil))</pre></td></tr><tr><td class="docs"><p>Update a partical key in the account details</p>
+</td><td class="codes"><pre class="brush: clojure">(defn update-account-details
+  [{:keys [type key value currency]}]
+  (case type
+    :update-account-value
+    (swap! account-details assoc key
+           (if (nil? currency)
+             value
+             (vector value currency)))
+    :update-account-time
+    (swap! account-details assoc :last-updated value)))</pre></td></tr><tr><td class="docs"><p>Subscribe immediately to receiving updates</p>
+</td><td class="codes"><pre class="brush: clojure">(do
+  (g/subscribe update-account-details))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.gateway" name="ib-re-actor.gateway"><h1 class="project-name">ib-re-actor.gateway</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>The Gateway</h1>
+
+<p>The main user interface. Functions for connecting to Interactive Brokers TWS Gateway and sending
+requests to it.</p>
+
+<h2>Big Picture</h2>
+
+<p>The IB API requires consumers to instantate an object of type com.ib.client.EClientSocket
+which is a socket client to the gateway, or TWS.  When instantating this object you pass in
+another object which must implement the com.ib.client.EWrapper interface.  The EWrapper is a
+collection of callbacks. You then invoke
+methods (like requesting price data) on the the EClientSocket object and the results
+(price update events) is returned by the EWrapper callbacks.
+So the typical pattern for dealing with the IB API is to implement an EWrapper type object for each
+application, which requires a lot of knowledge of the API.</p>
+
+<p>This library takes a slightly different approach to try ease that burden.  The library implements a listener framework
+around each callback in the EWrapper object.  So what happens is that each time the IB Gateway
+calls back to an method in the EWrapper, our object parses the response and packages it up into a tidy Clojure map
+which its hands to any registered listeners.</p>
+
+<p>Consumers of this library thus do not need to care about the mechanics of EWrapper, ESocketClient etc,
+they simply need to register a listener and will receive events.</p>
+
+<h2>Basic Usage</h2>
+
+<ol>
+<li>Connect to a running Gateway of TWS, using the connect function</li>
+<li>Register a listener for an event using the subscribe function</li>
+<li>Request the generation of the appropriate event using the request-* functions</li>
+<li>Cancel the request with the cancel-* when done.</li>
+</ol>
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.gateway
+  (:use [ib-re-actor.translation :only [translate integer-account-value?
+                                        numeric-account-value?
+                                        boolean-account-value?]]
+        [ib-re-actor.mapping])
+  (:require [clojure.xml :as xml]
+            [clojure.tools.logging :as log]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- get-stack-trace [ex]
+  (let [sw (java.io.StringWriter.)
+        pw (java.io.PrintWriter. sw)]
+    (.printStackTrace ex pw)
+    (.toString sw)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- log-exception
+  ([ex msg]
+     (log/error msg &quot;: &quot; (.getMessage ex))
+     (log/error &quot;Stack Trace: &quot; (get-stack-trace ex)))
+  ([ex]
+     (log-exception ex &quot;Error&quot;)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defonce client-id (atom 100))
+(defonce next-order-id (atom 0))
+(defonce next-request-id (atom 0))
+(defonce default-server-log-level :error)
+(defonce contract-&gt;id (atom {}))
+(defonce id-&gt;contract (atom {}))
+(defonce last-ticker-id (atom 1))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn register-contract [contract]
+  (let [existing (get @contract-&gt;id contract)]
+    (or existing
+        (let [id (swap! last-ticker-id inc)]
+          (log/debug &quot;registering id &quot; id &quot; for &quot; contract)
+          (swap! contract-&gt;id assoc contract id)
+          (swap! id-&gt;contract assoc id contract)
+          id))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn lookup-contract [id]
+  (get @id-&gt;contract id))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defonce connection (agent nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(set-error-mode! connection :continue)
+(set-error-handler! connection
+                    (fn [a ex]
+                      (log-exception &quot;Connection Error&quot; ex)
+                      (try (.eDisconnect @a)
+                           (catch Exception ex
+                             (log-exception &quot;Error disconnecting&quot; ex)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defonce listeners (agent nil))
+(set-error-mode! listeners :continue)
+(set-error-handler! listeners
+                    (fn [a ex]
+                      (log-exception &quot;Error in handler&quot; ex)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn clear-listeners []
+  (send listeners (fn [_] nil)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmacro send-connection [f &amp; args]
+  `(send-off connection
+             (fn [c#]
+               (~f c# ~@args)
+               c#)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- invoke-all [fs message]
+  (doseq [f fs]
+    (try
+      (f message)
+      (catch Exception ex (log-exception ex))))
+  fs)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- dispatch-message [msg]
+  (log/debug &quot;Dispatching: &quot; msg)
+  (send-off listeners invoke-all msg))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- is-finish? [date-string]
+  (.startsWith date-string &quot;finished&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmulti warning? class)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod warning? java.lang.Integer [code]
+  (&gt;= code 2100))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod warning? java.lang.Long [code]
+  (&gt;= code 2100))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod warning? clojure.lang.IPersistentMap [{code :code exception :exception}]
+  (cond
+   (not (nil? exception)) false
+   (nil? code) false
+   :else (warning? code)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod warning? :default [_]
+  false)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def error? (comp not warning?))</pre></td></tr><tr><td class="docs"><p>Predicate to determine if a message indicates a tick snapshot is done</p>
+</td><td class="codes"><pre class="brush: clojure">(defn is-end?
+  [{type :type :as msg}]
+  (cond
+   (= :tick-snapshot-end type) true
+   (and (= :error type) (error? msg)) true
+   :otherwise false))</pre></td></tr><tr><td class="docs"><p>Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
    calling a single function with maps that all have a :type to indicate what type
-   of messages was received, and the massaged parameters from the event.&quot;
-  [process-message]
+   of messages was received, and the massaged parameters from the event.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- create-wrapper
+  []
   (reify
-    EWrapper
+    com.ib.client.EWrapper
+    ;;; Connection and Server
+    (currentTime [this time]
+      (dispatch-message {:type :current-time
+                         :value (translate :from-ib :date-time time)}))
+    (log/error [this requestId errorCode message]
+      (dispatch-message {:type :error :request-id requestId :code errorCode
+                         :message message}))
+    (^void error [this ^String message]
+      (dispatch-message {:type :error :message message}))
+    (^void error [this ^Exception ex]
+      (let [sw (java.io.StringWriter.)
+            pw (java.io.PrintWriter. sw)]
+        (.printStackTrace ex pw)
+        (log/error &quot;Error: &quot; (.getMessage ex))
+        (log/error &quot;Stack Trace: &quot; sw))
+      (dispatch-message {:type :error :exception (.toString ex)}))
+    (connectionClosed [this]
+      (log/info &quot;Connection closed&quot;)
+      (dispatch-message {:type :connection-closed})
+      (send connection nil))
+    ;;; Market Data
+    (tickPrice [this tickerId field price canAutoExecute]
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code field)
+                         :contract (lookup-contract tickerId)
+                         :value price
+                         :can-auto-execute? (= 1 canAutoExecute)}))
+    (tickSize [this tickerId field size]
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code field)
+                         :contract (lookup-contract tickerId)
+                         :value size}))
+    (tickOptionComputation [this tickerId field impliedVol delta optPrice
+                            pvDividend gamma vega theta undPrice]
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code field)
+                         :contract (lookup-contract tickerId)
+                         :implied-volatility impliedVol
+                         :option-price optPrice
+                         :pv-dividends pvDividend
+                         :underlying-price undPrice
+                         :delta delta :gamma gamma :theta theta :vega vega}))
+    (tickGeneric [this tickerId tickType value]
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code tickType)
+                         :contract (lookup-contract tickerId) :value value}))
+    (tickString [this tickerId tickType value]
+      (let [field (translate :from-ib :tick-field-code tickType)]
+        (cond
+         (= field :last-timestamp)
+         (dispatch-message {:type :tick :field field
+                            :contract (lookup-contract tickerId)
+                            :value (translate :from-ib :date-time value)})
+         :else
+         (dispatch-message {:type :tick :field field
+                            :contract (lookup-contract tickerId)
+                            :value val}))))
+    (tickEFP [this tickerId tickType basisPoints formattedBasisPoints
+              impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code tickType)
+                         :contract (lookup-contract tickerId)
+                         :basis-points basisPoints
+                         :formatted-basis-points formattedBasisPoints
+                         :implied-future impliedFuture :hold-days holdDays
+                         :future-expiry futureExpiry
+                         :dividend-impact dividendImpact
+                         :dividends-to-expiry dividendsToExpiry}))
+    (tickSnapshotEnd [this reqId]
+      (dispatch-message {:type :tick-snapshot-end :request-id reqId}))
+    (marketDataType [this reqId type]
+      (dispatch-message {:type :market-data-type
+                         :request-id reqId
+                         :market-data-type (translate :from-ib :market-data-type type)}))
+    ;;; Orders
+    (orderStatus [this orderId status filled remaining avgFillPrice permId
+                  parentId lastFillPrice clientId whyHeld]
+      (dispatch-message {:type :order-status :order-id orderId
+                         :status (translate :from-ib :order-status status)
+                         :filled filled :remaining remaining
+                         :average-fill-price avgFillPrice
+                         :permanent-id permId :parent-id parentId
+                         :last-fill-price lastFillPrice :client-id clientId
+                         :why-held whyHeld}))
+    (openOrder [this orderId contract order orderState]
+      (dispatch-message {:type :open-order :order-id orderId :contract (-&gt;map contract)
+                         :order (-&gt;map order) :order-state (-&gt;map orderState)}))
+    (openOrderEnd [this]
+      (dispatch-message {:type :open-order-end}))
+    (nextValidId [this orderId]
+      (dosync
+       (reset! next-order-id orderId))
+      (dispatch-message {:type :next-valid-order-id :value orderId}))
+    ;;; Account and Portfolio
+    (updateAccountValue [this key value currency accountName]
+      (let [avk (translate :from-ib :account-value-key key)
+            val (cond
+                 (integer-account-value? avk) (Integer/parseInt value)
+                 (numeric-account-value? avk) (Double/parseDouble value)
+                 (boolean-account-value? avk) (Boolean/parseBoolean value)
+                 :else value)]
+        (dispatch-message {:type :update-account-value :key avk :value val
+                           :currency currency :account accountName})))
+    (accountDownloadEnd [this account-code]
+      (dispatch-message {:type :account-download-end :account-code account-code}))
+    (updatePortfolio [this contract position marketPrice marketValue averageCost
+                      unrealizedPNL realizedPNL accountName]
+      (dispatch-message {:type :update-portfolio :contract (-&gt;map contract)
+                         :position position :market-price marketPrice
+                         :market-value marketValue :average-cost averageCost
+                         :unrealized-gain-loss unrealizedPNL
+                         :realized-gain-loss realizedPNL
+                         :account accountName}))
+    (updateAccountTime [this timeStamp]
+      (dispatch-message {:type :update-account-time
+                         :value (translate :from-ib :time-of-day timeStamp)}))
+    ;;; Contract Details
+    (contractDetails [this requestId contractDetails]
+      (dispatch-message {:type :contract-details :request-id requestId
+                         :value (-&gt;map contractDetails)}))
+    (bondContractDetails [this requestId contractDetails]
+      (dispatch-message {:type :contract-details :request-id requestId
+                         :value (-&gt;map  contractDetails)}))
+    (contractDetailsEnd [this requestId]
+      (dispatch-message {:type :contract-details-end :request-id requestId}))
+    ;;; Execution Details
+    (execDetails [this requestId contract execution]
+      (dispatch-message {:type :execution-details :request-id requestId
+                         :contract (-&gt;map contract)
+                         :value (-&gt;map execution)}))
+    (execDetailsEnd [this requestId]
+      (dispatch-message {:type :execution-details-end :request-id requestId}))
+    (commissionReport [this commissionReport]
+      (dispatch-message {:type :commission-report :report (-&gt;map commissionReport)}))
+    ;;; Market Depth
+    (updateMktDepth [this tickerId position operation side price size]
+      (dispatch-message {:type :update-market-depth
+                         :contract (lookup-contract tickerId)
+                         :position position
+                         :operation (translate :from-ib :market-depth-row-operation
+                                               operation)
+                         :side (translate :from-ib :market-depth-side side)
+                         :price price :size size}))
+    (updateMktDepthL2 [this tickerId position marketMaker operation side price size]
+      (dispatch-message {:type :update-market-depth-level-2
+                         :contract (lookup-contract tickerId) :position position
+                         :market-maker marketMaker
+                         :operation (translate :from-ib :market-depth-row-operation
+                                               operation)
+                         :side (translate :from-ib :market-depth-side side)
+                         :price price :size size}))
+    ;;; News Bulletin
+    (updateNewsBulletin [this msgId msgType message origExchange]
+      (dispatch-message {:type (condp = msgType
+                                 0 :news-bulletin
+                                 1 :exchange-unavailable
+                                 2 :exchange-available)
+                         :id msgId :message message :exchange origExchange}))
+    ;;; Financial Advisors
+    (managedAccounts [this accountsList]
+      (dispatch-message {:type :managed-accounts
+                         :accounts (-&gt;&gt; (.split accountsList &quot;,&quot;) (map #(.trim %)) vec)}))
+    (receiveFA [this faDataType xml]
+      (dispatch-message {:type (condp = faDataType
+                                 1 :financial-advisor-groups
+                                 2 :financial-advisor-profile
+                                 3 :financial-advisor-account-aliases)
+                         :value xml}))
+    ;;; Historical Data
     (historicalData [this requestId date open high low close volume count wap hasGaps]
       (if (is-finish? date)
-        (process-message {:type :complete :request-id requestId})
-        (process-message {:type :price-bar :request-id requestId :time (translate-from-ib-date-time date)
-                          :open open :high high :low low :close close :volume volume
-                          :count count :WAP wap :has-gaps? hasGaps})))
-    (realtimeBar [this requestId time open high low close volume wap count]
-      (process-message {:type :price-bar :request-id requestId :time (translate-from-ib-date-time time)
-                        :open open :high high :low low :close close :volume volume
-                        :count count :WAP wap}))
-    (tickPrice [this tickerId field price canAutoExecute]
-      (process-message {:type :price-tick :field (translate-from-ib-tick-field-code field)
-                        :ticker-id tickerId
-                        :price price
-                        :can-auto-execute? (= 1 canAutoExecute)}))
-    (tickSize [this tickerId field size]
-      (process-message {:type :size-tick :field (translate-from-ib-tick-field-code field)
-                        :ticker-id tickerId
-                        :size size}))
-    (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice]
-      (process-message {:type :option-computation-tick :field (translate-from-ib-tick-field-code field)
-                        :ticker-id tickerId
-                        :implied-volatility impliedVol
-                        :option-price optPrice
-                        :pv-dividends pvDividend
-                        :underlying-price undPrice
-                        :delta delta :gamma gamma :theta theta :vega vega }))
-    (tickGeneric [this tickerId tickType value]
-      (process-message {:type :generic-tick :field (translate-from-ib-tick-field-code tickType)
-                        :ticker-id tickerId :value value}))
-    (tickString [this tickerId tickType value]
-      (let [field (translate-from-ib-tick-field-code tickType)
-            val (condp = field
-                  :last-timestamp (translate-from-ib-date-time value)
-                  value)]
-        (process-message {:type :string-tick :field field
-                          :ticker-id tickerId :value val})))
-    (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
-      (process-message {:type :efp-tick :field (translate-from-ib-tick-field-code tickType)
-                        :ticker-id tickerId
-                        :basis-points basisPoints :formatted-basis-points formattedBasisPoints
-                        :implied-future impliedFuture :hold-days holdDays :future-expiry futureExpiry
-                        :dividend-impact dividendImpact :dividends-to-expiry dividendsToExpiry}))
-    (tickSnapshotEnd [this reqId]
-      (process-message {:type :tick-snapshot-end :request-id reqId}))
-    (connectionClosed [this]
-      (process-message {:type :connection-closed}))
-    (error [this requestId errorCode message]
-      (process-message {:type :error :request-id requestId :code errorCode :message message}))
-    (^void error [this ^String message]
-      (process-message {:type :error :message message}))
-    (^void error [this ^Exception ex]
-      (process-message {:type :error :exception ex}))
-    (currentTime [this time]
-      (process-message {:type :current-time :value (translate-from-ib-date-time time)}))
-    (orderStatus [this orderId status filled remaining avgFillPrice permId parentId lastFillPrice clientId whyHeld]
-      (process-message {:type :order-status :order-id orderId :status (translate-from-ib-order-status status)
-                        :filled filled :remaining remaining :average-fill-price avgFillPrice
-                        :permanent-id permId :parent-id parentId
-                        :last-fill-price lastFillPrice :client-id clientId
-                        :why-held whyHeld}))
-    (openOrder [this orderId contract order orderState]
-      (process-message {:type :open-order :order-id orderId :contract contract :order order :order-state orderState}))
-    (openOrderEnd [this]
-      (process-message {:type :open-order-end}))
-    (nextValidId [this orderId]
-      (process-message {:type :next-valid-order-id :value orderId}))
-    (updateAccountValue [this key value currency accountName]
-      (let [account-value-key (translate-from-ib-account-value-key key)]
-        (if (= account-value-key :day-trades-remaining)
-          (process-message {:type :update-account-day-trades-remaining
-                            :value (Integer/parseInt value)
-                            :account accountName})
-          (process-message {:type :update-account-value :key account-value-key
-                            :value (Double/parseDouble value) :currency currency
-                            :account accountName}))))
-    (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
-      (process-message {:type :update-portfolio :contract contract :position position
-                        :market-price marketPrice :market-value marketValue
-                        :average-cost averageCost :unrealized-gain-loss unrealizedPNL :realized-gain-loss realizedPNL
-                        :account accountName}))
-    (updateAccountTime [this timeStamp]
-      (process-message {:type :update-account-time :value (translate-from-ib-date-time timeStamp)}))
-    (contractDetails [this requestId contractDetails]
-      (process-message {:type :contract-details :request-id requestId :value contractDetails}))
-    (bondContractDetails [this requestId contractDetails]
-      (process-message {:type :contract-details :request-id requestId :value contractDetails}))
-    (contractDetailsEnd [this requestId]
-      (process-message {:type :contract-details-end :request-id requestId}))
-    (execDetails [this requestId contract execution]
-      (process-message {:type :execution-details :request-id requestId :contract contract :value execution}))
-    (execDetailsEnd [this requestId]
-      (process-message {:type :execution-details-end :request-id requestId}))
-    (updateMktDepth [this tickerId position operation side price size]
-      (process-message {:type :update-market-depth :ticker-id tickerId :position position
-                        :operation (translate-from-ib-market-depth-row-operation operation)
-                        :side (translate-from-ib-market-depth-side side)
-                        :price price :size size}))
-    (updateMktDepthL2 [this tickerId position marketMaker operation side price size]
-      (process-message {:type :update-market-depth-level-2 :ticker-id tickerId :position position
-                        :market-maker marketMaker
-                        :operation (translate-from-ib-market-depth-row-operation operation)
-                        :side (translate-from-ib-market-depth-side side)
-                        :price price :size size}))
-    (updateNewsBulletin [this msgId msgType message origExchange]
-      (process-message {:type (condp = msgType
-                                0 :news-bulletin
-                                1 :exchange-unavailable
-                                2 :exchange-available)
-                        :id msgId :message message :exchange origExchange}))
-    (managedAccounts [this accountsList]
-      (process-message {:type :managed-accounts
-                        :accounts (-&gt;&gt; (.split accountsList &quot;,&quot;) (map #(.trim %)) vec)}))
-    (receiveFA [this faDataType xml]
-      (process-message {:type (condp = faDataType
-                                1 :financial-advisor-groups
-                                2 :financial-advisor-profile
-                                3 :financial-advisor-account-aliases)
-                        :value xml}))
+        (dispatch-message {:type :price-bar-complete :request-id requestId})
+        (dispatch-message
+         {:type :price-bar :request-id requestId
+          :time (translate :from-ib :timestamp date)
+          :open open :high high :low low :close close :volume volume
+          :trade-count count :WAP wap :has-gaps? hasGaps})))
+    ;;; Market Scanners
     (scannerParameters [this xml]
-      (process-message {:type :scan-parameters :value xml}))
-    (scannerData [this requestId rank contractDetails distance benchmark projection legsStr]
-      (process-message {:type :scan-result :request-id requestId :rank rank
-                        :contract-details contractDetails :distance distance
-                        :benchmark benchmark :projection projection
-                        :legs legsStr}))
+      (dispatch-message {:type :scan-parameters :value xml}))
+    (scannerData [this requestId rank contractDetails distance benchmark
+                  projection legsStr]
+      (dispatch-message {:type :scan-result :request-id requestId :rank rank
+                         :contract-details (-&gt;map contractDetails)
+                         :distance distance :benchmark benchmark
+                         :projection projection :legs legsStr}))
     (scannerDataEnd [this requestId]
-      (process-message {:type :scan-end :request-id requestId}))
+      (dispatch-message {:type :scan-end :request-id requestId}))
+    ;;; Real Time Bars
+    (realtimeBar [this requestId time open high low close volume wap count]
+      (dispatch-message {:type :price-bar :request-id requestId
+                         :time (translate :from-ib :date-time time)
+                         :open open :high high :low low :close close :volume volume
+                         :count count :WAP wap}))
+    ;;; Fundamental Data
     (fundamentalData [this requestId xml]
-      (process-message {:type :fundamental-data :request-id requestId
-                        :report (parse (java.io.ByteArrayInputStream. (.getBytes xml)))}))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn connect
-  &quot;This function must be called before any other. There is no feedback
-   for a successful connection, but a subsequent attempt to connect
-   will return the message 'Already connected.'
-   wrapper is an implementation of the EWrapper interface.
-   host is the hostname running IB Gateway or TWS.
-   port is the port IB Gateway / TWS is running on.
-   client-id identifies this client. Only one connection to a gateway can
-   be made per client-id at a time.&quot;
-  ([handler-fn] (connect handler-fn &quot;localhost&quot;))
-  ([handler-fn host] (connect handler-fn host 7496))
-  ([handler-fn host port] (connect handler-fn host port 1))
-  ([handler-fn host port client-id]
-     (let [wrapper (create-wrapper handler-fn)
-           connection (EClientSocket. wrapper)]
-       (doto connection
-         (.eConnect host port client-id)))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn disconnect
-  &quot;Call this function to terminate the connections with TWS.
-   Calling this function does not cancel orders that have already been sent.&quot;
-  [connection]
-  (.eDisconnect connection))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn request-market-data
-  &quot;Call this function to request market data. The market data will be returned by
-   :price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
-   and :efp-tick messages.
-   For snapshots, a :tick-snapshot-end message will indicate the snapshot is done.
-   ## Parameters
-   - connection
-     The connection to use to make the request. Use (connect) to get this.
-   - tickerId
-     The ticker id. Must be a unique value. When the market data returns, it
-     will be identified by this tag. This is also used when canceling the
-     market data.
-   - contract
-     This contains attributes used to describe the contract. Use (make-contract) or
-     (futures-contract) for example to create it.
-   - tick-list (optional)
-     A list of tick types:
-     :option-volume                       Option Volume (currently for stocks)
-     :option-open-interest                Option Open Interest (currently for stocks)
-     :historical-volatility 104           Historical Volatility (currently for stocks)
-     :option-implied-volatility 106       Option Implied Volatility (currently for stocks)
-     :index-future-premium 162            Index Future Premium
-     :miscellaneous-stats 165             Miscellaneous Stats
-     :mark-price 221                      Mark Price (used in TWS P&amp;L computations)
-     :auction-values 225                  Auction values (volume, price and imbalance)
-     :realtime-volume 233                 RTVolume
-     :shortable 236                       Shortable
-     :inventory 256                       Inventory
-     :fundamental-ratios 258              Fundamental Ratios
-     :realtime-historical-volatility 411  Realtime Historical Volatility
-     if no tick list is specified, a single snapshot of market data will come back
-     and have the market data subscription will be immediately canceled.&quot;
-  ([connection id contract tick-list]
-     (let [ib-tick-list (map translate-to-ib-tick-type tick-list)]
-       (.reqMktData connection id contract ib-tick-list false))
-     id)
-  ([connection id contract]
-     (.reqMktData connection id contract  true)
-     id))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn request-historical-data
-  &quot;Start receiving historical price bars stretching back &lt;duration&gt; &lt;duration-unit&gt;s back,
-   up till &lt;end&gt; for the specified contract. The messages will have :request-id of &lt;id&gt;.
-   duration-unit should be one of :second(s), :day(s), :week(s), or :year(s).
-   bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
-   what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :historical-volatility,
-   :option-implied-volatility, :option-volume, or :option-open-interest.&quot;
-  ([connection id contract end duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
-     (let [ib-end (translate-to-ib-date-time end)
-           ib-duration (translate-to-ib-duration duration duration-unit)
-           ib-bar-size (translate-to-ib-bar-size bar-size bar-size-unit)
-           ib-what-to-show (translate-to-ib-what-to-show what-to-show)]
-       (.reqHistoricalData connection id contract ib-end ib-duration ib-bar-size ib-what-to-show
-                           (if use-regular-trading-hours? 1 0)
-                           2)))
-  ([connection id contract end duration duration-unit bar-size bar-size-unit what-to-show]
-     (request-historical-data connection id contract end duration duration-unit bar-size bar-size-unit what-to-show true))
-  ([connection id contract end duration duration-unit bar-size bar-size-unit]
-     (request-historical-data connection id contract end duration duration-unit bar-size bar-size-unit :trades true)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn request-news-bulletins
-  &quot;Call this function to start receiving news bulletins. Each bulletin will
-   be sent in a :news-bulletin, :exchange-unavailable, or :exchange-available
-   message.&quot;
-  ([connection] (request-news-bulletins connection true))
-  ([connection all-messages?]
-     (.reqNewsBulletins connection all-messages?)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn cancel-news-bulletins
-  &quot;Call this function to stop receiving news bulletins.&quot;
-  [connection]
-  (.cancelNewsBulletins connection))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn request-fundamental-data
-  &quot;Call this function to receive Reuters global fundamental data. There must be a
-   subscription to Reuters Fundamental set up in Account Management before you
-   can receive this data.&quot;
-  [connection request-id contract report-type]
-  (.reqFundamentalData connection request-id contract
-                       (translate-to-ib-report-type report-type)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn cancel-fundamental-data
-  &quot;Call this function to stop receiving Reuters global fundamental data.&quot;
-  [connection request-id]
-  (.cancelFundamentalData connection request-id))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn is-end?
-  &quot;Predicate to determine if a message indicates a tick snapshot is done&quot;
-  [msg]
-  (contains? [:tick-snapshot-end :error]))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn warning? 
-  &quot;Predicate to determine if a an error message is just a warning or not&quot;
-  [msg]
-  (and (contains? msg :code)
-       (&gt;= (:code msg) 2100)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.contracts" name="ib-re-actor.contracts"><h1 class="project-name">ib-re-actor.contracts</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(ns ib-re-actor.contracts
-  (:use [ib-re-actor.conversions]
-        [ib-re-actor.util]
-        [clj-time.core :only [date-time]])
-  (:import [com.ib.client Contract]))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(field-based-property expiry m_expiry translate-from-ib-expiry translate-to-ib-expiry)
-(field-based-property underlying-symbol m_symbol)
-(field-based-property local-symbol m_localSymbol)
-(field-based-property multiplier m_multiplier #(Double/parseDouble %) str)
-(field-based-property exchange m_exchange)
-(field-based-property currency m_currency)
-(field-based-property primary-exchange m_primaryExch)
-(field-based-property include-expired? m_includeExpired)
-(field-based-property contract-id m_conId)
-(field-based-property security-id-type m_secIdType translate-from-ib-security-id-type translate-to-ib-security-id-type)
-(field-based-property security-id m_secId)</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn make-contract [contract-type]
-  (let [contract (Contract.)]
-    (set! (.m_secType contract) (translate-to-ib-security-type contract-type))
-    contract))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn futures-contract
-  ([] (make-contract :future))
-  ([expiry-val]
-     (-&gt; (futures-contract)
-         (expiry expiry-val)))
-  ([symbol-val exchange-val expiry-val]
-     (-&gt; (futures-contract expiry-val)
-         (exchange exchange-val)
-         (underlying-symbol symbol-val))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn index [symbol-val exchange-val]
-  (-&gt; (make-contract :index)
-      (underlying-symbol symbol-val)
-      (exchange exchange-val)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn equity
-  ([symbol-val exchange-val]
-     (equity symbol-val exchange-val exchange-val &quot;USD&quot;))
-  ([symbol-val primary-exchange-val exchange-val currency-val]
-     (-&gt; (make-contract :equity)
-         (underlying-symbol symbol-val)
-         (primary-exchange primary-exchange-val)
-         (exchange exchange-val)
-         (currency currency-val))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.conversions" name="ib-re-actor.conversions"><h1 class="project-name">ib-re-actor.conversions</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(ns ib-re-actor.conversions
-  (:use [clojure.contrib.def :only [defmacro-]]
-        [clj-time.core :only [year month day date-time
-                              plus minus years months weeks days hours minutes secs millis
-                              from-time-zone to-time-zone time-zone-for-id]]
-        [clj-time.format :only [formatter formatters parse unparse]]
-        [clj-time.coerce :only [from-long to-long]]))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defmacro- translation-table [name vals]
-  `(let [vals# ~vals]
-     (defn ~(symbol (str &quot;translate-to-ib-&quot; name)) [val#]
-       (get vals# val#))
-     (defn ~(symbol (str &quot;translate-from-ib-&quot; name)) [val#]
-       (get (zipmap (vals vals#)
-                    (keys vals#))
-            val#))))</pre></tr><tr><td class="docs"><p>example</p>
-</td><td class="codes" /><pre class="brush: clojure">#_ (translation-table size-tick-field-code
-                      {:bid-size 0
-                       :ask-size 3
-                       :last-size 5
-                       :volume 8})
+      (let [report-xml (-&gt; (java.io.ByteArrayInputStream (.getBytes xml))
+                           xml/parse)]
+        (dispatch-message {:type :fundamental-data :request-id requestId
+                           :report report-xml})))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn subscribe [f]
+  (send-off listeners conj f))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn unsubscribe [f]
+  (send-off listeners
+            (fn [fns] (filter (partial not= f) fns))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-order-id []
+  (swap! next-order-id inc))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-request-id []
+  (swap! next-request-id inc))</pre></td></tr><tr><td class="docs"><p>Call this function to request market data. The market data will be returned in
+   :tick messages.</p>
 
-(translation-table duration-unit
-                   {
-                    :second &quot;S&quot;
+<p>   For snapshots, a :tick-snapshot-end message will indicate the snapshot is done.</p>
+
+<p>   ## Parameters
+   - this
+     The connection to use to make the request. Use (connect) to get this.</p>
+
+<ul>
+<li><p>contract
+ This contains attributes used to describe the contract. Use (make-contract) or
+ (futures-contract) for example to create it.</p></li>
+<li><p>tick-list (optional)
+ A list of tick types:
+ :option-volume                       Option Volume (currently for stocks)
+ :option-open-interest                Option Open Interest (currently for stocks)
+ :historical-volatility 104           Historical Volatility (currently for stocks)
+ :option-implied-volatility 106       Option Implied Volatility (currently for stocks)
+ :index-future-premium 162            Index Future Premium
+ :miscellaneous-stats 165             Miscellaneous Stats
+ :mark-price 221                      Mark Price (used in TWS P&amp;L computations)
+ :auction-values 225                  Auction values (volume, price and imbalance)
+ :realtime-volume 233                 RTVolume
+ :shortable 236                       Shortable
+ :inventory 256                       Inventory
+ :fundamental-ratios 258              Fundamental Ratios
+ :realtime-historical-volatility 411  Realtime Historical Volatility</p>
+
+<p> if no tick list is specified, a single snapshot of market data will come back
+ and have the market data subscription will be immediately canceled.</p></li>
+</ul>
+</td><td class="codes"><pre class="brush: clojure">(defn request-market-data
+  ([contract tick-list snapshot?]
+     (let [ticker-id (register-contract contract)]
+       (send-connection .reqMktData ticker-id
+                        (map-&gt; com.ib.client.Contract contract)
+                        (translate :to-ib :tick-list tick-list)
+                        snapshot?)))
+  ([contract]
+     (request-market-data contract &quot;&quot; false)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn cancel-market-data [contract]
+  (let [ticker-id (@contract-&gt;id contract)]
+    (log/info &quot;cancelling &quot; ticker-id)
+    (send-connection .cancelMktData ticker-id)))</pre></td></tr><tr><td class="docs"><p>Start receiving historical price bars stretching back <duration> <duration-unit>s back,
+   up till <end> for the specified contract. The messages will have :request-id of <id>.</p>
+
+<p>   duration-unit should be one of :second(s), :day(s), :week(s), or :year(s).</p>
+
+<p>   bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).</p>
+
+<p>   what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask,
+   :historical-volatility, :option-implied-volatility, :option-volume,
+   or :option-open-interest.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn request-historical-data
+  ([id contract end duration duration-unit bar-size bar-size-unit
+    what-to-show use-regular-trading-hours?]
+     (let [[acceptable-duration acceptable-duration-unit]
+           (translate :to-ib :acceptable-duration [duration duration-unit])]
+       (send-connection .reqHistoricalData id
+                        (map-&gt; com.ib.client.Contract contract)
+                        (translate :to-ib :date-time end)
+                        (translate :to-ib :duration [acceptable-duration
+                                                     acceptable-duration-unit])
+                        (translate :to-ib :bar-size [bar-size bar-size-unit])
+                        (translate :to-ib :what-to-show what-to-show)
+                        (if use-regular-trading-hours? 1 0)
+                        2)))
+  ([id contract end duration duration-unit bar-size bar-size-unit what-to-show]
+     (request-historical-data id contract end duration duration-unit
+                              bar-size bar-size-unit what-to-show true))
+  ([id contract end duration duration-unit bar-size bar-size-unit]
+     (request-historical-data id contract end duration duration-unit
+                              bar-size bar-size-unit :trades true)))</pre></td></tr><tr><td class="docs"><p>Start receiving real time bar results.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn request-real-time-bars
+  [id contract what-to-show use-regular-trading-hours?]
+  (send-connection .reqRealTimeBars
+                   id
+                   (map-&gt; com.ib.client.Contract contract)
+                   5
+                   (translate :to-ib :what-to-show what-to-show)
+                   use-regular-trading-hours?))</pre></td></tr><tr><td class="docs"><p>Call this function to stop receiving real time bars for the passed in request-id</p>
+</td><td class="codes"><pre class="brush: clojure">(defn cancel-real-time-bars
+  [id]
+  (send-connection .cancelRealTimeBars id))</pre></td></tr><tr><td class="docs"><p>Call this function to start receiving news bulletins. Each bulletin will
+   be sent in a :news-bulletin, :exchange-unavailable, or :exchange-available
+   message.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn request-news-bulletins
+  ([]
+     (request-news-bulletins true))
+  ([all-messages?]
+     (send-connection .reqNewsBulletins all-messages?)))</pre></td></tr><tr><td class="docs"><p>Call this function to stop receiving news bulletins.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn cancel-news-bulletins
+  []
+  (send-connection .cancelNewsBulletins))</pre></td></tr><tr><td class="docs"><p>Call this function to receive Reuters global fundamental data. There must be a
+   subscription to Reuters Fundamental set up in Account Management before you
+   can receive this data.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn request-fundamental-data
+  ([contract report-type]
+     (request-fundamental-data (get-request-id) contract report-type))
+  ([request-id contract report-type]
+     (send-connection .reqFundamentalData request-id
+                      (map-&gt; com.ib.client.Contract contract)
+                      (translate :to-ib :report-type report-type))))</pre></td></tr><tr><td class="docs"><p>Call this function to stop receiving Reuters global fundamental data.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn cancel-fundamental-data
+  [request-id]
+  (send-connection .cancelFundamentalData request-id))</pre></td></tr><tr><td class="docs"><p>Call this function to download all details for a particular
+contract. The contract details will be received in a :contract-details
+message</p>
+</td><td class="codes"><pre class="brush: clojure">(defn request-contract-details
+  ([contract]
+     (request-contract-details (get-request-id) contract))
+  ([request-id contract]
+     (log/debug &quot;Requesting contract details #&quot; request-id &quot; for &quot; (pr-str contract))
+     (send-connection .reqContractDetails request-id
+                      (map-&gt; com.ib.client.Contract contract))
+     request-id))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn place-order
+  ([contract order]
+     (let [order-id (get-order-id)]
+       (place-order order-id contract (assoc order :order-id order-id))))
+  ([order-id contract order]
+     (send-connection .placeOrder order-id
+                      (map-&gt; com.ib.client.Contract contract)
+                      (map-&gt; com.ib.client.Order order))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn cancel-order
+  [order-id]
+  (send-connection .cancelOrder order-id))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn request-open-orders []
+  (send-connection .reqOpenOrders))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn request-executions
+  ([]
+     (request-executions nil))
+  ([client-id]
+     (send-connection .reqExecutions client-id)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn request-account-updates
+  [subscribe? account-code]
+  (send-connection .reqAccountUpdates subscribe? account-code))</pre></td></tr><tr><td class="docs"><p>Call this function to set the log level used on the server.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn set-server-log-level
+  [this log-level]
+  (send-connection .setServerLogLevel (translate :to-ib :log-level log-level)))</pre></td></tr><tr><td class="docs"><p>This function must be called before any other. There is no feedback
+   for a successful connection, but a subsequent attempt to connect
+   will return the message 'Already connected.'</p>
+
+<p>   wrapper is an implementation of the EWrapper interface.</p>
+
+<p>   host is the hostname running IB Gateway or TWS.</p>
+
+<p>   port is the port IB Gateway / TWS is running on.</p>
+
+<p>   client-id identifies this client. Only one connection to a gateway can
+   be made per client-id at a time.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn connect
+  ([] (connect &quot;localhost&quot; 7496))
+  ([client-id] (connect &quot;localhost&quot; 7496 client-id))
+  ([host port] (connect host port @client-id))
+  ([host port client-id]
+     (send-off connection
+               (fn [c]
+                 (try
+                   (let [connection (com.ib.client.EClientSocket. (create-wrapper))]
+                        (.eConnect connection host port client-id)
+                        (if (not= default-server-log-level :error)
+                          (set-server-log-level connection default-server-log-level))
+                        connection)
+                   (catch Exception ex
+                     (log/error &quot;Error trying to connect to &quot; host &quot;:&quot; port &quot;: &quot; ex)))))))</pre></td></tr><tr><td class="docs"><p>Call this function to terminate the connections with TWS.
+   Calling this function does not cancel orders that have already been sent.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn disconnect
+  []
+  (send-off connection (fn [c] (.eDisconnect c) c)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn request-current-time []
+  (send-connection .reqCurrentTime))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn connection-time []
+  (-&gt;&gt; (.TwsConnectionTime @connection)
+       (translate :from-ib :connection-time)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn request-server-version []
+  (send-connection .serverVersion))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.mapping" name="ib-re-actor.mapping"><h1 class="project-name">ib-re-actor.mapping</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for mapping to and from Interactive Brokers classes. It is much easier to work
+with maps in clojure, so we use these functions internally on all the data we exchange
+with the Interactive Brokers API.</p>
+
+<p>In addition to just converting to maps, we also use these functions to translate some
+primitives: strings with constant values into keywords, booleans in strings into booleans,
+date strings into clj-time dates, etc.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.mapping
+  (:use [clojure.string :only [join]]
+        [ib-re-actor.translation :only [translate]]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defprotocol Mappable
+  (-&gt;map [this]
+    &quot;Create a map with the all the non-the non-null properties of object.&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmulti map-&gt; (fn [type _] type))</pre></td></tr><tr><td class="docs"><p>Chainable, conditional assoc. If v is not nil, assoc it and return the result,
+otherwise, don't and return m unchanged.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- assoc-if-val-non-nil
+  ([m k v]
+     (if (nil? v) m (assoc m k v)))
+  ([m k v translation]
+     (if (nil? v) m (assoc m k (translate :from-ib translation v)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- assoc-nested [m k v]
+  (if (nil? v) m (assoc m k (-&gt;map v))))</pre></td></tr><tr><td class="docs"><p>When mapping from an object to a clojure map, this creates a call to assoc in the value.
+optional parameters:</p>
+
+<p>   :translation &lt;<translation key from translation.clj>>:
+      Specifying this option will add a call to (translate to-from ...) in each field
+setter or assoc when mapping to and from objects.</p>
+
+<p>   :nested &lt;<type>>:
+      Specifying this will map a nested instance of another class.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn emit-map&lt;-field
+  [this [k field &amp; options]]
+  (let [{:keys [translation nested]} (apply hash-map options)
+        m (gensym &quot;m&quot;)]
+    (cond
+     (not (nil? translation)) `((assoc-if-val-non-nil ~k (. ~this ~field) ~translation))
+     (not (nil? nested)) `((assoc-nested ~k (. ~this ~field)))
+     :otherwise `((assoc-if-val-non-nil ~k (. ~this ~field))))))</pre></td></tr><tr><td class="docs"><p>When mapping from a clojure map to an object, this creates a call to set the associated
+field on the object.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn emit-map-&gt;field
+  [m this [key field &amp; options]]
+  (let [{:keys [translation nested]} (apply hash-map options)
+        val (gensym &quot;val&quot;)]
+    `((if-let [~val (~key ~m)]
+        (try
+          (set! (. ~this ~field)
+                ~(cond
+                  (not (nil? translation)) `(translate :to-ib ~translation ~val)
+                  (not (nil? nested)) `(map-&gt; ~nested ~val)
+                  :otherwise `~val))
+          (catch ClassCastException ex#
+            (throw (ex-info (str &quot;Failed to map field &quot; ~(str field)
+                                 ~(when translation
+                                    (str &quot;, using translation &quot; translation))
+                                 &quot;, value \&quot;&quot; ~val &quot;\&quot;&quot;)
+                            {:class (class ~this)
+                             :key ~key
+                             :field ~(str field)
+                             :translation ~translation}
+                            ex#))))))))</pre></td></tr><tr><td class="docs"><p>This is used to extend an Interactive Brokers API class with a method to convert it into
+a clojure map, and using the same information, add a method to the map-> multimethod to
+convert maps into instances of the IB class.</p>
+</td><td class="codes"><pre class="brush: clojure">(defmacro defmapping
+  [c &amp; field-keys]
+  (let [this (gensym &quot;this&quot;)
+        map (gensym &quot;map&quot;)
+        valid-keys (gensym &quot;valid-keys&quot;)]
+    `(do
+       (extend-type ~c
+         Mappable
+         (-&gt;map [~this]
+           (-&gt; {} ~@(mapcat (partial emit-map&lt;-field this) field-keys))))
+       (defmethod map-&gt; ~c [_# ~map]
+         (let [~this (new ~c)]
+           ~@(mapcat (partial emit-map-&gt;field map this) field-keys)
+           ~this)))))</pre></td></tr><tr><td class="docs"><p>Same as defmapping, but for classes that don't have public constructors. Since we can't
+create instances, we will only map from objects to clojure maps.</p>
+</td><td class="codes"><pre class="brush: clojure">(defmacro defmapping-readonly
+  [c &amp; field-keys]
+  (let [this (gensym &quot;this&quot;)]
+    `(extend-type ~c
+       Mappable
+       (-&gt;map [~this]
+         (-&gt; {} ~@(mapcat (partial emit-map&lt;-field this) field-keys))))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmapping com.ib.client.Contract
+  [:contract-id m_conId]
+  [:symbol m_symbol]
+  [:exchange m_exchange]
+  [:local-symbol m_localSymbol]
+  [:primary-exchange m_primaryExch]
+  [:currency m_currency]
+  [:type m_secType :translation :security-type]
+  [:include-expired? m_includeExpired]
+  [:security-id-type m_secIdType :translation :security-id-type]
+  [:security-id m_secId]
+  [:combo-legs-description m_comboLegsDescrip]
+  [:expiry m_expiry :translation :expiry]
+  [:multiplier m_multiplier :translation :double-string]
+  [:put-call-right m_right :translation :right])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmapping com.ib.client.ContractDetails
+  [:summary m_summary :nested com.ib.client.Contract]
+  [:market-name m_marketName]
+  [:trading-class m_tradingClass]
+  [:min-tick m_minTick]
+  [:price-magnifier m_priceMagnifier]
+  [:order-types m_orderTypes :translation :order-types]
+  [:valid-exchanges m_validExchanges :translation :exchanges]
+  [:underlying-contract-id m_underConId]
+  [:long-name m_longName]
+  [:cusip m_cusip]
+  [:ratings m_ratings]
+  [:description-details m_descAppend]
+  [:bond-type m_bondType]
+  [:coupon-type m_couponType]
+  [:callable? m_callable]
+  [:putable? m_putable]
+  [:coupon m_coupon]
+  [:convertible? m_convertible]
+  [:maturity m_maturity :translation :date]
+  [:issue-date m_issueDate :translation :date]
+  [:next-option-date m_nextOptionDate :translation :date]
+  [:next-option-type m_nextOptionType]
+  [:next-option-partial m_nextOptionPartial]
+  [:notes m_notes]
+  [:contract-month m_contractMonth]
+  [:industry m_industry]
+  [:category m_category]
+  [:subcategory m_subcategory]
+  [:time-zone-id m_timeZoneId]
+  [:trading-hours m_tradingHours]
+  [:liquid-hours m_liquidHours])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmapping com.ib.client.ExecutionFilter
+  [:client-id m_clientId]
+  [:account-code m_acctCode]
+  [:after-time m_time :translation :timestamp]
+  [:order-symbol m_symbol]
+  [:security-type m_secType :translation :security-type]
+  [:exchange m_exchange]
+  [:side m_side :translation :order-action])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmapping com.ib.client.Execution
+  [:account-code m_acctNumber]
+  [:average-price m_avgPrice]
+  [:client-id m_clientId]
+  [:cummulative-quantity m_cumQty]
+  [:exchange m_exchange]
+  [:execution-id m_execId]
+  [:liquidate-last m_liquidation]
+  [:order-id m_orderId]
+  [:permanent-id m_permId]
+  [:price m_price]
+  [:shares m_shares]
+  [:side m_side :translation :execution-side]
+  [:time m_time])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmapping com.ib.client.Order
+  [:order-id m_orderId]
+  [:client-id m_clientId]
+  [:permanent-id m_permId]
+  [:transmit? m_transmit]
+  [:quantity m_totalQuantity]
+  [:action m_action :translation :order-action]
+  [:type m_orderType :translation :order-type]
+  [:block-order? m_blockOrder]
+  [:sweep-to-fill? m_sweepToFill]
+  [:time-in-force m_tif :translation :time-in-force]
+  [:good-after-time m_goodAfterTime]
+  [:good-till-date m_goodTillDate]
+  [:outside-regular-trading-hours? m_outsideRth]
+  [:hidden? m_hidden]
+  [:all-or-none? m_allOrNone ]
+  [:limit-price m_lmtPrice]
+  [:discretionary-amount m_discretionaryAmt]
+  [:stop-price m_auxPrice])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmapping-readonly com.ib.client.OrderState
+  [:status m_status :translation :order-status]
+  [:initial-margin m_initMargin]
+  [:maintenance-margin m_maintMargin]
+  [:equity-with-loan m_equityWithLoan]
+  [:commission m_commission]
+  [:minimum-commission m_minCommission]
+  [:maximum-commission m_maxCommission]
+  [:commission-currency m_commissionCurrency]
+  [:warning-text m_warningText])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmapping-readonly com.ib.client.CommissionReport
+  [:commission m_commission]
+  [:currency m_currency]
+  [:execution-id m_execId]
+  [:realized-profit-loss m_realizedPNL]
+  [:yield m_yield]
+  [:yield-redemption-date m_yieldRedemptionDate :translate :yield-redemption-date])</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.positions" name="ib-re-actor.positions"><h1 class="project-name">ib-re-actor.positions</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.positions
+  (:require [ib-re-actor.gateway :as g]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defonce positions (atom nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn handle-portfolio-update [{:keys [type contract] :as msg}]
+  (when (= type :update-portfolio)
+    (swap! positions assoc contract
+           (select-keys msg [:position :market-price :market-value
+                             :average-cost :unrealized-gain-loss
+                             :realized-gain-loss]))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(do
+  (g/subscribe handle-portfolio-update))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.synchronous" name="ib-re-actor.synchronous"><h1 class="project-name">ib-re-actor.synchronous</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for doing things with interactive brokers in a synchronous manner.
+   Mostly these are just wrappers that create a temporary handler function,
+   wait for a response, then unsubscribe. These are much easier to use in an
+   interactive context (such as when using the REPL) but probably not what you
+   would want to use in an application, as the asynchronous API is a much more
+   natural fit for building programs that react to events in market data.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.synchronous
+  (:require [ib-re-actor.gateway :as g]
+            [clojure.tools.logging :as log]
+            [clj-time.core :as t]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- reduce-responses [accept? reduce-fn done? completion-fn subscribe-fn &amp; args]
+  &quot;Given some functions, subscribes to the message stream, reducing each message into
+   an accumulator, then cleans up when done.&quot;
+  (let [responses (atom nil)
+        result (promise)
+        handler (fn [msg]
+                  (when (if (fn? accept?)
+                          (accept? msg)
+                          true)
+                    (if (g/is-end? msg)
+                      (deliver result msg)
+                      (swap! responses reduce-fn msg))))
+        response-watch (fn [_ k _ v]
+                         (when (done? v)
+                           (remove-watch responses k)
+                           (deliver result v)))]
+    (add-watch responses :result-watch response-watch)
+    (g/subscribe handler)
+    (try
+      (apply subscribe-fn args)
+      @result
+      (finally
+        (log/debug &quot;unsubscribing&quot;)
+        (g/unsubscribe handler)
+        (log/debug &quot;completing&quot;)
+        (if (fn? completion-fn)
+          (completion-fn))
+        (log/debug &quot;completed&quot;)))))</pre></td></tr><tr><td class="docs"><p>Returns the server time</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-time
+  []
+  (reduce-responses #(= :current-time (:type %))
+                    conj (comp not empty?) nil
+                    g/request-current-time))</pre></td></tr><tr><td class="docs"><p>Gets details for the specified contract.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-contract-details
+  [contract]
+  (let [req-id (g/get-request-id)]
+    (reduce-responses #(= req-id (:request-id %))
+                      conj (comp not empty?) nil
+                      g/request-contract-details
+                      req-id contract)))</pre></td></tr><tr><td class="docs"><p>Gets the current price for the specified contract.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-current-price
+  [con]
+  (let [fields [:open-tick :bid-price :close-price :last-size :low
+                :ask-size :bid-size :last-price :ask-price :high :volume]
+        accept? (fn [{:keys [type contract]}]
+                  (and (= type :tick) (= contract con)))
+        reduce-fn (fn [accum {:keys [field value]}]
+                    (assoc accum field value))
+        done? (fn [accum]
+                (let [received-fields (-&gt; accum keys set)]
+                  (every? received-fields fields)))
+        complete (partial g/cancel-market-data con)]
+    (reduce-responses accept? reduce-fn done? complete
+                      g/request-market-data con)))</pre></td></tr><tr><td class="docs"><p>Executes an order, returning only when the order is filled.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn execute-order
+  [contract order]
+  (let [order-id (g/get-order-id)
+        accept? #(= order-id (:order-id %))
+        reduce-fn (fn [coll x] (log/debug x) (conj coll x))
+        done? (partial some (fn [{:keys [type status]}]
+                              (and (= :order-status type)
+                                   (= :filled status))))]
+    (log/debug &quot;Order-Id: &quot; order-id)
+    (reduce-responses accept? reduce-fn done? nil g/place-order
+                      order-id contract order)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-historical-data [contract end-time duration duration-unit bar-size
+                           bar-size-unit what-to-show
+                           use-regular-trading-hours?]
+  &quot;Gets historical price bars for a contract.&quot;
+  (let [request-id (g/get-request-id)
+        accept? #(= request-id (:request-id %))
+        reduce-fn conj
+        done? (partial some #(= :price-bar-complete (:type %)))
+        complete (fn [])
+        responses (reduce-responses accept? reduce-fn done? complete
+                                    g/request-historical-data request-id
+                                    contract end-time duration duration-unit
+                                    bar-size bar-size-unit what-to-show
+                                    use-regular-trading-hours?)
+        errors (filter #(= :error (:type %)) responses)]
+    (if (not (empty? errors))
+      errors
+      (-&gt;&gt; responses
+           (filter #(= :price-bar (:type %)))
+           (map #(select-keys % [:time :open :high :low :close
+                                 :trade-count :volume :has-gaps?]))))))</pre></td></tr><tr><td class="docs"><p>Gets all open orders for the current connection.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-open-orders
+  []
+  (let [accept? #(#{:open-order :open-order-end :error} (:type %))
+        reduce-fn conj
+        done? (partial some #(= :open-order-end (:type %)))
+        complete (fn [])
+        responses (reduce-responses accept? reduce-fn done? complete
+                                    g/request-open-orders)
+        errors (filter #(= :error (:type %)) responses)]
+    (if (empty? errors)
+      (-&gt;&gt; responses
+           (filter #(= :open-order (:type %)))
+           (map #(select-keys % [:order-id :contract :order
+                                 :order-state])))
+      errors)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.translation" name="ib-re-actor.translation"><h1 class="project-name">ib-re-actor.translation</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.translation
+  (:require [clj-time.core :as time]
+            [clj-time.format :as tf]
+            [clj-time.coerce :as tc]
+            [clojure.string :as str]))</pre></td></tr><tr><td class="docs"><p>Translate to or from a value from the Interactive Brokers API.</p>
+
+<p>Examples:
+user> (translate :to-ib :duration-unit :seconds)
+"S"
+user> (translate :from-ib :duration-unit "S")
+:second</p>
+</td><td class="codes"><pre class="brush: clojure">(defmulti ^:dynamic translate
+  (fn [direction table-name _] [direction table-name]))</pre></td></tr><tr><td class="docs"><p>Check to see if a given value is an entry in the translation table.</p>
+
+<p>Examples:
+user> (valid? :to-ib :duration-unit :s)
+false
+user> (valid? :to-ib :duration-unit :seconds)
+true</p>
+</td><td class="codes"><pre class="brush: clojure">(defmulti ^:dynamic valid?
+  (fn [direction table-name _] [direction table-name]))</pre></td></tr><tr><td class="docs"><p>Creates a table for translating to and from string values from the Interactive
+Brokers API, as well as translate methods to and from the IB value and a method
+to check if if a given value is valid (known).</p>
+</td><td class="codes"><pre class="brush: clojure">(defmacro translation-table
+  [name vals]
+  (let [table-name (keyword name)]
+    `(let [to-table# ~vals
+           from-table# (zipmap (vals to-table#) (keys to-table#))]
+       (def ~name to-table#)
+       (defmethod valid? [:to-ib ~table-name] [_# _# val#]
+         (contains? to-table# val#))
+       (defmethod translate [:to-ib ~table-name] [_# _# val#]
+	 (when val#
+	   (cond
+	    (valid? :to-ib ~table-name val#)
+	    (to-table# val#)
+	    (string? val#)
+	    val#
+	    :otherwise
+	    (throw (ex-info (str &quot;Can't translate to IB &quot; ~table-name &quot; &quot; val#)
+			    {:value val#
+			     :table ~table-name
+			     :valid-values (keys to-table#)})))))
+       (defmethod valid? [:from-ib ~table-name] [_# _# val#]
+         (contains? from-table# val#))
+       (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
+	 (when val#
+	   (cond
+	    (valid? :from-ib ~table-name val#)
+	    (from-table# val#)
+	    (string? val#)
+	    val#
+	    :otherwise
+	    (throw (ex-info (str &quot;Can't translate from IB &quot; ~table-name &quot; &quot; val#)
+			    {:value val#
+			     :table ~table-name
+			     :valid-values (vals to-table#)}))))))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table duration-unit
+                   {:second &quot;S&quot;
                     :seconds &quot;S&quot;
                     :day &quot;D&quot;
                     :days &quot;D&quot;
                     :week &quot;W&quot;
                     :weeks &quot;W&quot;
                     :year &quot;Y&quot;
-                    :years &quot;Y&quot;
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table security-type
-                   {
-                    :equity &quot;STK&quot;
+                    :years &quot;Y&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :acceptable-duration] [_ _ [val unit]]
+  (case unit
+    :second [val :second]
+    :seconds [val :seconds]
+    :minute [(* 60 val) :seconds]
+    :minutes [(* 60 val) :seconds]
+    :hour [(* 60 60 val) :seconds]
+    :hours [(* 60 60 val) :seconds]
+    :day [val :day]
+    :days [val :days]
+    :week [val :week]
+    :weeks [val :weeks]
+    :year [val :year]
+    :years [val :years]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table security-type
+                   {:equity &quot;STK&quot;
                     :option &quot;OPT&quot;
                     :future &quot;FUT&quot;
                     :index &quot;IND&quot;
                     :future-option &quot;FOP&quot;
                     :cash &quot;CASH&quot;
-                    :bag &quot;BAG&quot;
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table bar-size-unit
+                    :bag &quot;BAG&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table bar-size-unit
                    {:second &quot;sec&quot;
                     :seconds &quot;secs&quot;
                     :minute &quot;min&quot;
@@ -2884,8 +3960,8 @@ advantage of clojure's transactional memory better if you did that.</p>
                     :hour &quot;hour&quot;
                     :hours &quot;hour&quot;
                     :day &quot;day&quot;
-                    :days &quot;days&quot;})</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table what-to-show
+                    :days &quot;days&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table what-to-show
                    {:trades &quot;TRADES&quot;
                     :midpoint &quot;MIDPOINT&quot;
                     :bid &quot;BID&quot;
@@ -2894,32 +3970,89 @@ advantage of clojure's transactional memory better if you did that.</p>
                     :historical-volatility &quot;HISTORICAL_VOLATILITY&quot;
                     :option-implied-volatility &quot;OPTION_IMPLIED_VOLATILITY&quot;
                     :option-volume &quot;OPTION_VOLUME&quot;
-                    :option-open-interest &quot;OPTION_OPEN_INTEREST&quot;})</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table time-in-force
+                    :option-open-interest &quot;OPTION_OPEN_INTEREST&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table time-in-force
                    {:day &quot;DAY&quot;
                     :good-to-close &quot;GTC&quot;
                     :immediate-or-cancel &quot;IOC&quot;
-                    :good-till-date &quot;GTD&quot;})</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table order-action
+                    :good-till-date &quot;GTD&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table order-action
                    {:buy &quot;BUY&quot;
                     :sell &quot;SELL&quot;
-                    :sell-short &quot;SSHORT&quot;})</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table order-type
-                   {
+                    :sell-short &quot;SSHORT&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table order-type
+                   {:ACTIVETIM &quot;ACTIVETIM&quot;
+                    :ADJUST &quot;ADJUST&quot;
+                    :ALERT &quot;ALERT&quot;
+                    :ALGO &quot;ALGO&quot;
+                    :ALGOLTH &quot;ALGOLTH&quot;
+                    :ALLOC &quot;ALLOC&quot;
+                    :AON &quot;AON&quot;
+                    :AUC &quot;AUC&quot;
+                    :average-cost &quot;AVGCOST&quot;
+                    :basket &quot;BASKET&quot;
+                    :BOARDLOT &quot;BOARDLOT&quot;
+                    :box-top &quot;BOXTOP&quot;
+                    :COND &quot;COND&quot;
+                    :CONDORDER &quot;CONDORDER&quot;
+                    :CONSCOST &quot;CONSCOST&quot;
+                    :DARKPOLL &quot;DARKPOLL&quot;
+                    :DAY &quot;DAY&quot;
+                    :DEACT &quot;DEACT&quot;
+                    :DEACTDIS &quot;DEACTDIS&quot;
+                    :DEACTEOD &quot;DEACTEOD&quot;
+                    :DIS &quot;DIS&quot;
+                    :EVRULE &quot;EVRULE&quot;
+                    :FOK &quot;FOK&quot;
+                    :good-after-time &quot;GAT&quot;
+                    :good-till-date &quot;GTD&quot;
+                    :good-till-canceled &quot;GTC&quot;
+                    :GTT &quot;GTT&quot;
+                    :HID &quot;HID&quot;
+                    :ICE &quot;ICE&quot;
+                    :IMB &quot;IMB&quot;
+                    :immediate-or-cancel &quot;IOC&quot;
                     :limit &quot;LMT&quot;
                     :limit-close &quot;LMTCLS&quot;
+                    :limit-on-close &quot;LOC&quot;
+                    :limit-on-open &quot;LOO&quot;
+                    :limit-if-touched &quot;LIT&quot;
+                    :LTH &quot;LTH&quot;
                     :market &quot;MKT&quot;
                     :market-close &quot;MKTCLS&quot;
+                    :market-on-close &quot;MOC&quot;
+                    :market-to-limit &quot;MTL&quot;
+                    :market-with-protection &quot;MKTPRT&quot;
+                    :market-if-touched &quot;MIT&quot;
+                    :market-on-open &quot;MOO&quot;
+                    :NONALGO &quot;NONALGO&quot;
+                    :one-cancels-all &quot;OCA&quot;
+                    :OPG &quot;OPG&quot;
+                    :OPGREROUT &quot;OPGREROUT&quot;
                     :pegged-to-market &quot;PEGMKT&quot;
-                    :rel &quot;REL&quot;
+                    :pegged-to-midpoint &quot;PEGMID&quot;
+                    :POSTONLY &quot;POSTONLY&quot;
+                    :PREOPGRTH &quot;PREOPGRTH&quot;
+                    :relative &quot;REL&quot;
+                    :request-for-quote &quot;QUOTE&quot;
+                    :RTH &quot;RTH&quot;
+                    :RTHIGNOPG &quot;RTHIGNOPG&quot;
                     :scale &quot;SCALE&quot;
+                    :SCALERST &quot;SCALERST&quot;
                     :stop &quot;STP&quot;
                     :stop-limit &quot;STPLMT&quot;
+                    :SWEEP &quot;SWEEP&quot;
+                    :TIMEPRIO &quot;TIMEPRIO&quot;
                     :trail &quot;TRAIL&quot;
                     :trail-limit &quot;TRAILLIMIT&quot;
-                    :vwap &quot;VWAP&quot;
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table order-status
+                    :trailing-limit-if-touched &quot;TRAILLIT&quot;
+                    :trailing-market-if-touched &quot;TRAILMIT&quot;
+                    :trailing-stop &quot;TRAIL&quot;
+                    :trailing-stop-limit &quot;TRAILLMT&quot;
+                    :VWAP &quot;VWAP&quot;
+                    :volatility &quot;VOL&quot;
+                    :what-if &quot;WHATIF&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table order-status
                    {
                     :pending-submit &quot;PendingSubmit&quot;
                     :pending-cancel &quot;PendingCancel&quot;
@@ -2928,13 +4061,13 @@ advantage of clojure's transactional memory better if you did that.</p>
                     :cancelled &quot;Cancelled&quot;
                     :filled &quot;Filled&quot;
                     :inactive &quot;Inactive&quot;
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table security-id-type
+                    })</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table security-id-type
                    {:isin &quot;ISIN&quot;
                     :cusip &quot;CUSIP&quot;
                     :sedol &quot;SEDOL&quot;
-                    :ric &quot;RIC&quot;})</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table tick-field-code
+                    :ric &quot;RIC&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table tick-field-code
                    {
                     :bid-size 0
                     :bid-price 1
@@ -2993,8 +4126,8 @@ advantage of clojure's transactional memory better if you did that.</p>
                     :trade-count 54
                     :trade-rate 55
                     :volume-rate 56}
-                   )</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table tick-type
+                   )</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table generic-tick-type
                    {
                     :option-volume 100                   ; :option-call-volume, :option-put-volume
                     :option-open-interest 101            ; :option-call-open-interest, :option-put-open-interest
@@ -3009,8 +4142,26 @@ advantage of clojure's transactional memory better if you did that.</p>
                     :inventory 256                       ;
                     :fundamental-ratios 258              ; :fundamental-ratios
                     :realtime-historical-volatility 411  ; 58?
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table fundamental-ratio
+                    })</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table log-level
+                   {:system 1
+                    :error 2
+                    :warning 3
+                    :informational 4
+                    :detail 5})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :tick-list] [_ _ val]
+  (-&gt;&gt; val
+       (map #(cond
+              (valid? :to-ib :tick-field-code %)
+              (translate :to-ib :tick-field-code %)
+
+              (valid? :to-ib :generic-tick-type %)
+              (translate :to-ib :generic-tick-type %)
+
+              :else %))
+       (map str)
+       (clojure.string/join &quot;,&quot;)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table fundamental-ratio
                    {
                     :closing-price &quot;NPRICE&quot;
                     :3-year-ttm-growth &quot;Three_Year_TTM_Growth&quot;
@@ -3059,122 +4210,361 @@ advantage of clojure's transactional memory better if you did that.</p>
                     :eps-change &quot;EPSCHNGYR&quot;
                     :eps-change-ttm &quot;TTMEPSCHG&quot;
                     :eps-growth &quot;EPSTRENDGR&quot;
-                    :dividend-growth &quot;DIVGRPCT&quot;})</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table account-value-key
+                    :dividend-growth &quot;DIVGRPCT&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table account-value-key
                    {
+                    :account-code &quot;AccountCode&quot;
+                    :account-ready &quot;AccountReady&quot;
+                    :account-type &quot;AccountType&quot;
+                    :accrued-cash &quot;AccruedCash&quot;
+                    :accrued-cash-commodities &quot;AccruedCash-C&quot;
+                    :accrued-cash-stock &quot;AccruedCash-S&quot;
+                    :accrued-dividend &quot;AccruedDividend&quot;
+                    :accrued-dividend-commodities &quot;AccruedDividend-C&quot;
+                    :accrued-dividend-stock &quot;AccruedDividend-S&quot;
+                    :available-funds &quot;AvailableFunds&quot;
+                    :available-funds-commodities &quot;AvailableFunds-C&quot;
+                    :available-funds-stock &quot;AvailableFunds-S&quot;
+                    :billable &quot;Billable&quot;
+                    :billable-commodities &quot;Billable-C&quot;
+                    :billable-stock &quot;Billable-S&quot;
+                    :buying-power &quot;BuyingPower&quot;
                     :cash-balance &quot;CashBalance&quot;
+                    :corporate-bond-value &quot;CorporateBondValue&quot;
+                    :currency &quot;Currency&quot;
+                    :cushion &quot;Cushion&quot;
                     :day-trades-remaining &quot;DayTradesRemaining&quot;
+                    :day-trades-remaining-T+1 &quot;DayTradesRemainingT+1&quot;
+                    :day-trades-remaining-T+2 &quot;DayTradesRemainingT+2&quot;
+                    :day-trades-remaining-T+3 &quot;DayTradesRemainingT+3&quot;
+                    :day-trades-remaining-T+4 &quot;DayTradesRemainingT+4&quot;
                     :equity-with-loan-value &quot;EquityWithLoanValue&quot;
-                    :initial-margin-required &quot;InitMarginReq&quot;
-                    :maintenance-margin-required &quot;MaintMarginReq&quot;
+                    :equity-with-loan-value-commodities &quot;EquityWithLoanValue-C&quot;
+                    :equity-with-loan-value-stock &quot;EquityWithLoanValue-S&quot;
+                    :excess-liquidity &quot;ExcessLiquidity&quot;
+                    :excess-liquidity-commodities &quot;ExcessLiquidity-C&quot;
+                    :excess-liquidity-stock &quot;ExcessLiquidity-S&quot;
+                    :exchange-rate &quot;ExchangeRate&quot;
+                    :full-available-funds &quot;FullAvailableFunds&quot;
+                    :full-available-funds-commodities &quot;FullAvailableFunds-C&quot;
+                    :full-available-funds-stock &quot;FullAvailableFunds-S&quot;
+                    :full-excess-liquidity &quot;FullExcessLiquidity&quot;
+                    :full-excess-liquidity-commodities &quot;FullExcessLiquidity-C&quot;
+                    :full-excess-liquidity-stock &quot;FullExcessLiquidity-S&quot;
+                    :full-initial-margin-requirement &quot;FullInitMarginReq&quot;
+                    :full-initial-margin-requirement-commodities &quot;FullInitMarginReq-C&quot;
+                    :full-initial-margin-requirement-stock &quot;FullInitMarginReq-S&quot;
+                    :full-maintenance-margin-requirement &quot;FullMaintMarginReq&quot;
+                    :full-maintenance-margin-requirement-commodities &quot;FullMaintMarginReq-C&quot;
+                    :full-maintenance-margin-requirement-stock &quot;FullMaintMarginReq-S&quot;
+                    :fund-value &quot;FundValue&quot;
+                    :future-option-value &quot;FutureOptionValue&quot;
+                    :futures-profit-loss &quot;FuturesPNL&quot;
+                    :fx-cash-balance &quot;FxCashBalance&quot;
+                    :gross-position-value &quot;GrossPositionValue&quot;
                     :net-liquidation &quot;NetLiquidation&quot;
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table market-depth-row-operation
+                    :gross-position-value-stock &quot;GrossPositionValue-S&quot;
+                    :indian-stock-haircut &quot;IndianStockHaircut&quot;
+                    :indian-stock-haircut-commodities &quot;IndianStockHaircut-C&quot;
+                    :indian-stock-haircut-stock &quot;IndianStockHaircut-S&quot;
+                    :initial-margin-requirement &quot;InitMarginReq&quot;
+                    :initial-margin-requirement-commodities &quot;InitMarginReq-C&quot;
+                    :initial-margin-requirement-stock &quot;InitMarginReq-S&quot;
+                    :leverage-stock &quot;Leverage-S&quot;
+                    :look-ahead-available-funds &quot;LookAheadAvailableFunds&quot;
+                    :look-ahead-available-funds-commodities &quot;LookAheadAvailableFunds-C&quot;
+                    :look-ahead-available-funds-stock &quot;LookAheadAvailableFunds-S&quot;
+                    :look-ahead-excess-liquidity &quot;LookAheadExcessLiquidity&quot;
+                    :look-ahead-excess-liquidity-commodities &quot;LookAheadExcessLiquidity-C&quot;
+                    :look-ahead-excess-liquidity-stock &quot;LookAheadExcessLiquidity-S&quot;
+                    :look-ahead-initial-margin-requirement &quot;LookAheadInitMarginReq&quot;
+                    :look-ahead-initial-margin-requirement-commodities &quot;LookAheadInitMarginReq-C&quot;
+                    :look-ahead-initial-margin-requirement-stock &quot;LookAheadInitMarginReq-S&quot;
+                    :look-ahead-maintenance-margin-requirement &quot;LookAheadMaintMarginReq&quot;
+                    :look-ahead-maintenance-margin-requirement-commodities &quot;LookAheadMaintMarginReq-C&quot;
+                    :look-ahead-maintenance-margin-requirement-stock &quot;LookAheadMaintMarginReq-S&quot;
+                    :look-ahead-next-change &quot;LookAheadNextChange&quot;
+                    :maintenance-margin-requirement &quot;MaintMarginReq&quot;
+                    :maintenance-margin-requirement-commodities &quot;MaintMarginReq-C&quot;
+                    :maintenance-margin-requirement-stock &quot;MaintMarginReq-S&quot;
+                    :money-market-fund-value &quot;MoneyMarketFundValue&quot;
+                    :mutual-fund-value &quot;MutualFundValue&quot;
+                    :net-dividend &quot;NetDividend&quot;
+                    :net-liquidation-commodities &quot;NetLiquidation-C&quot;
+                    :net-liquidation-stock &quot;NetLiquidation-S&quot;
+                    :net-liquidation-by-currency &quot;NetLiquidationByCurrency&quot;
+                    :option-market-value &quot;OptionMarketValue&quot;
+                    :pa-shares-value &quot;PASharesValue&quot;
+                    :pa-shares-value-commodities &quot;PASharesValue-C&quot;
+                    :pa-shares-value-stock &quot;PASharesValue-S&quot;
+                    :post-expiration-excess &quot;PostExpirationExcess&quot;
+                    :post-expiration-excess-commodities &quot;PostExpirationExcess-C&quot;
+                    :post-expiration-excess-stock &quot;PostExpirationExcess-S&quot;
+                    :post-expiration-margin &quot;PostExpirationMargin&quot;
+                    :post-expiration-margin-commodities &quot;PostExpirationMargin-C&quot;
+                    :post-expiration-margin-stock &quot;PostExpirationMargin-S&quot;
+                    :profit-loss &quot;PNL&quot;
+                    :previous-day-equity-with-loan-value &quot;PreviousDayEquityWithLoanValue&quot;
+                    :previous-day-equity-with-loan-value-stock &quot;PreviousDayEquityWithLoanValue-S&quot;
+                    :realized-profit-loss &quot;RealizedPnL&quot;
+                    :regulation-T-equity &quot;RegTEquity&quot;
+                    :regulation-T-equity-stock &quot;RegTEquity-S&quot;
+                    :regulation-T-margin &quot;RegTMargin&quot;
+                    :regulation-T-margin-stock &quot;RegTMargin-S&quot;
+                    :sma &quot;SMA&quot;
+                    :sma-stock &quot;SMA-S&quot;
+                    :stock-market-value &quot;StockMarketValue&quot;
+                    :t-bill-value &quot;TBillValue&quot;
+                    :t-bond-value &quot;TBondValue&quot;
+                    :total-cash-balance &quot;TotalCashBalance&quot;
+                    :total-cash-value &quot;TotalCashValue&quot;
+                    :total-cash-value-commodities &quot;TotalCashValue-C&quot;
+                    :total-cash-value-stock &quot;TotalCashValue-S&quot;
+                    :trading-type-stock &quot;TradingType-S&quot;
+                    :unaltered-initial-margin-requirement &quot;UnalteredInitMarginReq&quot;
+                    :unaltered-maintenance-margin-requirement &quot;UnalteredMaintMarginReq&quot;
+                    :unrealized-profit-loss &quot;UnrealizedPnL&quot;
+                    :warrants-value &quot;WarrantValue&quot;
+                    :what-if-portfolio-margin-enabled &quot;WhatIfPMEnabled&quot;
+                    })</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn numeric-account-value? [key]
+  (contains? #{:accrued-cash :accrued-cash-commodities :accrued-cash-stock
+               :accrued-dividend :accrued-dividend-commodities :accrued-dividend-stock
+               :available-funds :available-funds-commodities :available-funds-stock
+               :billable :billable-commodities :billable-stock
+               :buying-power :cash-balance :corporate-bond-value :cushion
+               :equity-with-loan-value :equity-with-loan-value-commodities :equity-with-loan-value-stock
+               :excess-liquidity :excess-liquidity-commodities :excess-liquidity-stock
+               :exchange-rate
+               :full-available-funds :full-available-funds-commodities :full-available-funds-stock
+               :full-excess-liquidity :full-excess-liquidity-commodities :full-excess-liquidity-stock
+               :full-initial-margin-requirement :full-initial-margin-requirement-commodities :full-initial-margin-requirement-stock
+               :full-maintenance-margin-requirement :full-maintenance-margin-requirement-commodities :full-maintenance-margin-requirement-stock
+               :fund-value :future-option-value :futures-profit-loss :fx-cash-balance
+               :gross-position-value :gross-position-values-commodities :gross-position-value-stock
+               :indian-stock-haricut :indian-stock-haircut-commodities :indian-stock-haircut-stock
+               :initial-margin-requirement :initial-margin-requirement-commodities :initial-margin-requirement-stock
+               :leverage :leverage-commodities :leverage-stock
+               :look-ahead-available-funds :look-ahead-available-funds-commodities :look-ahead-available-funds-stock
+               :look-ahead-excess-liquidity :look-ahead-excess-liquidity-commodities :look-ahead-excess-liquidity-stock
+               :look-ahead-initial-margin-requirement :look-ahead-initial-margin-requirement-commodities :look-ahead-initial-margin-requirement-stock
+               :look-ahead-maintenance-margin-requirement :look-ahead-maintenance-margin-requirement-commodities
+               :look-ahead-maintenance-margin-requirement-stock
+               :look-ahead-next-change
+               :maintenance-margin-requirement :maintenance-margin-requirement-commodities :maintenance-margin-requirement-stock
+               :money-market-fund-value :mutual-fund-value :net-dividend
+               :net-liquidation :net-liquidation-commodities :net-liquidation-stock
+               :net-liquidation-by-currency :option-market-value
+               :pa-shares-value :pa-shares-value-commodities :pa-shares-value-stock
+               :post-expiration-margin
+               :post-expiration-margin-commodities :post-expiration-margin-stock
+               :post-expiration-excess
+               :post-expiration-excess-commodities :post-expiration-excess-stock
+               :previous-day-equity-with-loan-value :previous-day-equity-with-loan-value-commodities :previous-day-equity-with-loan-value-stock
+               :realized-profit-loss
+               :regulation-T-equity :regulation-T-equity-commodities :regulation-T-equity-stock
+               :regulation-T-margin :regulation-T-margin-commodities :regulation-T-margin-stock
+               :sma :sma-commodities :sma-stock
+               :stock-market-value :t-bill-value :t-bond-value :total-cash-balance
+               :total-cash-value :total-cash-value-commodities :total-cash-value-stock
+               :unaltered-initial-margin-requirement :unaltered-maintenance-margin-requirement
+               :unrealized-profit-loss :warrants-value
+               } key))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn integer-account-value? [key]
+  (contains? #{:day-trades-remaining :day-trades-remaining-T+1 :day-trades-remaining-T+2
+               :day-trades-remaining-T+3 :day-trades-remaining-T+4
+               } key))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn boolean-account-value? [key]
+  (contains? #{:account-ready :profit-loss :what-if-portfolio-margin-enabled} key))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table market-depth-row-operation
                    {
                     :insert 0
                     :update 1
                     :delete 2
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table market-depth-side
+                    })</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table market-depth-side
                    {
                     :ask 0
                     :bid 1
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(translation-table report-type
+                    })</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table report-type
                    {
                     :estimates &quot;Estimates&quot;
                     :financial-statements &quot;Financial Statements&quot;
                     :summary &quot;Summary&quot;
-                    })</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn translate-to-ib-duration [val unit]
-  (str val &quot; &quot; (translate-to-ib-duration-unit unit)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn translate-from-ib-date-time [val]
+                    })</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table right
+                   {:put &quot;PUT&quot;
+                    :call &quot;CALL&quot;
+                    :none &quot;0&quot;
+                    :unknown &quot;?&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table rule-80A
+                   {:individual &quot;I&quot;
+                    :agency &quot;A&quot;
+                    :agent-other-member &quot;W&quot;
+                    :individual-PTIA &quot;J&quot;
+                    :agency-PTIA &quot;U&quot;
+                    :agent-other-member-PTIA &quot;M&quot;
+                    :individual-PT &quot;K&quot;
+                    :agency-PT &quot;Y&quot;
+                    :agent-other-member-PT &quot;N&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table market-data-type
+                   {:real-time-streaming 1
+                    :frozen 2})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table boolean-int
+                   {true 1
+                    false 0})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(translation-table execution-side
+                   {:buy &quot;BOT&quot;
+                    :sell &quot;SLD&quot;})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :duration] [_ _ [val unit]]
+  (str val &quot; &quot; (translate :to-ib :duration-unit unit)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :duration] [_ _ val]
+  (when val
+    (let [[amount unit] (.split val &quot; &quot;)]
+      (vector (Integer/parseInt amount)
+              (translate :from-ib :duration-unit unit)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :date-time] [_ _ val]
   (condp instance? val
-    String (translate-from-ib-date-time (Long/parseLong val))
-    Long (from-long (* 1000 val))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn translate-to-ib-expiry [val]
-  (let [y (year val)
-        ys (.toString y)
-        m (month val)
-        ms (format &quot;%02d&quot; m)]
-    (str ys ms)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn translate-from-ib-expiry [val]
-  (parse (formatter &quot;yyyyMM&quot;) val))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn translate-to-ib-date-time [value]
-  (-&gt; (formatter &quot;yyyyMMdd HH:mm:ss&quot;)
-      (unparse value)
-      (str &quot; UTC&quot;)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn translate-to-ib-bar-size [val unit]
-  (str val &quot; &quot; (translate-to-ib-bar-size-unit unit)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.core" name="ib-re-actor.core"><h1 class="project-name">ib-re-actor.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(ns ib-re-actor.core)</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.historic-data" name="ib-re-actor.historic-data"><h1 class="project-name">ib-re-actor.historic-data</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(ns ib-re-actor.historic-data)</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defprotocol HistoricalReceiver
-  (bar [this request-id bar])
-  (complete [this request-id]))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defrecord NullHistoricalReceiver []
-    HistoricalReceiver
-  (bar [_ _ _])
-  (complete [_ _]))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.orders" name="ib-re-actor.orders"><h1 class="project-name">ib-re-actor.orders</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(ns ib-re-actor.orders
-  (:use [ib-re-actor.conversions])
-  (:import [com.ib.client Order]))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn id
-  ([^Order order] (.m_clientId order))
-  ([^Order order value] (set! (.m_clientId order) value)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn quantity
-  ([^Order order] (.m_totalQuantity order))
-  ([^Order order value] (set! (.m_totalQuantity order) value)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn limit-price
-  ([^Order order] (.m_lmtPrice order))
-  ([^Order order value] (set! (.m_lmtPrice order) value)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(def *client-order-id* (atom 1))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn limit-order
-  &quot;Create a limit order.
-A Limit order is an order to buy or sell at a specified price or
-better. The Limit order ensures that if the order fills, it will not
-fill at a price less favorable than your limit price, but it does not
-guarantee a fill.
-Specify the contract, action, quantity, and limit-price.
-Valid actions are: :buy, :sell, :sell-short.&quot;
-  ([contract action quantity limit-price]
-     (limit-order contract action quantity limit-price (swap! *client-order-id* inc)))
-  ([contract action quantity limit-price id]
-     (let [order (Order.)]
-       (set! (.m_action order) (translate-to-ib-order-action action))
-       (set! (.m_orderType order) (translate-to-ib-order-type :limit))
-       (set! (.m_tif order) (translate-to-ib-time-in-force :day))
-       (ib-re-actor.orders/id order id)
-       (ib-re-actor.orders/quantity order quantity)
-       (ib-re-actor.orders/limit-price order limit-price)
-       order)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defmulti time-in-force
-  &quot;Change the time an order will be in force if not filled.&quot;
-  (fn [_ value] (class value)))
-(defmethod time-in-force clojure.lang.Keyword [^Order order value]
-  (set! (.m_tif order) (translate-to-ib-time-in-force value))
-  order)
-(defmethod time-in-force org.joda.time.DateTime [^Order order date]
-  (set! (.m_goodTillDate order) (translate-to-ib-date-time date))
-  (time-in-force order :good-till-date))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn good-for-day [^Order order]
-  &quot;Make an order be in force for the rest of the day or until filled.&quot;
-  (time-in-force order :day))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn buy-limit
-  &quot;Create a limit order to buy a contract.&quot;
-  ([contract quantity limit-price transmit? id]
-     (limit-order contract :buy quantity limit-price transmit? id))
-  ([contract quantity limit-price transmit?]
-     (limit-order contract :buy quantity limit-price transmit?))
-  ([contract quantity limit-price]
-     (limit-order contract :buy quantity limit-price)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.util" name="ib-re-actor.util"><h1 class="project-name">ib-re-actor.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(ns ib-re-actor.util)</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defmacro field-based-property
-  ([property-name field-name]
-     `(defn ~property-name
-        ([x#] (. x# ~field-name))
-        ([x# val#] (set! (. x# ~field-name) val#) x#)))
-  ([property-name field-name get-xform set-xform]
-     `(defn ~property-name
-        ([x#] (~get-xform (. x# ~field-name)))
-        ([x# val#] (set! (. x# ~field-name) (~set-xform val#)) x#))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_ib-re-actor.connection">ib-re-actor.connection</li><li class="floating-toc-li" id="floating-toc_ib-re-actor.contracts">ib-re-actor.contracts</li><li class="floating-toc-li" id="floating-toc_ib-re-actor.conversions">ib-re-actor.conversions</li><li class="floating-toc-li" id="floating-toc_ib-re-actor.core">ib-re-actor.core</li><li class="floating-toc-li" id="floating-toc_ib-re-actor.historic-data">ib-re-actor.historic-data</li><li class="floating-toc-li" id="floating-toc_ib-re-actor.orders">ib-re-actor.orders</li><li class="floating-toc-li" id="floating-toc_ib-re-actor.util">ib-re-actor.util</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+    java.util.Date (tc/from-date val)
+    String (translate :from-ib :date-time (Long/parseLong val))
+    Long (tc/from-long (* 1000 val))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :date-time] [_ _ value]
+  (when val
+    (-&gt; (tf/formatter &quot;yyyyMMdd HH:mm:ss&quot;)
+        (tf/unparse value)
+        (str &quot; UTC&quot;))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :timestamp] [_ _ val]
+  (condp instance? val
+    java.util.Date (tc/from-date val)
+    org.joda.time.DateTime (translate :to-ib :timestamp
+                                      (-&gt; (tf/formatter &quot;yyyyMMdd-HH:mm:ss&quot;)
+                                          (tf/unparse val)
+                                          (str &quot; UTC&quot;)))
+    String val))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :timestamp] [_ _ val]
+  (cond
+   (nil? val) nil
+
+   (every? #(Character/isDigit %) val)
+   (tc/from-long (* (Long/parseLong val) 1000))
+
+   (= (.length val) 8)
+   (-&gt; (tf/formatter &quot;yyyyMMdd&quot;)
+       (tf/parse val))
+
+   (= (.length val) 17)
+   (-&gt; (tf/formatter &quot;yyyyMMdd-HH:mm:ss&quot;)
+       (tf/parse val))
+
+   :otherwise val))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :time-zone] [_ _ val]
+  (case val
+    &quot;GMT&quot; &quot;+0000&quot;
+    &quot;EST&quot; &quot;-0500&quot;
+    &quot;MST&quot; &quot;-0700&quot;
+    &quot;PST&quot; &quot;-0800&quot;
+    &quot;AST&quot; &quot;-0400&quot;
+    &quot;JST&quot; &quot;+0900&quot;
+    &quot;AET&quot; &quot;+1000&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :connection-time] [_ _ val]
+  (when val
+    (let [tokens (vec (.split val &quot; &quot;))
+          timezone-token (get tokens 2)]
+      (when timezone-token
+        (let [timezone-offset (translate :from-ib :time-zone timezone-token)
+              tokens-with-adjusted-timezone (concat (take 2 tokens) [timezone-offset])
+              adjusted-date-time-string (apply str (interpose &quot; &quot; tokens-with-adjusted-timezone))]
+          (-&gt; (tf/formatter &quot;yyyyMMdd HH:mm:ss Z&quot;)
+              (tf/parse adjusted-date-time-string)))))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :connection-time] [_ _ val]
+  (when val
+    (-&gt; (tf/formatter &quot;yyyyMMdd HH:mm:ss z&quot;)
+        (tf/unparse val))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :date] [_ _ val]
+  (tf/unparse (tf/formatter &quot;MM/dd/yyyy&quot;) val))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :date] [_ _ val]
+  (when val
+    (try
+      (tf/parse (tf/formatter &quot;MM/dd/yyyy&quot;) val)
+      (catch Exception e
+        (throw (ex-info &quot;Failed to translate from IB date value.&quot;
+                        {:value val
+                         :expected-form &quot;MM/dd/yyyy&quot;}))))))</pre></td></tr><tr><td class="docs"><p>FIXME: We should turn time of day into some kind of data structure that does
+no have a date component.</p>
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :time-of-day] [_ _ val]
+  (when val
+    (try
+      (tf/parse (tf/formatter &quot;HH:mm&quot;) val)
+      (catch Exception e
+        (throw (ex-info &quot;Failed to translate from IB time-of-day value.&quot;
+                        {:value val
+                         :expected-form &quot;HH:mm&quot;}))))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :time-of-day] [_ _ val]
+  (when val
+    (try
+      (tf/unparse (tf/formatter &quot;HH:mm&quot;) val)
+      (catch Exception e
+        (throw (ex-info &quot;Failed to translate from IB time-of-day value.&quot;
+                        {:value val
+                         :expected-form &quot;HH:mm&quot;}))))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :expiry] [_ _ val]
+  (when val
+    (let [y (time/year val)
+          ys (.toString y)
+          m (time/month val)
+          ms (format &quot;%02d&quot; m)]
+      (str ys ms))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :expiry] [_ _ val]
+  (condp = (.length val)
+    6 (tf/parse (tf/formatter &quot;yyyyMM&quot;) val)
+    8 (tf/parse (tf/formatter &quot;yyyyMMdd&quot;) val)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :bar-size] [_ _ [val unit]]
+  (str val &quot; &quot; (translate :to-ib :bar-size-unit unit)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :double-string] [_ _ val]
+  (str val))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :double-string] [_ _ val]
+  (Double/parseDouble val))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :order-types] [_ _ val]
+  (-&gt;&gt; (.split val &quot;,&quot;)
+       (map (partial translate :from-ib :order-type))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :order-types] [_ _ val]
+  (str/join &quot;,&quot; (map (partial translate :to-ib :order-type) val)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :exchanges] [_ _ val]
+  (str/split val #&quot;,&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:to-ib :exchanges] [_ _ val]
+  (str/join &quot;,&quot; val))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]
+  (let [year (int (Math/floor (/ val 10000)))
+        month (int (Math/floor (/ (mod val 10000) 100)))
+        day (int (Math/floor (mod 19720427 100)))]
+    (time/date-time year month day)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.util" name="ib-re-actor.util"><h1 class="project-name">ib-re-actor.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.util
+  (:use [ib-re-actor.translation]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def ^:const option-flag-keywords #{:read-only})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmacro field-props [&amp; property-descriptors]
+  (reduce (fn [implementation [name field &amp; options]]
+            (let [option-flags (set (take-while option-flag-keywords options))
+                  kw-args (drop-while option-flag-keywords options)
+                  {:keys [translation]} (apply hash-map kw-args)
+                  this (gensym &quot;this&quot;)
+                  val (gensym &quot;val&quot;)]
+              (assoc implementation (keyword name)
+                     `(fn
+                        ([~this]
+                           ~(if translation
+                              `(translate :from-ib ~translation (. ~this ~field))
+                              `(. ~this ~field)))
+                        ~@(if (not (option-flags :read-only))
+                            `(([~this ~val]
+                                 (set! (. ~this ~field)
+                                       ~(if translation
+                                          `(translate :to-ib ~translation ~val)
+                                          val))
+                                 ~this)))))))
+          {} property-descriptors))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn assoc-if [map key val]
+  (if val
+    (assoc map key val)
+    map))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
        SyntaxHighlighter.all()</script></body></html>
