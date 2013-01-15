@@ -1,15 +1,16 @@
 (ns ib-re-actor.test.translation
   (:use [ib-re-actor.translation]
-        [clj-time.core :only [date-time]]
-        [midje.sweet]))
+        [clj-time.core :only [date-time interval]]
+        [midje.sweet])
+  (:require [clj-time.coerce :as c]))
 
 (fact "unknown string codes just translate into themselves"
       (fact "coming from IB"
-	    (translate :from-ib :security-type "some weird value")
-	    => "some weird value")
+            (translate :from-ib :security-type "some weird value")
+            => "some weird value")
       (fact "going out to IB"
-	    (translate :to-ib :security-type "some weird value")
-	    => "some weird value"))
+            (translate :to-ib :security-type "some weird value")
+            => "some weird value"))
 
 (fact "unknown keyword codes throw"
       (translate :to-ib :security-type :I-misspelled-something)
@@ -132,3 +133,31 @@
  | :bid-price     | 1        |
  | :ask-price     | 2        |
  | :ask-size      | 3        |)
+
+
+(tabular
+ (fact "it can translate IB trading and liquid hours to joda intervals"
+       (translate :from-ib :trading-hours [?tz ?ib-string]) => ?intervals)
+ :where
+ | ?tz    | ?ib-string | ?intervals |
+ | "America/Belize"  |  "20130115:1700-1515,1530-1615;20130116:1700-1515,1530-1615" |
+ [(interval (c/to-date-time "2013-01-14T23:00:00.000") (c/to-date-time "2013-01-15T21:15:00.000"))
+  (interval (c/to-date-time "2013-01-15T21:30:00.000") (c/to-date-time "2013-01-15T22:15:00.000"))
+  (interval (c/to-date-time "2013-01-15T23:00:00.000") (c/to-date-time "2013-01-16T21:15:00.000"))
+  (interval (c/to-date-time "2013-01-16T21:30:00.000") (c/to-date-time "2013-01-16T22:15:00.000"))] |
+
+  |"JST"| "20130116:1630-2330,0900-1135,1145-1515;20130117:1630-2330,0900-1135,1145-1515"|
+  [(interval (c/to-date-time "2013-01-16T07:30:00.000") (c/to-date-time "2013-01-16T14:30:00.000"))
+   (interval (c/to-date-time "2013-01-16T00:00:00.000") (c/to-date-time "2013-01-16T02:35:00.000"))
+   (interval (c/to-date-time "2013-01-16T02:45:00.000") (c/to-date-time "2013-01-16T06:15:00.000"))
+   (interval (c/to-date-time "2013-01-17T07:30:00.000") (c/to-date-time "2013-01-17T14:30:00.000"))
+   (interval (c/to-date-time "2013-01-17T00:00:00.000") (c/to-date-time "2013-01-17T02:35:00.000"))
+   (interval (c/to-date-time "2013-01-17T02:45:00.000") (c/to-date-time "2013-01-17T06:15:00.000"))] |
+
+   |"EST" | "20130115:1715-1700;20130116:1715-1700"|
+   [(interval (c/to-date-time "2013-01-14T22:15:00.000") (c/to-date-time "2013-01-15T22:00:00.000"))
+    (interval (c/to-date-time "2013-01-15T22:15:00.000") (c/to-date-time "2013-01-16T22:00:00.000"))] |
+
+   |"EST" | "20130115:CLOSED;20130116:1715-1700"|
+   [(interval (c/to-date-time "2013-01-15T05:00:00.000") (c/to-date-time "2013-01-15T05:00:00.000"))
+    (interval (c/to-date-time "2013-01-15T22:15:00.000") (c/to-date-time "2013-01-16T22:00:00.000"))] |)

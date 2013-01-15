@@ -39,37 +39,37 @@ to check if if a given value is valid (known)."
          (contains? to-table# val#))
 
        (defmethod translate [:to-ib ~table-name] [_# _# val#]
-	 (when val#
-	   (cond
-	    (valid? :to-ib ~table-name val#)
-	    (to-table# val#)
+         (when val#
+           (cond
+            (valid? :to-ib ~table-name val#)
+            (to-table# val#)
 
-	    (string? val#)
-	    val#
+            (string? val#)
+            val#
 
-	    :otherwise
-	    (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
-			    {:value val#
-			     :table ~table-name
-			     :valid-values (keys to-table#)})))))
+            :otherwise
+            (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
+                            {:value val#
+                             :table ~table-name
+                             :valid-values (keys to-table#)})))))
 
        (defmethod valid? [:from-ib ~table-name] [_# _# val#]
          (contains? from-table# val#))
 
        (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
-	 (when val#
-	   (cond
-	    (valid? :from-ib ~table-name val#)
-	    (from-table# val#)
+         (when val#
+           (cond
+            (valid? :from-ib ~table-name val#)
+            (from-table# val#)
 
-	    (string? val#)
-	    val#
+            (string? val#)
+            val#
 
-	    :otherwise
-	    (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
-			    {:value val#
-			     :table ~table-name
-			     :valid-values (vals to-table#)}))))))))
+            :otherwise
+            (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
+                            {:value val#
+                             :table ~table-name
+                             :valid-values (vals to-table#)}))))))))
 
 (translation-table duration-unit
                    {:second "S"
@@ -739,3 +739,57 @@ to check if if a given value is valid (known)."
         month (int (Math/floor (/ (mod val 10000) 100)))
         day (int (Math/floor (mod 19720427 100)))]
     (time/date-time year month day)))
+
+;; -----
+;; ## Deals with the trading hours reporting.  This is really ugly.
+;; IB uses their timezone definitions incorrectly.  Correct them here.  No, no, they really do.
+(def ib-timezone-map
+  {"EST" "America/New_York"
+   "CST" "America/Chicago"
+   "JST" "Asia/Tokyo"})
+
+(defn- to-utc
+  "Returns a full date-time in UTC, referring to a particular time at a particular place. Place must be a TZ string such as America/Chicago. Date will only use the year-month-day fields, the min and second come from the parms."
+  ([place date-time]
+     (to-utc place date-time (time/hour date-time) (time/minute date-time) (time/sec date-time)))
+  ([place date hour minute]
+     (to-utc place date hour minute 0))
+  ([place date hour minute second]
+     (let [zone (time/time-zone-for-id (or (ib-timezone-map place) place))]
+       (time/to-time-zone
+        (time/from-time-zone
+         (time/date-time (time/year date) (time/month date) (time/day date) hour minute second)
+         zone)
+        (time/time-zone-for-id "UTC")))))
+
+
+(defn- th-days
+  "Returns a seq of the days in an interval"
+  [s]
+  (str/split s #";"))
+
+(defn- th-components [s]
+  (str/split s #":"))
+
+;; NB: Closed days are represented as 0 length intervals on that day.
+(defn- th-intervals [[day s]]
+  (if (= s "CLOSED")
+    [[(str day "0000") (str day "0000")]]
+    (map #(mapv (partial str day) (str/split % #"-")) (str/split s #","))))
+
+;; Convert to Joda intervals
+(defn- joda-interval [tz [start end]]
+  [start end]
+  (let [start-dt  (to-utc tz (tf/parse (tf/formatter "yyyyMMddHHmm") start))
+        end-dt    (to-utc tz (tf/parse (tf/formatter "yyyyMMddHHmm") end))
+        mod-start (if (time/after? start-dt end-dt)
+                    (time/minus start-dt (time/days 1))
+                    start-dt)]
+    (time/interval mod-start end-dt)))
+
+(defmethod translate [:from-ib :trading-hours] [_ _ [tz t-string]]
+  (->> t-string
+       th-days
+       (map th-components)
+       (mapcat th-intervals)
+       (map (partial joda-interval tz))))

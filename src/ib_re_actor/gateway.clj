@@ -281,8 +281,12 @@
 
     ;;; Contract Details
     (contractDetails [this requestId contractDetails]
-      (dispatch-message {:type :contract-details :request-id requestId
-                         :value (->map contractDetails)}))
+      (let [{:keys [trading-hours liquid-hours time-zone-id] :as m} (->map contractDetails)]
+        (dispatch-message {:type :contract-details
+                           :request-id requestId
+                           :value (-> m
+                                      (assoc :trading-hours (translate :from-ib :trading-hours [time-zone-id trading-hours]))
+                                      (assoc :liquid-hours  (translate :from-ib :trading-hours [time-zone-id liquid-hours])))})))
 
     (bondContractDetails [this requestId contractDetails]
       (dispatch-message {:type :contract-details :request-id requestId
