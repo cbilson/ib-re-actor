@@ -74,7 +74,7 @@ a clojure map, and using the same information, add a method to the map-> multime
 convert maps into instances of the IB class."
   [c & field-keys]
   (let [this (gensym "this")
-        map (gensym "map")
+        field-map (gensym "field-map")
         valid-keys (gensym "valid-keys")]
     `(do
        (extend-type ~c
@@ -82,9 +82,9 @@ convert maps into instances of the IB class."
          (->map [~this]
            (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))
 
-       (defmethod map-> ~c [_# ~map]
+       (defmethod map-> ~c [_# ~field-map]
          (let [~this (new ~c)]
-           ~@(mapcat (partial emit-map->field map this) field-keys)
+           ~@(mapcat (partial emit-map->field field-map this) field-keys)
            ~this)))))
 
 (defmacro defmapping-readonly
