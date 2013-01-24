@@ -290,7 +290,7 @@
 
     (bondContractDetails [this requestId contractDetails]
       (dispatch-message {:type :contract-details :request-id requestId
-                         :value (->map  contractDetails)}))
+                         :value (->map contractDetails)}))
 
     (contractDetailsEnd [this requestId]
       (dispatch-message {:type :contract-details-end :request-id requestId}))
