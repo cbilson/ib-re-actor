@@ -136,7 +136,7 @@
 
 
 (tabular
- (fact "it can translate IB trading and liquid hours to joda intervals"
+ (fact "It can translate IB trading and liquid hours to joda intervals"
        (translate :from-ib :trading-hours [?tz ?ib-string]) => ?intervals)
  :where
  | ?tz    | ?ib-string | ?intervals |

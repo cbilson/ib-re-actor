@@ -625,15 +625,16 @@ to check if if a given value is valid (known)."
     String val))
 
 (defmethod translate [:from-ib :timestamp] [_ _ val]
+
   (cond
    (nil? val) nil
-
-   (every? #(Character/isDigit %) val)
-   (tc/from-long (* (Long/parseLong val) 1000))
 
    (= (.length val) 8)
    (-> (tf/formatter "yyyyMMdd")
        (tf/parse val))
+
+   (every? #(Character/isDigit %) val)
+   (tc/from-long (* (Long/parseLong val) 1000))
 
    (= (.length val) 17)
    (-> (tf/formatter "yyyyMMdd-HH:mm:ss")
@@ -761,7 +762,6 @@ to check if if a given value is valid (known)."
          (time/date-time (time/year date) (time/month date) (time/day date) hour minute second)
          zone)
         (time/time-zone-for-id "UTC")))))
-
 
 (defn- th-days
   "Returns a seq of the days in an interval"
