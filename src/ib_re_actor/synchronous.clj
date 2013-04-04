@@ -59,8 +59,9 @@
   [con]
   (let [fields [:open-tick :bid-price :close-price :last-size :low
                 :ask-size :bid-size :last-price :ask-price :high :volume]
-        accept? (fn [{:keys [type contract]}]
-                  (and (= type :tick) (= contract con)))
+        my-ticker-id (g/get-ticker-id)
+        accept? (fn [{:keys [type contract ticker-id]}]
+                  (and (= type :tick) (= ticker-id my-ticker-id)))
         reduce-fn (fn [accum {:keys [field value]}]
                     (assoc accum field value))
         done? (fn [accum]
@@ -68,7 +69,7 @@
                   (every? received-fields fields)))
         complete (partial g/cancel-market-data con)]
     (reduce-responses accept? reduce-fn done? complete
-                      g/request-market-data con)))
+                      g/request-market-data my-ticker-id con)))
 
 (defn execute-order
   "Executes an order, returning only when the order is filled."

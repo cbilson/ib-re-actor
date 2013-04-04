@@ -55,17 +55,8 @@
 (defonce id->contract (atom {}))
 (defonce last-ticker-id (atom 1))
 
-(defn register-contract [contract]
-  (let [existing (get @contract->id contract)]
-    (or existing
-        (let [id (swap! last-ticker-id inc)]
-          (log/debug "registering id " id " for " contract)
-          (swap! contract->id assoc contract id)
-          (swap! id->contract assoc id contract)
-          id))))
-
-(defn lookup-contract [id]
-  (get @id->contract id))
+(defn get-ticker-id []
+  (swap! last-ticker-id inc))
 
 (defonce connection (agent nil))
 
@@ -170,21 +161,21 @@
     (tickPrice [this tickerId field price canAutoExecute]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code field)
-                         :contract (lookup-contract tickerId)
+                         :ticker-id tickerId
                          :value price
                          :can-auto-execute? (= 1 canAutoExecute)}))
 
     (tickSize [this tickerId field size]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code field)
-                         :contract (lookup-contract tickerId)
+                         :ticker-id tickerId
                          :value size}))
 
     (tickOptionComputation [this tickerId field impliedVol delta optPrice
                             pvDividend gamma vega theta undPrice]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code field)
-                         :contract (lookup-contract tickerId)
+                         :ticker-id tickerId
                          :implied-volatility impliedVol
                          :option-price optPrice
                          :pv-dividends pvDividend
@@ -194,26 +185,27 @@
     (tickGeneric [this tickerId tickType value]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code tickType)
-                         :contract (lookup-contract tickerId) :value value}))
+                         :ticker-id tickerId
+                         :value value}))
 
     (tickString [this tickerId tickType value]
       (let [field (translate :from-ib :tick-field-code tickType)]
         (cond
          (= field :last-timestamp)
          (dispatch-message {:type :tick :field field
-                            :contract (lookup-contract tickerId)
+                            :ticker-id tickerId
                             :value (translate :from-ib :date-time value)})
 
          :else
          (dispatch-message {:type :tick :field field
-                            :contract (lookup-contract tickerId)
+                            :ticker-id tickerId
                             :value val}))))
 
     (tickEFP [this tickerId tickType basisPoints formattedBasisPoints
               impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code tickType)
-                         :contract (lookup-contract tickerId)
+                         :ticker-id tickerId
                          :basis-points basisPoints
                          :formatted-basis-points formattedBasisPoints
                          :implied-future impliedFuture :hold-days holdDays
@@ -310,7 +302,7 @@
     ;;; Market Depth
     (updateMktDepth [this tickerId position operation side price size]
       (dispatch-message {:type :update-market-depth
-                         :contract (lookup-contract tickerId)
+                         :ticker-id tickerId
                          :position position
                          :operation (translate :from-ib :market-depth-row-operation
                                                operation)
@@ -319,7 +311,8 @@
 
     (updateMktDepthL2 [this tickerId position marketMaker operation side price size]
       (dispatch-message {:type :update-market-depth-level-2
-                         :contract (lookup-contract tickerId) :position position
+                         :ticker-id tickerId
+                         :position position
                          :market-maker marketMaker
                          :operation (translate :from-ib :market-depth-row-operation
                                                operation)
@@ -407,6 +400,10 @@
    - this
      The connection to use to make the request. Use (connect) to get this.
 
+   - ticker-id
+     A unique identifier that will be used to identify responses to this request.
+     See `get-ticker-id`
+
    - contract
      This contains attributes used to describe the contract. Use (make-contract) or
      (futures-contract) for example to create it.
@@ -429,14 +426,13 @@
 
      if no tick list is specified, a single snapshot of market data will come back
      and have the market data subscription will be immediately canceled."
-  ([contract tick-list snapshot?]
-     (let [ticker-id (register-contract contract)]
-       (send-connection .reqMktData ticker-id
-                        (map-> com.ib.client.Contract contract)
-                        (translate :to-ib :tick-list tick-list)
-                        snapshot?)))
-  ([contract]
-     (request-market-data contract "" false)))
+  ([ticker-id contract tick-list snapshot?]
+     (send-connection .reqMktData ticker-id
+                      (map-> com.ib.client.Contract contract)
+                      (translate :to-ib :tick-list tick-list)
+                      snapshot?))
+  ([ticker-id contract]
+     (request-market-data ticker-id contract "" false)))
 
 (defn cancel-market-data [contract]
   (let [ticker-id (@contract->id contract)]
