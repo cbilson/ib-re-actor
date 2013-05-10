@@ -48,7 +48,7 @@
        (translate :to-ib :bar-size [?value ?unit]) => ?expected)
  :where
  | ?value | ?unit    | ?expected |
- | 1      | :second  | "1 sec"   |
+ | 1      | :second  | "1 secs"  |
  | 5      | :seconds | "5 secs"  |
  | 1      | :minute  | "1 min"   |
  | 3      | :minutes | "3 mins"  |

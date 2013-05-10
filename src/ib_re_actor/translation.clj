@@ -105,15 +105,27 @@ to check if if a given value is valid (known)."
                     :cash "CASH"
                     :bag "BAG"})
 
-(translation-table bar-size-unit
-                   {:second "sec"
-                    :seconds "secs"
-                    :minute "min"
-                    :minutes "mins"
-                    :hour "hour"
-                    :hours "hour"
-                    :day "day"
-                    :days "days"})
+(defmethod translate [:to-ib :bar-size-unit] [_ _ unit]
+  (case unit
+    :second "secs"
+    :seconds "secs"
+    :minute "min"
+    :minutes "mins"
+    :hour "hour"
+    :hours "hour"
+    :day "day"
+    :days "days"))
+
+(defmethod translate [:from-ib :bar-size-unit] [_ _ unit]
+  (case unit
+    "sec" :second
+    "secs" :seconds
+    "min" :minute
+    "mins" :minutes
+    "hour" :hour
+    "hours" :hours
+    "day" :day
+    "days" :days))
 
 (translation-table what-to-show
                    {:trades "TRADES"
