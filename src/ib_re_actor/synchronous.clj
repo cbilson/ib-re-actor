@@ -57,18 +57,27 @@
 (defn get-current-price
   "Gets the current price for the specified contract."
   [con]
-  (let [fields [:open-tick :bid-price :close-price :last-size :low
-                :ask-size :bid-size :last-price :ask-price :high :volume]
-        accept? (fn [{:keys [type contract]}]
-                  (and (= type :tick) (= contract con)))
-        reduce-fn (fn [accum {:keys [field value]}]
-                    (assoc accum field value))
-        done? (fn [accum]
-                (let [received-fields (-> accum keys set)]
-                  (every? received-fields fields)))
-        complete (partial g/cancel-market-data con)]
-    (reduce-responses accept? reduce-fn done? complete
-                      g/request-market-data con)))
+  (let [fields (atom nil)
+        req-ticker-id (swap! g/last-ticker-id inc)
+        result (promise)
+        handler (fn [{:keys [type ticker-id request-id field value code] :as msg}]
+                  (cond
+                   (and (= type :tick) (= ticker-id req-ticker-id))
+                   (swap! fields assoc field value)
+
+                   (and (= type :tick-snapshot-end) (= req-ticker-id request-id))
+                   (deliver result @fields)
+
+                   (and (= type :error) (= 504 code))
+                   (deliver result msg)))]
+    (g/subscribe handler)
+    (try
+      (g/request-market-data con req-ticker-id "" true)
+      @result
+      (finally
+        (log/debug "unsubscribing")
+        (g/unsubscribe handler)
+        (log/debug "completing")))))
 
 (defn execute-order
   "Executes an order, returning only when the order is filled."

@@ -10,7 +10,7 @@
 (testable-privates ib-re-actor.gateway dispatch-message create-wrapper)
 
 (def some-contract {:symbol "SOME TICKER"})
-(def some-contract-id (register-contract some-contract))
+(def some-contract-id (get-request-id))
 
 (defn make-order-state []
   (let [ctor (first (.getDeclaredConstructors OrderState))]
@@ -55,38 +55,38 @@ wrapper, collecting and returning any messages the wrapper dispatched."
 (fact "price ticks"
       (wrapper->message (tickPrice some-contract-id 2 3.0 1))
       => {:type :tick :field :ask-price :value 3.0
-          :can-auto-execute? true :contract some-contract})
+          :can-auto-execute? true :ticker-id some-contract-id})
 
 (fact "size ticks"
       (wrapper->message (tickSize some-contract-id 3 4))
       => {:type :tick :field :ask-size :value 4
-          :contract some-contract})
+          :ticker-id some-contract-id})
 
 (fact "option computation ticks"
       (wrapper->message
        (tickOptionComputation some-contract-id 10 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))
-      => {:type :tick :field :bid-option-computation :contract some-contract
+      => {:type :tick :field :bid-option-computation :ticker-id some-contract-id
           :implied-volatility 2.0 :delta 3.0 :option-price 4.0
           :pv-dividends 5.0 :gamma 6.0 :vega 7.0 :theta 8.0 :underlying-price 9.0})
 
 (fact "generic ticks"
       (wrapper->message (tickGeneric some-contract-id 50 2.0))
       => {:type :tick :field :bid-yield
-          :contract some-contract :value 2.0})
+          :ticker-id some-contract-id :value 2.0})
 
 (fact "string ticks"
       (fact "last timestamp ticks"
             (wrapper->message
              (tickString some-contract-id 45 "1000000000"))
             => {:type :tick :field :last-timestamp
-                :contract some-contract
+                :ticker-id some-contract-id
                 :value (date-time 2001 9 9 1 46 40)}))
 
 (fact "EFP ticks"
       (wrapper->message (tickEFP some-contract-id 38 2.0 "0.03 %" 4.0 5
                                  "2001-04-01" 6.0 7.0))
       => {:type :tick :field :bid-efp-computation
-          :contract some-contract :basis-points 2.0
+          :ticker-id some-contract-id :basis-points 2.0
           :formatted-basis-points "0.03 %"
           :implied-future 4.0 :hold-days 5 :future-expiry "2001-04-01"
           :dividend-impact 6.0 :dividends-to-expiry 7.0})
@@ -215,13 +215,13 @@ wrapper, collecting and returning any messages the wrapper dispatched."
 
 (fact "when market depth changes"
       (wrapper->message (updateMktDepth some-contract-id 2 0 1 3.0 4))
-      => {:type :update-market-depth :contract some-contract :position 2
+      => {:type :update-market-depth :ticker-id some-contract-id :position 2
           :operation :insert :side :bid :price 3.0 :size 4})
 
 (fact "when the Level II market depth changes"
       (wrapper->message (updateMktDepthL2 some-contract-id 2 "some market maker"
                                           1 0 3.0 4))
-      => {:type :update-market-depth-level-2 :contract some-contract :position 2
+      => {:type :update-market-depth-level-2 :ticker-id some-contract-id :position 2
           :market-maker "some market maker" :operation :update :side :ask
           :price 3.0 :size 4})
 
