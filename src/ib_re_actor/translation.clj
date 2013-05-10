@@ -759,6 +759,7 @@ to check if if a given value is valid (known)."
 (def ib-timezone-map
   {"EST" "America/New_York"
    "CST" "America/Chicago"
+   "CTT" "America/Chicago"
    "JST" "Asia/Tokyo"})
 
 (defn- to-utc
