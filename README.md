@@ -365,7 +365,7 @@ user> (get-historical-data {:symbol "AAPL" :type :equity :exchange "ISLAND"}
 
 ;;; wrap request-current-time
 user> (get-time)
-({:type :current-time, :value #<DateTime 2012-12-21T01:42:58.000Z>})
+#<DateTime 2012-12-21T01:42:58.000Z>
 
 ;;; wrap request-contract-details
 user> (get-contract-details {:symbol "AAPL" :type :equity :exchange "ISLAND"})
