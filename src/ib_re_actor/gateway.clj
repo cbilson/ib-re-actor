@@ -109,15 +109,65 @@
 (defmethod warning? :default [_]
   false)
 
-(def error? (comp not warning?))
+(def error? (complement warning?))
 
-(defn is-end?
-  "Predicate to determine if a message indicates a tick snapshot is done"
-  [{type :type :as msg}]
+(defn request-level-error? [code-or-message]
   (cond
-   (= :tick-snapshot-end type) true
-   (and (= :error type) (error? msg)) true
-   :otherwise false))
+   (map? code-or-message)
+   (and (= :error (:type code-or-message))
+        (request-level-error? (:code code-or-message)))
+
+   :otherwise
+   (#{200                                ; no security definition
+      } code-or-message)))
+
+(defn connection-level-error? [code-or-message]
+  (cond
+   (map? code-or-message)
+   (and (= :error (:type code-or-message))
+        (connection-level-error? (:code code-or-message)))
+
+   :otherwise
+   (#{504                                ; Not connected
+      1100                               ; Connectivity between IB and TWS has been lost
+      } code-or-message)))
+
+(defn error-end?
+  ([msg]
+     (error-end? nil msg))
+  ([req-order-or-ticker-id {:keys [type request-id order-id ticker-id] :as msg}]
+     (cond
+      (not= :error type)
+      false
+
+      (not (error? msg))
+      false
+
+      (connection-level-error? msg)
+      true
+
+      (and (= req-order-or-ticker-id (or request-id order-id ticker-id))
+           (error? msg))
+      true)))
+
+(def end-message-type? #{:tick-snapshot-end :open-order-end
+                         :account-download-end :contract-details-end
+                         :price-bar-complete
+                         :execution-details-end :scan-end })
+
+(defn request-end?
+  "Predicate to determine if a message indicates a series of responses for a request is done"
+  [req-id {:keys [type request-id] :as msg}]
+  (and (end-message-type? type)
+       (or (nil? req-id)
+           (= request-id req-id))))
+
+(defn end?
+  ([msg]
+     (end? nil msg))
+  ([req-id msg]
+     (or (error-end? req-id msg)
+         (request-end? req-id msg))))
 
 (defn- create-wrapper
   "Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
