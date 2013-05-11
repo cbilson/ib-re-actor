@@ -270,7 +270,7 @@ satisfying the last requirement.
 
 For example, let's say we want 1 second bars for an entire day for DOW
 minis. 2000 seconds is about 33 minutes. YMZ2 trades almost all day,
-but let's say we want to start when it get's liquid all the way until
+but let's say we want to start when it gets liquid all the way until
 the next time it stops trading:
 
 ```clojure
