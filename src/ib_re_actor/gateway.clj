@@ -583,10 +583,10 @@ message"
                (fn [c]
                  (try
                    (let [connection (com.ib.client.EClientSocket. (create-wrapper))]
-                        (.eConnect connection host port client-id)
-                        (if (not= default-server-log-level :error)
-                          (set-server-log-level connection default-server-log-level))
-                        connection)
+                     (.eConnect connection host port client-id)
+                     (if (not= default-server-log-level :error)
+                       (set-server-log-level connection default-server-log-level))
+                     connection)
                    (catch Exception ex
                      (log/error "Error trying to connect to " host ":" port ": " ex)))))))
 
