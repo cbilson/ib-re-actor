@@ -427,6 +427,13 @@
   (send-off listeners
             (fn [fns] (filter (partial not= f) fns))))
 
+(defmacro with-subscription [handler & body]
+  `(try
+     (g/subscribe ~handler)
+     ~@body
+     (finally
+       (g/unsubscribe ~handler))))
+
 (defn get-order-id []
   (swap! next-order-id inc))
 
